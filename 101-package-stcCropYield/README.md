@@ -1,4 +1,4 @@
 
-101-package-nppR
-=================
-This task contains the code to generate R package nppR.
+101-package-stcCropYield
+========================
+This task contains the code to generate R package stcCropYield.
