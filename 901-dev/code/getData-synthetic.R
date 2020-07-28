@@ -147,11 +147,15 @@ getData.synthetic_year.ecoregion <- function(
         is.selected <- (DF.output[,"crop"] == temp.crop);
         DF.temp     <- DF.output[is.selected,colnames(temp.X)];
         DF.temp     <- as.matrix(cbind(x0 = rep(x=1,times=nrow(DF.temp)),DF.temp));
-        temp.mean   <- abs(rnorm(n = 1, mean = 10, sd = 2));
-        temp.sd     <- abs(rnorm(n = 1, mean =  2, sd = 1));
-        temp.beta   <- abs(rnorm(n = ncol(DF.temp), mean = temp.mean, sd = temp.sd));
-        DF.temp.01  <- DF.temp %*% temp.beta;
-        DF.output[is.selected,"yield"] <- DF.temp %*% temp.beta;
+
+        temp.mean <- abs(rnorm(n = 1, mean = 10, sd = 2));
+        temp.sd1  <- abs(rnorm(n = 1, mean =  2, sd = 1));
+        temp.sd2  <- abs(rnorm(n = 1, mean = 10, sd = 1));
+
+        temp.beta  <- abs(rnorm(n = ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
+        temp.noise <- rnorm(n = nrow(DF.temp), mean = 0, sd = temp.sd2);
+
+        DF.output[is.selected,"yield"] <- DF.temp %*% temp.beta + temp.noise;
         }
     return( DF.output );
     }
