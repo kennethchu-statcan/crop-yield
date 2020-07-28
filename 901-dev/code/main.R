@@ -19,20 +19,20 @@ require(dplyr);
 code.files <- c(
     #"diagnostics-MB.R",
     #"filterData-MB.R",
-    #"forwardTransferValidation.R",
+    "forwardTransferValidation.R",
     #"getData-MB.R",
     "getData-synthetic.R",
-    #"getLearner.R",
-    "get-learner-metadata.R"
-    #"initializePlot.R",
-    #"preprocessor.R",
+    "getLearner.R",
+    "get-learner-metadata.R",
+    "initializePlot.R",
+    "preprocessor.R",
     #"learner-glmnet.R",
     #"learner-lm.R",
-    #"learner-xgboost.R",
+    "learner-xgboost.R",
     #"learner-xgbtree.R",
     #"learner-byOne-xgboost.R",
     #"learner-byTwo-glmnet.R",
-    #"learner-byTwo-xgboost.R",
+    "learner-byTwo-xgboost.R"
     #"learner-byTwo-xgbtree.R"
     );
 
@@ -66,43 +66,50 @@ print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 learner.metadata <- get.learner.metadata(
-    ecoregion   = "my_ecoregion",
-    crop        = "my_crop",
-    predictors  = paste0("x0",seq(1,n.predictors)),
-    search.grid = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
+    year              = "my_year",
+    ecoregion         = "my_ecoregion",
+    crop              = "my_crop",
+    response.variable = "my_yield",
+    harvested.area    = "my_harvested_area",
+    predictors        = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    search.grid       = list(
+        alpha       = seq(23,11,-8),
+        lambda      = seq(23,11,-8),
+        lambda_bias = seq(23,11,-8)
+        )
     );
 
 cat("\nlearner.metadata\n");
 print( learner.metadata   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#validation.years <- seq(2008,2017);
-#training.window  <- 10;
+validation.years <- seq(2008,2017);
+training.window  <- 5;
 
-#learner.count <- 0;
-#for (learner.name in names(learner.metadata)) {
-#
-#    learner.count <- learner.count + 1;
-#
-#    cat(paste0("\n### Learner: ",learner.name,"\n"));
-#
-#    for (validation.year in validation.years) {
-#
-#        training.years <- seq(validation.year-training.window,validation.year - 1);
-#        DF.training    <- DF.MB[DF.MB[,"year"] %in%   training.years,];
-#        DF.validation  <- DF.MB[DF.MB[,"year"] ==   validation.year, ];
-#
-#        forwardTransferValidation(
-#            learner.name     = learner.name,
-#            validation.year  = validation.year,
-#            learner.metadata = learner.metadata[[learner.name]],
-#            DF.training      = DF.training,
-#            DF.validation    = DF.validation
-#            );
-#
-#        }
-#	
-#    }
+learner.count <- 0;
+for (learner.name in names(learner.metadata)) {
+
+    learner.count <- learner.count + 1;
+
+    cat(paste0("\n### Learner: ",learner.name,"\n"));
+
+    for (validation.year in validation.years) {
+
+        training.years <- seq(validation.year-training.window,validation.year - 1);
+        DF.training    <- DF.synthetic[DF.synthetic[,"my_year"] %in%   training.years,];
+        DF.validation  <- DF.synthetic[DF.synthetic[,"my_year"] ==   validation.year, ];
+
+        forwardTransferValidation(
+            learner.name     = learner.name,
+            validation.year  = validation.year,
+            learner.metadata = learner.metadata[[learner.name]],
+            DF.training      = DF.training,
+            DF.validation    = DF.validation
+            );
+
+        }
+
+    }
 
 cat("\n##################################################\n");
 cat("\n##### warnings():\n");

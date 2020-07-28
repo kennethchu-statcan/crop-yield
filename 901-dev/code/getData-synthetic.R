@@ -130,12 +130,13 @@ getData.synthetic_year.ecoregion <- function(
     ) {
     n.parcels <- length(parcels);
     DF.output <- data.frame(
-        my_year          = rep(x = year,      n = n.parcels),
-        my_ecoregion     = rep(x = ecoregion, n = n.parcels),
-        my_parcelID      = parcels,
-        my_crop          = sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
-        my_yield         = rep(x = -9999, n = n.parcels),
-        stringsAsFactors = FALSE
+        my_year           = rep(x = year,      n = n.parcels),
+        my_ecoregion      = rep(x = ecoregion, n = n.parcels),
+        my_parcelID       = parcels,
+        my_crop           = sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
+        my_harvested_area = runif(n = n.parcels, min = 0.8, max = 1),
+        my_yield          = rep(x = -9999, n = n.parcels),
+        stringsAsFactors  = FALSE
         );
     temp.X <- matrix(
         data = rnorm(n = nrow(DF.output) * n.predictors, mean = 100, sd = 20),
