@@ -3,6 +3,7 @@ getData.synthetic <- function(
     years        = seq(2000,2018),
     n.ecoregions =  5,
     n.crops      = 10,
+    n.predictors =  7,
     output.RData = "raw-synthetic.RData",
     output.csv   = "raw-synthetic.csv"
     ) {
@@ -10,6 +11,9 @@ getData.synthetic <- function(
     this.function.name <- "getData.synthetic";
     cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
     cat(paste0("starting: ",this.function.name,"()\n"));
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    require(stringr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if (file.exists(output.RData)) {
@@ -46,11 +50,12 @@ getData.synthetic <- function(
         for ( temp.ecoregion in ecoregions ) {
 
             DF.temp <- getData.synthetic_year.ecoregion(
-                year       = temp.year,
-                ecoregion  = temp.ecoregion,
-                parcels    = list.parcels[[temp.ecoregion]],
-                crops      = crops,
-                crop.probs = crop.probs
+                year         = temp.year,
+                ecoregion    = temp.ecoregion,
+                parcels      = list.parcels[[temp.ecoregion]],
+                crops        = crops,
+                crop.probs   = crop.probs,
+                n.predictors = n.predictors
                 );
             DF.output <- rbind(DF.output,DF.temp);
         
@@ -79,6 +84,20 @@ getData.synthetic <- function(
     }
 
 ##################################################
+getData.synthetic_predictors <- function(n.predictors = NULL) {
+    require(stringr);
+    predictors <- base::paste0(
+        "x",
+        stringr::str_pad(
+            string = seq(1,n.predictors),
+            width  = 1 + floor(log10(n.predictors)),
+            side   = "left",
+            pad    = "0"
+            )
+        );
+    return( predictors );
+    }
+
 getData.synthetic_crop.probs <- function(
     crops = NULL
     ) {
@@ -102,11 +121,12 @@ getData.synthetic_parcels.by.ecoregion <- function(
     }
 
 getData.synthetic_year.ecoregion <- function(
-    year       = NULL,
-    ecoregion  = NULL,
-    parcels    = NULL,
-    crops      = NULL,
-    crop.probs = NULL
+    year         = NULL,
+    ecoregion    = NULL,
+    parcels      = NULL,
+    crops        = NULL,
+    crop.probs   = NULL,
+    n.predictors = NULL
     ) {
     n.parcels <- length(parcels);
     DF.output <- data.frame(
@@ -114,12 +134,29 @@ getData.synthetic_year.ecoregion <- function(
         ecoregion        = rep(x = ecoregion, n = n.parcels),
         parcelID         = parcels,
         crop             = sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
+        yield            = rep(x = -9999, n = n.parcels),
         stringsAsFactors = FALSE
         );
+    temp.X <- matrix(
+        data = rnorm(n = nrow(DF.output) * n.predictors, mean = 100, sd = 20),
+        nrow = nrow(DF.output)
+        );
+    colnames(temp.X) <- getData.synthetic_predictors(n.predictors = n.predictors);
+    DF.output <- cbind(DF.output,temp.X);
+    for ( temp.crop in crops ) {
+        is.selected <- (DF.output[,"crop"] == temp.crop);
+        DF.temp     <- DF.output[is.selected,colnames(temp.X)];
+        DF.temp     <- as.matrix(cbind(x0 = rep(x=1,times=nrow(DF.temp)),DF.temp));
+        temp.mean   <- abs(rnorm(n = 1, mean = 10, sd = 2));
+        temp.sd     <- abs(rnorm(n = 1, mean =  2, sd = 1));
+        temp.beta   <- abs(rnorm(n = ncol(DF.temp), mean = temp.mean, sd = temp.sd));
+        DF.temp.01  <- DF.temp %*% temp.beta;
+        DF.output[is.selected,"yield"] <- DF.temp %*% temp.beta;
+        }
     return( DF.output );
     }
 
-get.predictors <- function() {
+get.predictors.REAL <- function() {
     predictors <- c(
         #"year",
         "cropsurv",
