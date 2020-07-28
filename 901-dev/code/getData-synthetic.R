@@ -130,11 +130,11 @@ getData.synthetic_year.ecoregion <- function(
     ) {
     n.parcels <- length(parcels);
     DF.output <- data.frame(
-        year             = rep(x = year,      n = n.parcels),
-        ecoregion        = rep(x = ecoregion, n = n.parcels),
-        parcelID         = parcels,
-        crop             = sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
-        yield            = rep(x = -9999, n = n.parcels),
+        my_year          = rep(x = year,      n = n.parcels),
+        my_ecoregion     = rep(x = ecoregion, n = n.parcels),
+        my_parcelID      = parcels,
+        my_crop          = sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
+        my_yield         = rep(x = -9999, n = n.parcels),
         stringsAsFactors = FALSE
         );
     temp.X <- matrix(
@@ -144,7 +144,7 @@ getData.synthetic_year.ecoregion <- function(
     colnames(temp.X) <- getData.synthetic_predictors(n.predictors = n.predictors);
     DF.output <- cbind(DF.output,temp.X);
     for ( temp.crop in crops ) {
-        is.selected <- (DF.output[,"crop"] == temp.crop);
+        is.selected <- (DF.output[,"my_crop"] == temp.crop);
         DF.temp     <- DF.output[is.selected,colnames(temp.X)];
         DF.temp     <- as.matrix(cbind(x0 = rep(x=1,times=nrow(DF.temp)),DF.temp));
 
@@ -155,7 +155,7 @@ getData.synthetic_year.ecoregion <- function(
         temp.beta  <- abs(rnorm(n = ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
         temp.noise <- rnorm(n = nrow(DF.temp), mean = 0, sd = temp.sd2);
 
-        DF.output[is.selected,"yield"] <- DF.temp %*% temp.beta + temp.noise;
+        DF.output[is.selected,"my_yield"] <- DF.temp %*% temp.beta + temp.noise;
         }
     return( DF.output );
     }

@@ -21,9 +21,9 @@ code.files <- c(
     #"filterData-MB.R",
     #"forwardTransferValidation.R",
     #"getData-MB.R",
-    "getData-synthetic.R"
+    "getData-synthetic.R",
     #"getLearner.R",
-    #"get-learner-metadata.R",
+    "get-learner-metadata.R"
     #"initializePlot.R",
     #"preprocessor.R",
     #"learner-glmnet.R",
@@ -43,10 +43,15 @@ for ( code.file in code.files ) {
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(7654321);
 
+n.ecoregions <-  7;
+n.crops      <- 15;
+n.predictors <-  7;
+
 DF.synthetic <- getData.synthetic(
     years        = seq(2000,2020),
-    n.ecoregions =  7,
-    n.crops      = 15,
+    n.ecoregions = n.ecoregions,
+    n.crops      = n.crops,
+    n.predictors = n.predictors,
     output.RData = "raw-synthetic.RData",
     output.csv   = "raw-synthetic.csv"
     );
@@ -60,10 +65,15 @@ print( summary(DF.synthetic)   );
 # diagnostics.MB(DF.input = DF.MB);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#learner.metadata <- get.learner.metadata();
+learner.metadata <- get.learner.metadata(
+    ecoregion   = "my_ecoregion",
+    crop        = "my_crop",
+    predictors  = paste0("x0",seq(1,n.predictors)),
+    search.grid = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
+    );
 
-#cat("\nlearner.metadata\n");
-#print( learner.metadata   );
+cat("\nlearner.metadata\n");
+print( learner.metadata   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 #validation.years <- seq(2008,2017);
