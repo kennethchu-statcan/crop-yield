@@ -41,18 +41,18 @@ learner.xgboost.byOne <- R6Class(
 				}
 			},
 
-		predict = function(newdata = NULL) {
-			DF.output <- data.frame();
-			my.levels <- unique(as.character(newdata[,self$by_variables]));
-			for ( my.level in my.levels ) {
-				cat(paste0("\n# predicting: ",my.level,"\n"));
-		        DF.temp   <- self$trained.machines[[my.level]]$predict(newdata = newdata[newdata[,self$by_variables] == my.level,]);
-		        DF.output <- rbind(DF.output,DF.temp);
-				}
-			return ( DF.output );
-			}
+        predict = function(newdata = NULL) {
+            DF.output <- data.frame();
+            my.levels <- unique(as.character(newdata[,self$by_variables]));
+            for ( my.level in my.levels ) {
+                cat(paste0("\n# predicting: ",my.level,"\n"));
+                DF.temp   <- self$trained.machines[[my.level]]$predict(newdata = newdata[newdata[,self$by_variables] == my.level,]);
+                DF.output <- rbind(DF.output,DF.temp);
+                }
+            return ( DF.output );
+            }
 
-		) # public = list()
+        ) # public = list()
 
-	) # R6Class()
+    ) # R6Class()
 
