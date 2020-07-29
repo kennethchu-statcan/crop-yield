@@ -38,8 +38,8 @@ learner.xgboost.byOne <- R6Class(
                     );
                 temp.learner$fit();
                 self$trained.machines[[my.level]] <- temp.learner;
-				}
-			},
+                }
+            },
 
         predict = function(newdata = NULL) {
             DF.output <- data.frame();
