@@ -94,7 +94,7 @@ learner.xgboost <- R6Class(
             DF.output <- newdata;
             DF.output[,"predicted_response"] <- predicted.response;
             return ( DF.output );
-			}
+            }
 
         ) # public = list()
 
