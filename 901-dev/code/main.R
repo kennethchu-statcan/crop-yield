@@ -24,7 +24,7 @@ code.files <- c(
     "initializePlot.R",
     "preprocessor.R",
     "learner-xgboost.R",
-    #"learner-xgboost-byOne.R",
+    "learner-xgboost-byOne.R",
     "learner-xgboost-byTwo.R"
     );
 
