@@ -40,7 +40,7 @@ learner.xgboost.byTwo <- R6Class(
             },
 
         fit = function() {
-			my.levels <- unique(as.character(self$training.data[,"byOne_byTwo"]));
+            my.levels <- unique(as.character(self$training.data[,"byOne_byTwo"]));
             self$trained.machines <- list();
             for ( my.level in my.levels ) {
                 cat(paste0("\n# fitting: ",my.level,"\n"));
