@@ -17,23 +17,15 @@ cat("\n##################################################\n");
 require(dplyr);
 
 code.files <- c(
-    #"diagnostics-MB.R",
-    #"filterData-MB.R",
     "forwardTransferValidation.R",
-    #"getData-MB.R",
     "getData-synthetic.R",
     "getLearner.R",
     "get-learner-metadata.R",
     "initializePlot.R",
     "preprocessor.R",
-    #"learner-glmnet.R",
-    #"learner-lm.R",
     "learner-xgboost.R",
-    #"learner-xgbtree.R",
-    #"learner-byOne-xgboost.R",
-    #"learner-byTwo-glmnet.R",
-    "learner-byTwo-xgboost.R"
-    #"learner-byTwo-xgbtree.R"
+    #"learner-xgboost-byOne.R",
+    "learner-xgboost-byTwo.R"
     );
 
 for ( code.file in code.files ) {
@@ -83,7 +75,7 @@ cat("\nlearner.metadata\n");
 print( learner.metadata   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-validation.years <- seq(2008,2017);
+validation.years <- seq(2012,2017);
 training.window  <- 5;
 
 learner.count <- 0;

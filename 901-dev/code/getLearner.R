@@ -22,44 +22,30 @@ getLearner <- function(
             training.data    = DF.training
             );
 
-    } else if ( "crop_xgboost" == learner.metadata[["learner"]] ) {
+    } else if ( "xgboost_byOne" == learner.metadata[["learner"]] ) {
 
-        instantiated.learner <- learner.crop.xgboost$new(
+        instantiated.learner <- learner.xgboost.byOne$new(
             learner.metadata = learner.metadata,
             training.data    = DF.training
             );
 
-    } else if ( "region_xgboost" == learner.metadata[["learner"]] ) {
+    } else if ( "xgboost_byTwo" == learner.metadata[["learner"]] ) {
 
-        instantiated.learner <- learner.region.xgboost$new(
+        instantiated.learner <- learner.xgboost.byTwo$new(
             learner.metadata = learner.metadata,
             training.data    = DF.training
             );
 
-    } else if ( "byOne_xgboost" == learner.metadata[["learner"]] ) {
+    } else if ( "glmnet_byTwo" == learner.metadata[["learner"]] ) {
 
-        instantiated.learner <- learner.byOne.xgboost$new(
+        instantiated.learner <- learner.glmnet.byTwo$new(
             learner.metadata = learner.metadata,
             training.data    = DF.training
             );
 
-    } else if ( "byTwo_xgboost" == learner.metadata[["learner"]] ) {
+    } else if ( "xgbtree_byTwo" == learner.metadata[["learner"]] ) {
 
-        instantiated.learner <- learner.byTwo.xgboost$new(
-            learner.metadata = learner.metadata,
-            training.data    = DF.training
-            );
-
-    } else if ( "byTwo_glmnet" == learner.metadata[["learner"]] ) {
-
-        instantiated.learner <- learner.byTwo.glmnet$new(
-            learner.metadata = learner.metadata,
-            training.data    = DF.training
-            );
-
-    } else if ( "byTwo_xgbtree" == learner.metadata[["learner"]] ) {
-
-        instantiated.learner <- learner.byTwo.xgbtree$new(
+        instantiated.learner <- learner.xgbtree.byTwo$new(
             learner.metadata = learner.metadata,
             training.data    = DF.training
             );
