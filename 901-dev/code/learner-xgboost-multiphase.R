@@ -127,8 +127,10 @@ learner.xgboost.multiphase <- R6Class(
             DF.output[,"predicted_response"] <- DF.output[,"predicted_response_phase01"]
             print("A-6");
             ### ~~~~~~~~~~ ###
+            DF.output <- DF.output[order(DF.output[,"synthetic.rowID"]),];
             DF.output <- DF.output[,setdiff(colnames(DF.output),"synthetic.rowID")];
             print("A-7");
+            ### ~~~~~~~~~~ ###
 			return ( DF.output );
             }
 
