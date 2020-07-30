@@ -32,22 +32,9 @@ learner.xgboost.multiphase <- R6Class(
             print( self$learner.metadata   );
             print("Y-2");
 
-            #self$response_variable <- self$learner.metadata[["response_variable"]];
-            #self$training.data     <- training.data[,c(self$response.variable,self$by.variables,self$learner.metadata[["predictors"]])];
+            },
 
-			#self$training.data[,"byOne_byTwo"] <- factor(
-			#	paste0(
-			#		self$training.data[,self$by.variables[1]],
-			#		"_",
-			#		self$training.data[,self$by.variables[2]]
-			#		)
-			#	);
-
-			#self$training.data <- self$training.data[,setdiff(colnames(self$training.data),self$by.variables)];
-
-			},
-
-		fit = function() {
+        fit = function() {
 
             temp.learner.metadata                   <- self$learner.metadata;
             temp.learner.metadata[["learner"]]      <- "xgboost_byGroup";
@@ -94,9 +81,9 @@ learner.xgboost.multiphase <- R6Class(
             temp.learner$fit();
             self$learner.phase02 <- temp.learner;
 
-			},
+            },
 
-		predict = function(newdata = NULL) {
+        predict = function(newdata = NULL) {
             newdata[,"synthetic.rowID"] <- seq(1,nrow(newdata),1);
             DF.output <- newdata;
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -143,9 +130,9 @@ learner.xgboost.multiphase <- R6Class(
             DF.output <- DF.output[,setdiff(colnames(DF.output),"synthetic.rowID")];
             print("A-7");
 			return ( DF.output );
-			}
+            }
 
-		) # public = list()
+        ) # public = list()
 
-	) # R6Class()
+    ) # R6Class()
 
