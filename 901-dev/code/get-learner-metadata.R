@@ -19,11 +19,12 @@ get.learner.metadata <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     learner.metadata <- c(
         get.learner.metadata_xgboost(
-            #learner           = "xgboost_byTwo",
-            #by.variables      = c(ecoregion,crop),
-            #learner           = "xgboost_byOne",
+            # learner         = "xgboost_byTwo",
+            # by.variables    = c(ecoregion,crop),
+            # learner         = "xgboost_byOne",
+            # by.variables    = c(crop),
             learner           = "xgboost_byGroup",
-            by.variables      = c(crop),
+            by.variables      = c(ecoregion,crop),
             year              = year,
             ecoregion         = ecoregion,
             crop              = crop,
