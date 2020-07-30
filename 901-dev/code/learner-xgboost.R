@@ -73,15 +73,19 @@ learner.xgboost <- R6Class(
             },
 
         predict = function(newdata = NULL) {
+
+            cat("\ncolnames(newdata) -- learner.xgboost$predict()\n");
+            print( colnames(newdata) );
+
             preprocessed.newdata <- self$preprocessor$transform(
                 newdata = newdata[,c(self$response_variable,self$learner.metadata[["predictors"]])]
                 );
 
-            cat("\ndim(preprocessed.newdata)\n");
-            print( dim(preprocessed.newdata)   );
+            cat("\ndim(preprocessed.newdata) -- learner.xgboost$predict()\n");
+            print( dim(preprocessed.newdata) );
 
-            cat("\ncolnames(self$preprocessed.newdata)\n");
-            print( colnames(self$preprocessed.newdata)   );
+            cat("\ncolnames(preprocessed.newdata) -- learner.xgboost$predict()\n");
+            print( colnames(preprocessed.newdata) );
 
             DMatrix.preprocessed.newdata <- xgboost::xgb.DMatrix(
                 data  = as.matrix(preprocessed.newdata[,setdiff(colnames(preprocessed.newdata),self$response_variable)]),
@@ -91,8 +95,13 @@ learner.xgboost <- R6Class(
                 object  = self$trained.machine,
                 newdata = DMatrix.preprocessed.newdata
                 );
+
             DF.output <- newdata;
             DF.output[,"predicted_response"] <- predicted.response;
+
+            cat("\ncolnames(DF.output) -- learner.xgboost$predict()\n");
+            print( colnames(DF.output) );
+
             return ( DF.output );
             }
 

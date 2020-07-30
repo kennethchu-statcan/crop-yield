@@ -13,8 +13,8 @@ learner.xgboost.byGroup <- R6Class(
         training.data    = NULL,
 
         # class attributes
-        by_variables      = NULL,
-        response_variable = NULL,
+        by.variables      = NULL,
+        response.variable = NULL,
         trained.machines  = NULL,
 
         initialize = function(
@@ -23,17 +23,28 @@ learner.xgboost.byGroup <- R6Class(
             ) {
 
             self$learner.metadata  <- learner.metadata;
-            self$by_variables      <- self$learner.metadata[["by_variables"]];
-            self$response_variable <- self$learner.metadata[["response_variable"]];
+            self$by.variables      <- self$learner.metadata[["by_variables"]];
+            self$response.variable <- self$learner.metadata[["response_variable"]];
 
-            colnames.training  <- c(self$response_variable,self$by_variables,self$learner.metadata[["predictors"]]);
+            colnames.training  <- c(self$response.variable,self$by.variables,self$learner.metadata[["predictors"]]);
             self$training.data <- training.data[,colnames.training];
 
             self$training.data[,"concatenated_by_variable"] <- private$get_concatenated_by_variable(
-                DF.input = self$training.data[,self$by_variables]
+                DF.input = self$training.data[,self$by.variables]
                 );
 
-            self$training.data <- self$training.data[,setdiff(colnames(self$training.data),self$by_variables)];
+            self$training.data <- self$training.data[,setdiff(colnames(self$training.data),self$by.variables)];
+
+            print("Z-1");
+            cat("\nself$learner.metadata\n");
+            print( self$learner.metadata   );
+            print("Z-2");
+            cat("\nself$by.variables\n");
+            print( self$by.variables   );
+            print("Z-3");
+            cat("\nself$response.variable\n");
+            print( self$response.variable   );
+            print("Z-4");
 
             },
 
@@ -44,7 +55,7 @@ learner.xgboost.byGroup <- R6Class(
                 cat(paste0("\n# fitting: ",my.level,"\n"));
                 temp.learner <- learner.xgboost$new(
                     learner.metadata = self$learner.metadata,
-                    training.data    = self$training.data[self$training.data[,"concatenated_by_variable"] == my.level,c(self$response_variable,self$learner.metadata[["predictors"]])]
+                    training.data    = self$training.data[self$training.data[,"concatenated_by_variable"] == my.level,c(self$response.variable,self$learner.metadata[["predictors"]])]
                     );
                 temp.learner$fit();
                 self$trained.machines[[my.level]] <- temp.learner;
@@ -52,24 +63,41 @@ learner.xgboost.byGroup <- R6Class(
             },
 
         predict = function(newdata = NULL) {
+            print("B-1");
             original.colnames.newdata <- colnames(newdata);
+            print("B-2");
             newdata[,"concatenated_by_variable"] <- private$get_concatenated_by_variable(
-                DF.input = newdata[,self$by_variables]
+                DF.input = newdata[,self$by.variables]
                 );
+            print("B-3");
             DF.output <- data.frame();
+            print("B-4");
             my.levels <- unique(as.character(newdata[,"concatenated_by_variable"]));
+            print("B-5");
             for ( my.level in my.levels ) {
                 cat(paste0("\n# predicting: ",my.level,"\n"));
                 if ( my.level %in% names(self$trained.machines) ) {
+                    print("C-1");
+                    cat("\nnames(self$by.variables)\n");
+                    print( names(self$by.variables)   );
+                    cat("\nnames(self$trained.machines)\n");
+                    print( names(self$trained.machines)   );
+                    temp.machine <- self$trained.machines[[my.level]];
+                    cat("\nstr(temp.machine)\n");
+                    print( str(temp.machine)   );
                     DF.temp <- self$trained.machines[[my.level]]$predict(newdata = newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata]);
+                    print("C-2");
                 } else {
+                    print("C-3");
                     DF.temp <- newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata];
                     DF.temp[,"predicted_response"] <- 0;
+                    print("C-4");
                     }
                 rownames(DF.temp)   <- NULL;
                 DF.output           <- as.data.frame(dplyr::bind_rows(DF.output,DF.temp));
                 rownames(DF.output) <- NULL;
                 }
+            print("B-6");
             return ( DF.output );
             }
 
@@ -83,7 +111,7 @@ learner.xgboost.byGroup <- R6Class(
             } else {
                 output.factor <- factor(
                     apply(
-                        X      = DF.input[,self$by_variables],
+                        X      = DF.input[,self$by.variables],
                         MARGIN = 1,
                         FUN    = function(x) { paste0(x,collapse="_") }
                         )

@@ -1,12 +1,14 @@
 
 get.learner.metadata <- function(
-    year              = "year",
-    ecoregion         = "ecoregion",
-    crop              = "crop",
-    response.variable = "yield",
-    harvested.area    = "harvested_area",
-    predictors        = NULL,
-    search.grid       = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
+    year                 = "year",
+    ecoregion            = "ecoregion",
+    crop                 = "crop",
+    response.variable    = "yield",
+    harvested.area       = "harvested_area",
+    predictors           = NULL,
+    by.variables.phase01 = c(ecoregion,crop),
+    by.variables.phase02 = c(crop),
+    search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
     ) {
 
     this.function.name <- "get.learner.metadata";
@@ -18,20 +20,16 @@ get.learner.metadata <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     learner.metadata <- c(
-        get.learner.metadata_xgboost(
-            # learner         = "xgboost_byTwo",
-            # by.variables    = c(ecoregion,crop),
-            # learner         = "xgboost_byOne",
-            # by.variables    = c(crop),
-            learner           = "xgboost_byGroup",
-            by.variables      = c(ecoregion,crop),
-            year              = year,
-            ecoregion         = ecoregion,
-            crop              = crop,
-            response.variable = response.variable,
-            harvested.area    = harvested.area,
-            predictors        = predictors,
-            search.grid       = search.grid
+        get.learner.metadata_xgboost.multiphase(
+            year                 = year,
+            ecoregion            = ecoregion,
+            crop                 = crop,
+            response.variable    = response.variable,
+            harvested.area       = harvested.area,
+            predictors           = predictors,
+            by.variables.phase01 = by.variables.phase01,
+            by.variables.phase02 = by.variables.phase02,
+            search.grid          = search.grid
             )
         );
 
@@ -50,7 +48,72 @@ get.learner.metadata <- function(
     }
 
 ##################################################
-get.learner.metadata_xgboost <- function(
+get.learner.metadata_xgboost.multiphase <- function(
+    year                 = NULL,
+    ecoregion            = NULL,
+    crop                 = NULL,
+    response.variable    = NULL,
+    harvested.area       = NULL,
+    predictors           = c(),
+    by.variables.phase01 = c(ecoregion,crop),
+    by.variables.phase02 = c(crop),
+    search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
+    ) {
+
+    temp.list     <- list();
+    expanded.grid <- base::expand.grid(search.grid);
+    for ( metadata.count in 1:nrow(expanded.grid)) {
+
+        metadata.suffix <- stringr::str_pad(
+            string = metadata.count,
+            width  = 1 + floor(log10(nrow(expanded.grid))),
+            pad    = "0"
+            );
+
+        metadata.ID <- paste0("xgboost_multiphase","_",metadata.suffix);
+
+        inner.list <- list();
+        for ( temp.colname in colnames(expanded.grid) ) {
+            inner.list[[temp.colname]] = expanded.grid[metadata.count,temp.colname]
+            }
+        inner.list <- c(
+            inner.list,
+            verbose       =   2,
+            print_every_n =  10,
+            nrounds       = 500
+            );
+
+        temp.list[[ metadata.ID ]] <- inner.list;
+
+        }
+
+    output.learner.metadata <- lapply(
+        X = temp.list,
+        FUN = function(x) {
+            return(
+                list(
+                    learner              = "xgboost_multiphase",
+                    year                 = year,
+                    ecoregion            = ecoregion,
+                    crop                 = crop,
+                    response_variable    = response.variable,
+                    harvested_area       = harvested.area,
+                    predictors           = setdiff(predictors,c(response.variable,harvested.area)),
+                    by_variables_phase01 = by.variables.phase01,
+                    by_variables_phase02 = by.variables.phase02,
+                    hyperparameters      = x,
+                    binarize_factors     = TRUE
+                    )
+                );
+            }
+        );
+
+    return( output.learner.metadata );
+
+    }
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+DELETE.get.learner.metadata_xgboost <- function(
     learner           = NULL,
     by.variables      = NULL,
     year              = NULL,
@@ -118,7 +181,6 @@ get.learner.metadata_xgboost <- function(
 
     }
 
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DELETEME.get.retained_predictors <- function() {
     retained_predictors <- c(
         #"year",

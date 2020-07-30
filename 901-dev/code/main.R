@@ -25,8 +25,9 @@ code.files <- c(
     "preprocessor.R",
     "learner-xgboost.R",
     "learner-xgboost-byGroup.R",
-    "learner-xgboost-byOne.R",
-    "learner-xgboost-byTwo.R"
+#   "learner-xgboost-byOne.R",
+#   "learner-xgboost-byTwo.R",
+    "learner-xgboost-multiphase.R"
     );
 
 for ( code.file in code.files ) {
@@ -59,13 +60,15 @@ print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 learner.metadata <- get.learner.metadata(
-    year              = "my_year",
-    ecoregion         = "my_ecoregion",
-    crop              = "my_crop",
-    response.variable = "my_yield",
-    harvested.area    = "my_harvested_area",
-    predictors        = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-    search.grid       = list(
+    year                 = "my_year",
+    ecoregion            = "my_ecoregion",
+    crop                 = "my_crop",
+    response.variable    = "my_yield",
+    harvested.area       = "my_harvested_area",
+    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    by.variables.phase01 = c("my_ecoregion","my_crop"),
+    by.variables.phase02 = c("my_crop"),
+    search.grid = list(
         alpha       = seq(23,11,-8),
         lambda      = seq(23,11,-8),
         lambda_bias = seq(23,11,-8)
