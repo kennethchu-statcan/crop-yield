@@ -22,6 +22,13 @@ getLearner <- function(
             training.data    = DF.training
             );
 
+    } else if ( "xgboost_byGroup" == learner.metadata[["learner"]] ) {
+
+        instantiated.learner <- learner.xgboost.byGroup$new(
+            learner.metadata = learner.metadata,
+            training.data    = DF.training
+            );
+
     } else if ( "xgboost_byOne" == learner.metadata[["learner"]] ) {
 
         instantiated.learner <- learner.xgboost.byOne$new(

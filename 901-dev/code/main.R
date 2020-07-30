@@ -25,6 +25,7 @@ code.files <- c(
     "preprocessor.R",
     "learner-xgboost.R",
     "learner-xgboost-byOne.R",
+    "learner-xgboost-byGroup.R",
     "learner-xgboost-byTwo.R"
     );
 
