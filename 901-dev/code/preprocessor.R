@@ -19,15 +19,15 @@ preprocessor = R6Class(
             ) {
             self$learner.metadata <- learner.metadata;
             self$training.data    <- training.data;
-			},
+            },
 
-		fit = function() {},
+        fit = function() {},
 
-		transform = function(newdata = NULL) { return( newdata ); }
+        transform = function(newdata = NULL) { return( newdata ); }
 
-		),
+        ),
 
-	private = list()
+    private = list()
 
-	) # R6Class()
+    ) # R6Class()
 
