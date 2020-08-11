@@ -1,0 +1,127 @@
+
+get.metrics.models <- function(
+    list.prediction.directories = NULL,
+    crops.retained              = NULL,
+    FILE.output                 = "list-metrics-models.RData"
+    ) {
+
+    this.function.name <- "get.metrics.models";
+    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    cat(paste0("starting: ",this.function.name,"()\n"));
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if (file.exists(FILE.output)) {
+
+        list.metrics.models <- base::readRDS(file = FILE.output);
+
+    } else {
+
+        list.metrics.models <- list();
+        for ( temp.name in names(list.prediction.directories) ) {
+            cat(paste0("\n### technique: ",temp.name));
+            temp.dir        <- list.prediction.directories[[ temp.name ]];
+            temp.comparison <- get.metrics.models_single.model(
+                prefix         = temp.name,
+                dir.results    = temp.dir,
+                crops.retained = crops.retained
+                );
+            list.metrics.models[[ temp.name ]] <- temp.comparison;
+            }
+
+        base::saveRDS(
+            file   = FILE.output,
+            object = list.metrics.models
+            );
+
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    for ( prefix in names(list.prediction.directories) ) {
+
+        temp.filename <- paste0("metrics-",prefix,"-model-year.csv");
+        if ( !file.exists(temp.filename) ) {
+            write.csv(
+                x         = list.metrics.models[[ prefix ]][[ "error.model.year" ]],
+                file      = temp.filename,
+                row.names = FALSE
+                );
+            }
+
+        temp.filename <- paste0("metrics-",prefix,"-model.csv");
+        if ( !file.exists(temp.filename) ) {
+            write.csv(
+                x         = list.metrics.models[[ prefix ]][[ "error.model" ]],
+                file      = temp.filename,
+                row.names = FALSE
+                );
+            }
+
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    cat(paste0("\nexiting: ",this.function.name,"()"));
+    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    return( list.metrics.models );
+
+    }
+
+##################################################
+get.metrics.models_single.model <- function(
+    prefix         = NULL,
+    dir.results    = NULL,
+    crops.retained = NULL
+    ) {
+
+    require(dplyr);
+
+    modelIDs <- list.files(dir.results);
+
+    DF.errors.model.year <- data.frame();
+    for ( modelID in modelIDs ) {
+
+        folder.model     <- file.path(dir.results,modelID);
+        validation.years <- list.files(folder.model);
+
+        for ( validation.year in validation.years ) {
+
+            cat(paste0("\n(modelID, validation.year): (",modelID,", ",validation.year,")"));
+
+            folder.year <- file.path(folder.model,validation.year);
+            errors.csv  <- list.files(path = folder.year, pattern = 'region-crop.csv');
+            csvdata     <- as.data.frame(read.csv( file.path(folder.year,errors.csv) ));
+            #csvdata     <- csvdata[csvdata[,"cropsurv"] %in% crops.retained,];
+
+            csvdata$weights <- (csvdata$actual_production) / sum(csvdata$actual_production);
+            weighted_error  <- weighted.mean(x = csvdata$relative_error, weights = csvdata$weights);
+            weighted_std    <- weighted.sd(  x = csvdata$relative_error, weights = csvdata$weights);
+
+            newdata <- data.frame(
+            	model          = modelID,
+            	year           = validation.year,
+            	weighted_error = weighted_error,
+            	weighted_std   = weighted_std
+            	);
+
+            DF.errors.model.year <- rbind(DF.errors.model.year,newdata);
+
+            }
+        }
+
+    cat("\n");
+
+    DF.errors.model <- DF.errors.model.year %>%
+        group_by( model ) %>%
+        summarize(
+            mean_weight_error = mean(weighted_error), 
+            mean_std_error    = mean(weighted_std)
+            );
+
+    return(
+        list(
+            error.model.year = DF.errors.model.year,
+            error.model      = DF.errors.model
+            )
+        );
+
+    }
+
