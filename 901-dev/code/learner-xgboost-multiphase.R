@@ -131,6 +131,12 @@ learner.xgboost.multiphase <- R6Class(
                 FUN    = function(x) { ifelse( sum(!is.na(x)) > 0 , x[!is.na(x)][1] , NA ) }
                 );
 
+            DF.output[,"phase"] <- apply(
+                X      = DF.output[,grep(x=colnames(DF.output),pattern="predicted_response_phase.+",value=TRUE)],
+                MARGIN = 1,
+                FUN    = function(x) { ifelse( sum(!is.na(x)) > 0 , which(!is.na(x))[1] , NA ) }
+                );
+
             print("A-6");
             ### ~~~~~~~~~~ ###
             DF.output <- DF.output[order(DF.output[,"synthetic.rowID"]),];
