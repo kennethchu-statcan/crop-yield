@@ -35,25 +35,14 @@ get.performance.metrics <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     for ( prefix in names(list.prediction.directories) ) {
-
         temp.filename <- paste0("metrics-",prefix,"-model-year.csv");
         if ( !file.exists(temp.filename) ) {
             write.csv(
-                x         = list.performance.metrics[[ prefix ]][[ "error.model.year" ]],
+                x         = list.performance.metrics[[ prefix ]],
                 file      = temp.filename,
                 row.names = FALSE
                 );
             }
-
-        temp.filename <- paste0("metrics-",prefix,"-model.csv");
-        if ( !file.exists(temp.filename) ) {
-            write.csv(
-                x         = list.performance.metrics[[ prefix ]][[ "error.model" ]],
-                file      = temp.filename,
-                row.names = FALSE
-                );
-            }
-
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -110,21 +99,7 @@ get.performance.metrics_single.model <- function(
         );
 
     cat("\n");
-
-    DF.errors.model <- DF.errors.model.year %>%
-        group_by( model ) %>%
-        summarize(
-            mean_weight_error     = mean(weighted_error), 
-            mean_std_error        = mean(weighted_std),
-            mean_composite_metric = mean(composite_metric)
-            );
-
-    return(
-        list(
-            error.model.year = DF.errors.model.year,
-            error.model      = DF.errors.model
-            )
-        );
+    return( DF.errors.model.year );
 
     }
 
