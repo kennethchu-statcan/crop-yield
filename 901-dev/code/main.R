@@ -20,7 +20,7 @@ code.files <- c(
     "getData-synthetic.R",
     "getLearner.R",
     "get-learner-metadata.R",
-    "get-metrics-models.R",
+    "get-performance-metrics.R",
     "initializePlot.R",
     "preprocessor.R",
     "learner-xgboost.R",
@@ -61,7 +61,7 @@ print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 #rollingWindowForwardValidation(
-#    validation.years     = seq(2012,2017),
+#    validation.years     = seq(2005,2017),
 #    training.window      = 5,
 #    DF.input             = DF.synthetic,
 #    year                 = "my_year",
@@ -86,10 +86,15 @@ list.prediction.directories <- list(
     xgboost_multiphase = file.path(dir.out,"predictions")
     );
 
-get.metrics.models(
+list.performance.metrics <- get.performance.metrics(
     list.prediction.directories = list.prediction.directories,
     FILE.output                 = "list-metrics-models.RData"
     );
+
+cat("\nstr(list.performance.metrics)\n");
+print( str(list.performance.metrics)   );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 

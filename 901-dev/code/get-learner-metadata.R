@@ -9,7 +9,8 @@ get.learner.metadata <- function(
     by.variables.phase01 = c(ecoregion,crop),
     by.variables.phase02 = c(crop),
     by.variables.phase03 = c(ecoregion),
-    search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
+    search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
+    output.directory     = "predictions"
     ) {
 
     this.function.name <- "get.learner.metadata";
@@ -36,9 +37,13 @@ get.learner.metadata <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( !dir.exists(output.directory) ) {
+        dir.create(path = output.directory, recursive = TRUE);
+        }
+
     jsonlite::write_json(
         x      = learner.metadata,
-        path   = "learner-metadata.json",
+        path   = file.path(output.directory,"learner-metadata.json"),
         pretty = TRUE
         );
 

@@ -1,36 +1,36 @@
 
-get.metrics.models <- function(
+get.performance.metrics <- function(
     list.prediction.directories = NULL,
     crops.retained              = NULL,
-    FILE.output                 = "list-metrics-models.RData"
+    FILE.output                 = "list-performance-metrics.RData"
     ) {
 
-    this.function.name <- "get.metrics.models";
+    this.function.name <- "get.performance.metrics";
     cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
     cat(paste0("starting: ",this.function.name,"()\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if (file.exists(FILE.output)) {
 
-        list.metrics.models <- base::readRDS(file = FILE.output);
+        list.performance.metrics <- base::readRDS(file = FILE.output);
 
     } else {
 
-        list.metrics.models <- list();
+        list.performance.metrics <- list();
         for ( temp.name in names(list.prediction.directories) ) {
             cat(paste0("\n### technique: ",temp.name));
             temp.dir        <- list.prediction.directories[[ temp.name ]];
-            temp.comparison <- get.metrics.models_single.model(
+            temp.comparison <- get.performance.metrics_single.model(
                 prefix         = temp.name,
                 dir.results    = temp.dir,
                 crops.retained = crops.retained
                 );
-            list.metrics.models[[ temp.name ]] <- temp.comparison;
+            list.performance.metrics[[ temp.name ]] <- temp.comparison;
             }
 
         base::saveRDS(
             file   = FILE.output,
-            object = list.metrics.models
+            object = list.performance.metrics
             );
 
         }
@@ -41,7 +41,7 @@ get.metrics.models <- function(
         temp.filename <- paste0("metrics-",prefix,"-model-year.csv");
         if ( !file.exists(temp.filename) ) {
             write.csv(
-                x         = list.metrics.models[[ prefix ]][[ "error.model.year" ]],
+                x         = list.performance.metrics[[ prefix ]][[ "error.model.year" ]],
                 file      = temp.filename,
                 row.names = FALSE
                 );
@@ -50,7 +50,7 @@ get.metrics.models <- function(
         temp.filename <- paste0("metrics-",prefix,"-model.csv");
         if ( !file.exists(temp.filename) ) {
             write.csv(
-                x         = list.metrics.models[[ prefix ]][[ "error.model" ]],
+                x         = list.performance.metrics[[ prefix ]][[ "error.model" ]],
                 file      = temp.filename,
                 row.names = FALSE
                 );
@@ -61,12 +61,12 @@ get.metrics.models <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\nexiting: ",this.function.name,"()"));
     cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
-    return( list.metrics.models );
+    return( list.performance.metrics );
 
     }
 
 ##################################################
-get.metrics.models_single.model <- function(
+get.performance.metrics_single.model <- function(
     prefix         = NULL,
     dir.results    = NULL,
     crops.retained = NULL
@@ -107,13 +107,20 @@ get.metrics.models_single.model <- function(
             }
         }
 
+    DF.errors.model.year[,"composite_metric"] <- apply(
+        X      = DF.errors.model.year[,c("weighted_error","weighted_std")],
+        MARGIN = 1,
+        FUN    = function(x) { return(sum(x)/sqrt(2)); }
+        );
+
     cat("\n");
 
     DF.errors.model <- DF.errors.model.year %>%
         group_by( model ) %>%
         summarize(
-            mean_weight_error = mean(weighted_error), 
-            mean_std_error    = mean(weighted_std)
+            mean_weight_error     = mean(weighted_error), 
+            mean_std_error        = mean(weighted_std),
+            mean_composite_metric = mean(composite_metric)
             );
 
     return(

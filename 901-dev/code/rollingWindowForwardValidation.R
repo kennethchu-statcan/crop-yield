@@ -53,7 +53,8 @@ rollingWindowForwardValidation <- function(
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
-        search.grid          = search.grid
+        search.grid          = search.grid,
+        output.directory     = file.path(output.directory,"predictions")
         );
 
     cat("\nlearner.metadata\n");
