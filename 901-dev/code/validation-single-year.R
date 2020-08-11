@@ -13,7 +13,7 @@ validation.single.year <- function(
 
     require(dplyr);
 
-    original.wd <- normalizePath( getwd() );
+    original.wd <- normalizePath(getwd());
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n### validation year: ",validation.year,"\n"));
