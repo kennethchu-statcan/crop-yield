@@ -92,11 +92,11 @@ get.performance.metrics_single.model <- function(
             }
         }
 
-    DF.errors.model.year[,"composite_metric"] <- apply(
-        X      = DF.errors.model.year[,c("weighted_error","weighted_std")],
-        MARGIN = 1,
-        FUN    = function(x) { return(sum(x)/sqrt(2)); }
-        );
+    #DF.errors.model.year[,"composite_metric"] <- apply(
+    #    X      = DF.errors.model.year[,c("weighted_error","weighted_std")],
+    #    MARGIN = 1,
+    #    FUN    = function(x) { return(sum(x)/sqrt(2)); }
+    #    );
 
     cat("\n");
     return( DF.errors.model.year );
