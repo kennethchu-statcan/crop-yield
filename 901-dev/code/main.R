@@ -88,7 +88,7 @@ list.prediction.directories <- list(
 
 list.performance.metrics <- get.performance.metrics(
     list.prediction.directories = list.prediction.directories,
-    FILE.output                 = "list-metrics-models.RData"
+    FILE.output                 = "list-performance-metrics.RData"
     );
 
 cat("\nstr(list.performance.metrics)\n");
