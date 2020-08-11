@@ -20,6 +20,7 @@ code.files <- c(
     "getData-synthetic.R",
     "getLearner.R",
     "get-learner-metadata.R",
+    "get-metrics-models.R",
     "initializePlot.R",
     "preprocessor.R",
     "learner-xgboost.R",
@@ -59,25 +60,35 @@ print( summary(DF.synthetic)   );
 # diagnostics.MB(DF.input = DF.MB);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-rollingWindowForwardValidation(
-    validation.years     = seq(2012,2017),
-    training.window      = 5,
-    DF.input             = DF.synthetic,
-    year                 = "my_year",
-    ecoregion            = "my_ecoregion",
-    crop                 = "my_crop",
-    response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
-    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-    by.variables.phase01 = c("my_ecoregion","my_crop"),
-    by.variables.phase02 = c("my_crop"),
-    by.variables.phase03 = c("my_ecoregion"),
-    search.grid = list(
-        alpha       = seq(23,11,-8),
-        lambda      = seq(23,11,-8),
-        lambda_bias = seq(23,11,-8)
-        ),
-    output.directory = dir.out
+#rollingWindowForwardValidation(
+#    validation.years     = seq(2012,2017),
+#    training.window      = 5,
+#    DF.input             = DF.synthetic,
+#    year                 = "my_year",
+#    ecoregion            = "my_ecoregion",
+#    crop                 = "my_crop",
+#    response.variable    = "my_yield",
+#    harvested.area       = "my_harvested_area",
+#    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+#    by.variables.phase01 = c("my_ecoregion","my_crop"),
+#    by.variables.phase02 = c("my_crop"),
+#    by.variables.phase03 = c("my_ecoregion"),
+#    search.grid = list(
+#        alpha       = seq(23,11,-8),
+#        lambda      = seq(23,11,-8),
+#        lambda_bias = seq(23,11,-8)
+#        ),
+#    output.directory = dir.out
+#    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+list.prediction.directories <- list(
+    xgboost_multiphase = file.path(dir.out,"predictions")
+    );
+
+get.metrics.models(
+    list.prediction.directories = list.prediction.directories,
+    FILE.output                 = "list-metrics-models.RData"
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

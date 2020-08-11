@@ -19,7 +19,7 @@ getData.synthetic <- function(
     if (file.exists(output.RData)) {
 
         cat(paste0("\nloading file: ",output.RData,"\n"));
-        base::readRDS(file = output.RData);
+        DF.output <- base::readRDS(file = output.RData);
 
     } else {
 
