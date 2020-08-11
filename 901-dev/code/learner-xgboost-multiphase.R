@@ -125,7 +125,7 @@ learner.xgboost.multiphase <- R6Class(
             print("A-5");
             ### ~~~~~~~~~~ ###
             # DF.output[,"predicted_response"] <- DF.output[,"predicted_response_phase01"]
-            DF.output[,"predicted_response"] <- apply(i
+            DF.output[,"predicted_response"] <- apply(
                 X      = DF.output[,grep(x=colnames(DF.output),pattern="predicted_response_phase.+",value=TRUE)],
                 MARGIN = 1,
                 FUN    = function(x) { ifelse( sum(!is.na(x)) > 0 , x[!is.na(x)][1] , NA ) }
