@@ -26,7 +26,8 @@ code.files <- c(
     "learner-xgboost-byGroup.R",
     "learner-xgboost-multiphase.R",
     "rollingWindowForwardValidation.R",
-    "validation-single-year.R"
+    "validation-single-year.R",
+    "weighted-statistics.R"
     );
 
 for ( code.file in code.files ) {
