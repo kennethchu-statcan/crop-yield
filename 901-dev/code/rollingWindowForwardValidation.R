@@ -42,10 +42,7 @@ rollingWindowForwardValidation <- function(
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    #learner.count <- 0;
     for (learner.name in names(learner.metadata)) {
-
-        #learner.count <- learner.count + 1;
 
         cat(paste0("\n### Learner: ",learner.name,"\n"));
 
@@ -55,7 +52,6 @@ rollingWindowForwardValidation <- function(
             DF.training    <- DF.input[DF.input[,year] %in%   training.years,];
             DF.validation  <- DF.input[DF.input[,year] ==   validation.year, ];
 
-            #forwardTransferValidation(
             validation.single.year(
                 learner.name     = learner.name,
                 validation.year  = validation.year,
