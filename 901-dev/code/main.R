@@ -17,7 +17,6 @@ cat("\n##################################################\n");
 require(dplyr);
 
 code.files <- c(
-    "forwardTransferValidation.R",
     "getData-synthetic.R",
     "getLearner.R",
     "get-learner-metadata.R",
@@ -25,7 +24,9 @@ code.files <- c(
     "preprocessor.R",
     "learner-xgboost.R",
     "learner-xgboost-byGroup.R",
-    "learner-xgboost-multiphase.R"
+    "learner-xgboost-multiphase.R",
+    "rollingWindowForwardValidation.R",
+    "validation-single-year.R"
     );
 
 for ( code.file in code.files ) {
@@ -57,7 +58,10 @@ print( summary(DF.synthetic)   );
 # diagnostics.MB(DF.input = DF.MB);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-learner.metadata <- get.learner.metadata(
+rollingWindowForwardValidation(
+    validation.years     = seq(2012,2017),
+    training.window      = 5,
+    DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
@@ -71,40 +75,11 @@ learner.metadata <- get.learner.metadata(
         alpha       = seq(23,11,-8),
         lambda      = seq(23,11,-8),
         lambda_bias = seq(23,11,-8)
-        )
+        ),
+    output.directory = dir.out
     );
 
-cat("\nlearner.metadata\n");
-print( learner.metadata   );
-
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-validation.years <- seq(2012,2017);
-training.window  <- 5;
-
-learner.count <- 0;
-for (learner.name in names(learner.metadata)) {
-
-    learner.count <- learner.count + 1;
-
-    cat(paste0("\n### Learner: ",learner.name,"\n"));
-
-    for (validation.year in validation.years) {
-
-        training.years <- seq(validation.year-training.window,validation.year - 1);
-        DF.training    <- DF.synthetic[DF.synthetic[,"my_year"] %in%   training.years,];
-        DF.validation  <- DF.synthetic[DF.synthetic[,"my_year"] ==   validation.year, ];
-
-        forwardTransferValidation(
-            learner.name     = learner.name,
-            validation.year  = validation.year,
-            learner.metadata = learner.metadata[[learner.name]],
-            DF.training      = DF.training,
-            DF.validation    = DF.validation
-            );
-
-        }
-
-    }
 
 cat("\n##################################################\n");
 cat("\n##### warnings():\n");

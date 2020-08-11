@@ -1,5 +1,5 @@
 
-forwardTransferValidation <- function(
+validation.single.year <- function(
     learner.name     = NULL,
     validation.year  = NULL,
     learner.metadata = NULL,
@@ -7,7 +7,7 @@ forwardTransferValidation <- function(
     DF.validation    = NULL
     ) {
 
-    this.function.name <- "forwardTransferValidation";
+    this.function.name <- "validation.single.year";
     cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
     cat(paste0("starting: ",this.function.name,"()\n"));
 
