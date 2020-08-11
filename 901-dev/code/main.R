@@ -25,8 +25,6 @@ code.files <- c(
     "preprocessor.R",
     "learner-xgboost.R",
     "learner-xgboost-byGroup.R",
-#   "learner-xgboost-byOne.R",
-#   "learner-xgboost-byTwo.R",
     "learner-xgboost-multiphase.R"
     );
 
@@ -68,6 +66,7 @@ learner.metadata <- get.learner.metadata(
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
+    by.variables.phase03 = c("my_ecoregion"),
     search.grid = list(
         alpha       = seq(23,11,-8),
         lambda      = seq(23,11,-8),
