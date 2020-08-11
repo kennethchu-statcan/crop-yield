@@ -59,6 +59,7 @@ get.learner.metadata_xgboost.multiphase <- function(
     predictors           = c(),
     by.variables.phase01 = c(ecoregion,crop),
     by.variables.phase02 = c(crop),
+    by.variables.phase03 = c(ecoregion),
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
     ) {
 
@@ -103,6 +104,7 @@ get.learner.metadata_xgboost.multiphase <- function(
                     predictors           = setdiff(predictors,c(response.variable,harvested.area)),
                     by_variables_phase01 = by.variables.phase01,
                     by_variables_phase02 = by.variables.phase02,
+                    by_variables_phase03 = by.variables.phase03,
                     hyperparameters      = x,
                     binarize_factors     = TRUE
                     )
