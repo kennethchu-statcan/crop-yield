@@ -21,6 +21,24 @@ rollingWindowForwardValidation <- function(
     cat(paste0("starting: ",this.function.name,"()\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    rollingWindowForwardValidation_input.validity.checks(
+        validation.years     = validation.years,
+        training.window      = training.window,
+        DF.input             = DF.input,
+        year                 = year,
+        ecoregion            = ecoregion,
+        crop                 = crop,
+        response.variable    = response.variable,
+        harvested.area       = harvested.area,
+        predictors           = predictors,
+        by.variables.phase01 = by.variables.phase01,
+        by.variables.phase02 = by.variables.phase02,
+        by.variables.phase03 = by.variables.phase03,
+        search.grid          = search.grid,
+        output.directory     = output.directory
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     original.wd <- getwd();
     setwd(output.directory);
 
@@ -73,4 +91,22 @@ rollingWindowForwardValidation <- function(
     }
 
 ##################################################
+rollingWindowForwardValidation_input.validity.checks <- function(
+    validation.years     = NULL,
+    training.window      = NULL,
+    DF.input             = NULL,
+    year                 = NULL,
+    ecoregion            = NULL,
+    crop                 = NULL,
+    response.variable    = NULL,
+    harvested.area       = NULL,
+    predictors           = NULL,
+    by.variables.phase01 = NULL,
+    by.variables.phase02 = NULL,
+    by.variables.phase03 = NULL,
+    search.grid          = NULL,
+    output.directory     = NULL
+    ) {
+ 
+    }
 
