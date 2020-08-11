@@ -90,7 +90,7 @@ learner.xgboost.byGroup <- R6Class(
                 } else {
                     print("C-3");
                     DF.temp <- newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata];
-                    DF.temp[,"predicted_response"] <- 0;
+                    DF.temp[,"predicted_response"] <- NA;
                     print("C-4");
                     }
                 rownames(DF.temp)   <- NULL;
