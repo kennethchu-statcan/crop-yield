@@ -56,7 +56,7 @@ forwardTransferValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.filename <- paste0("predictions-",learner.name);
-    output.RData    <- file.path(output.sub.directory,paste0(output.filename,"-parcel.Rdata"));
+    output.RData    <- file.path(output.sub.directory,paste0(output.filename,"-parcel.RData"));
     saveRDS( object = DF.predictions.parcel, file = output.RData );
 
     #output.CSV <- file.path(output.sub.directory,paste0(output.filename,".csv"));
