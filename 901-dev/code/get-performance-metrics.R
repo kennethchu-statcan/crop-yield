@@ -82,7 +82,7 @@ get.performance.metrics_single.model <- function(
 
             newdata <- data.frame(
             	model          = modelID,
-            	year           = validation.year,
+            	year           = as.numeric(validation.year),
             	weighted_error = weighted_error,
             	weighted_std   = weighted_std
             	);
