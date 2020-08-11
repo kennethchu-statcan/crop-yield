@@ -1,7 +1,6 @@
 
 get.performance.metrics <- function(
     list.prediction.directories = NULL,
-    crops.retained              = NULL,
     FILE.output                 = "list-performance-metrics.RData"
     ) {
 
@@ -21,9 +20,8 @@ get.performance.metrics <- function(
             cat(paste0("\n### technique: ",temp.name));
             temp.dir        <- list.prediction.directories[[ temp.name ]];
             temp.comparison <- get.performance.metrics_single.model(
-                prefix         = temp.name,
-                dir.results    = temp.dir,
-                crops.retained = crops.retained
+                prefix      = temp.name,
+                dir.results = temp.dir
                 );
             list.performance.metrics[[ temp.name ]] <- temp.comparison;
             }
@@ -67,9 +65,8 @@ get.performance.metrics <- function(
 
 ##################################################
 get.performance.metrics_single.model <- function(
-    prefix         = NULL,
-    dir.results    = NULL,
-    crops.retained = NULL
+    prefix      = NULL,
+    dir.results = NULL
     ) {
 
     require(dplyr);
@@ -89,7 +86,6 @@ get.performance.metrics_single.model <- function(
             folder.year <- file.path(folder.model,validation.year);
             errors.csv  <- list.files(path = folder.year, pattern = 'region-crop.csv');
             csvdata     <- as.data.frame(read.csv( file.path(folder.year,errors.csv) ));
-            #csvdata     <- csvdata[csvdata[,"cropsurv"] %in% crops.retained,];
 
             csvdata$weights <- (csvdata$actual_production) / sum(csvdata$actual_production);
             weighted_error  <- weighted.mean(x = csvdata$relative_error, weights = csvdata$weights);
