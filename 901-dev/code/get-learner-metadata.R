@@ -8,6 +8,7 @@ get.learner.metadata <- function(
     predictors           = NULL,
     by.variables.phase01 = c(ecoregion,crop),
     by.variables.phase02 = c(crop),
+    by.variables.phase03 = c(ecoregion),
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
     ) {
 
@@ -29,6 +30,7 @@ get.learner.metadata <- function(
             predictors           = predictors,
             by.variables.phase01 = by.variables.phase01,
             by.variables.phase02 = by.variables.phase02,
+            by.variables.phase03 = by.variables.phase03,
             search.grid          = search.grid
             )
         );
