@@ -20,6 +20,7 @@ code.files <- c(
     "getData-synthetic.R",
     "getLearner.R",
     "get-learner-metadata.R",
+    "get-mock-production-errors.R",
     "get-performance-metrics.R",
     "initializePlot.R",
     "preprocessor.R",
@@ -95,6 +96,14 @@ cat("\nstr(list.performance.metrics)\n");
 print( str(list.performance.metrics)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+list.mock.production.errors <- get.mock.production.errors(
+    list.performance.metrics = list.performance.metrics,
+    validation.window        = 10,
+    FILE.output              = "list-mock-production-errors.RData"
+    );
+
+cat("\nstr(list.mock.production.errors)\n");
+print( str(list.mock.production.errors)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
