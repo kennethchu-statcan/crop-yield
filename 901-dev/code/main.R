@@ -58,29 +58,27 @@ print( str(DF.synthetic)   );
 cat("\nsummary(DF.synthetic)\n");
 print( summary(DF.synthetic)   );
 
-# diagnostics.MB(DF.input = DF.MB);
-
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#rollingWindowForwardValidation(
-#    validation.years     = seq(2005,2017),
-#    training.window      = 5,
-#    DF.input             = DF.synthetic,
-#    year                 = "my_year",
-#    ecoregion            = "my_ecoregion",
-#    crop                 = "my_crop",
-#    response.variable    = "my_yield",
-#    harvested.area       = "my_harvested_area",
-#    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-#    by.variables.phase01 = c("my_ecoregion","my_crop"),
-#    by.variables.phase02 = c("my_crop"),
-#    by.variables.phase03 = c("my_ecoregion"),
-#    search.grid = list(
-#        alpha       = seq(23,11,-8),
-#        lambda      = seq(23,11,-8),
-#        lambda_bias = seq(23,11,-8)
-#        ),
-#    output.directory = dir.out
-#    );
+rollingWindowForwardValidation(
+    validation.years     = seq(2005,2020),
+    training.window      = 5,
+    DF.input             = DF.synthetic,
+    year                 = "my_year",
+    ecoregion            = "my_ecoregion",
+    crop                 = "my_crop",
+    response.variable    = "my_yield",
+    harvested.area       = "my_harvested_area",
+    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    by.variables.phase01 = c("my_ecoregion","my_crop"),
+    by.variables.phase02 = c("my_crop"),
+    by.variables.phase03 = c("my_ecoregion"),
+    search.grid = list(
+        alpha       = seq(23,11,-8),
+        lambda      = seq(23,11,-8),
+        lambda_bias = seq(23,11,-8)
+        ),
+    output.directory = dir.out
+    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 list.prediction.directories <- list(
