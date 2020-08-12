@@ -44,7 +44,8 @@ n.crops      <- 15;
 n.predictors <-  7;
 
 DF.synthetic <- getData.synthetic(
-    years        = seq(2000,2020),
+    #years       = seq(2000,2020),
+    years        = seq(2015,2020),
     n.ecoregions = n.ecoregions,
     n.crops      = n.crops,
     n.predictors = n.predictors,
@@ -60,8 +61,8 @@ print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 rollingWindowForwardValidation(
-    validation.years     = seq(2005,2020),
-    training.window      = 5,
+    training.window      = 2,
+    validation.window    = 3,
     DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
@@ -79,29 +80,6 @@ rollingWindowForwardValidation(
         ),
     output.directory = dir.out
     );
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-list.prediction.directories <- list(
-    xgboost_multiphase = file.path(dir.out,"predictions")
-    );
-
-list.performance.metrics <- get.performance.metrics(
-    list.prediction.directories = list.prediction.directories,
-    FILE.output                 = "list-performance-metrics.RData"
-    );
-
-cat("\nstr(list.performance.metrics)\n");
-print( str(list.performance.metrics)   );
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-list.mock.production.errors <- get.mock.production.errors(
-    list.performance.metrics = list.performance.metrics,
-    validation.window        = 10,
-    FILE.output              = "list-mock-production-errors.RData"
-    );
-
-cat("\nstr(list.mock.production.errors)\n");
-print( str(list.mock.production.errors)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 

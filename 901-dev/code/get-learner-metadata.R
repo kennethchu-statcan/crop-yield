@@ -10,7 +10,8 @@ get.learner.metadata <- function(
     by.variables.phase02 = c(crop),
     by.variables.phase03 = c(ecoregion),
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
-    output.directory     = "predictions"
+    output.directory     = "predictions",
+    metadata.json        = file.path(output.directory,"learner-metadata.json")
     ) {
 
     this.function.name <- "get.learner.metadata";
@@ -43,7 +44,7 @@ get.learner.metadata <- function(
 
     jsonlite::write_json(
         x      = learner.metadata,
-        path   = file.path(output.directory,"learner-metadata.json"),
+        path   = metadata.json,
         pretty = TRUE
         );
 

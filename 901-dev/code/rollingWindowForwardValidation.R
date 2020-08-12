@@ -1,7 +1,7 @@
 
 rollingWindowForwardValidation <- function(
-    validation.years     = NULL,
     training.window      = NULL,
+    validation.window    = NULL,
     DF.input             = NULL,
     year                 = "year",
     ecoregion            = "ecoregion",
@@ -21,9 +21,15 @@ rollingWindowForwardValidation <- function(
     cat(paste0("starting: ",this.function.name,"()\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    require(jsonlite);
+    require(parallel);
+    require(foreach);
+    require(doParallel);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     rollingWindowForwardValidation_input.validity.checks(
-        validation.years     = validation.years,
         training.window      = training.window,
+        validation.window    = validation.window,
         DF.input             = DF.input,
         year                 = year,
         ecoregion            = ecoregion,
@@ -42,6 +48,9 @@ rollingWindowForwardValidation <- function(
     original.wd <- getwd();
     setwd(output.directory);
 
+    predictions.directory <- file.path(output.directory,"predictions");
+    metadata.json         <- file.path(predictions.directory,"learner-metadata.json");
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     learner.metadata <- get.learner.metadata(
         year                 = year,
@@ -54,15 +63,26 @@ rollingWindowForwardValidation <- function(
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
         search.grid          = search.grid,
-        output.directory     = file.path(output.directory,"predictions")
+        output.directory     = predictions.directory,
+        metadata.json        = metadata.json
         );
 
     cat("\nlearner.metadata\n");
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    for (learner.name in names(learner.metadata)) {
+    num.cores <- max(1,parallel::detectCores() - 1);
+    cat("\nnum.cores\n");
+    print( num.cores   );
 
+    doParallel::registerDoParallel(cores = num.cores);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    validation.years <- sort(unique(DF.input[,year]));
+    #for (learner.name in names(learner.metadata)) {
+    foreach ( temp.index = 1:length(learner.metadata) ) %dopar% {
+
+        learner.name <- names(learner.metadata)[temp.index];
         cat(paste0("\n### Learner: ",learner.name,"\n"));
 
         for (validation.year in validation.years) {
@@ -83,6 +103,30 @@ rollingWindowForwardValidation <- function(
 
         }
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    temp.json  <- jsonlite::read_json(metadata.json);
+    model.name <- gsub(x = names(temp.json)[1], pattern = "_[0-9]+$", replacement = "")
+
+    list.prediction.directories <- list();
+    list.prediction.directories[[model.name]] <- predictions.directory;
+
+    list.performance.metrics <- get.performance.metrics(
+        list.prediction.directories = list.prediction.directories,
+        FILE.output                 = "list-performance-metrics.RData"
+        );
+
+    cat("\nstr(list.performance.metrics)\n");
+    print( str(list.performance.metrics)   );
+
+    list.mock.production.errors <- get.mock.production.errors(
+        list.performance.metrics = list.performance.metrics,
+        validation.window        = validation.window,
+        FILE.output              = "list-mock-production-errors.RData"
+        );
+
+    cat("\nstr(list.mock.production.errors)\n");
+    print( str(list.mock.production.errors)   );
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\nexiting: ",this.function.name,"()"));
     cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
@@ -93,8 +137,8 @@ rollingWindowForwardValidation <- function(
 
 ##################################################
 rollingWindowForwardValidation_input.validity.checks <- function(
-    validation.years     = NULL,
     training.window      = NULL,
+    validation.window    = NULL,
     DF.input             = NULL,
     year                 = NULL,
     ecoregion            = NULL,
