@@ -37,19 +37,19 @@ get.mock.production.errors <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     for ( prefix in names(list.mock.production.errors) ) {
 
-        #temp.filename <- paste0("mock-production-errors-",prefix,".csv");
-        #if ( !file.exists(temp.filename) ) {
-        #    write.csv(
-        #        x         = list.mock.production.errors[[ prefix ]][[ "mock_production_errors" ]],
-        #        file      = temp.filename,
-        #        row.names = FALSE
-        #        );
-        #    }
-
         temp.filename <- paste0("mock-production-errors-",prefix,"-diagnostics.csv");
         if ( !file.exists(temp.filename) ) {
             write.csv(
                 x         = list.mock.production.errors[[ prefix ]][[ "diagnostics" ]],
+                file      = temp.filename,
+                row.names = FALSE
+                );
+            }
+
+        temp.filename <- paste0("mock-production-errors-",prefix,".csv");
+        if ( !file.exists(temp.filename) ) {
+            write.csv(
+                x         = list.mock.production.errors[[ prefix ]][[ "mock_production_errors" ]],
                 file      = temp.filename,
                 row.names = FALSE
                 );
@@ -102,16 +102,46 @@ get.mock.production.errors_single.model <- function(
         FUN    = function(x) { return(sum(x)/sqrt(2)); }
         );
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.diagnostics <- dplyr::left_join(
+        x  = DF.diagnostics,
+        y  = DF.performance.metrics[,c("model","year","weighted_error")],
+        by = c("production_year" = "year", "model" = "model") 
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     reordered.colnames <- c("production_year",setdiff(colnames(DF.diagnostics),"production_year"));
     DF.diagnostics     <- DF.diagnostics[,reordered.colnames];
 
+    colnames(DF.diagnostics) <- base::gsub(
+        x           = colnames(DF.diagnostics),
+        pattern     = "mean_weighted_error",
+        replacement = "validation_error"
+        );
+
+    colnames(DF.diagnostics) <- base::gsub(
+        x           = colnames(DF.diagnostics),
+        pattern     = "mean_weighted_std",
+        replacement = "validation_std"
+        );
+
+    colnames(DF.diagnostics) <- base::gsub(
+        x           = colnames(DF.diagnostics),
+        pattern     = "weighted_error",
+        replacement = "mock_production_error"
+        );
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.mock.production.errors = DF.diagnostics %>%
+        dplyr::group_by( production_year ) %>%
+        dplyr::mutate( min_composite_metric =  min(composite_metric) ) %>%
+        dplyr::filter(     composite_metric == min_composite_metric  );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     return(
         list(
             diagnostics            = DF.diagnostics,
-            mock.production.errors = NULL
+            mock_production_errors = DF.mock.production.errors
             )
         );
 
