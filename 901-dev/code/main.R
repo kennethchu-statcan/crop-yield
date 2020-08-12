@@ -45,7 +45,7 @@ n.predictors <-  7;
 
 DF.synthetic <- getData.synthetic(
     #years       = seq(2000,2020),
-    years        = seq(2015,2020),
+    years        = seq(2011,2020),
     n.ecoregions = n.ecoregions,
     n.crops      = n.crops,
     n.predictors = n.predictors,
@@ -74,9 +74,9 @@ rollingWindowForwardValidation(
     by.variables.phase02 = c("my_crop"),
     by.variables.phase03 = c("my_ecoregion"),
     search.grid = list(
-        alpha       = seq(23,11,-8),
-        lambda      = seq(23,11,-8),
-        lambda_bias = seq(23,11,-8)
+        alpha       = seq(23,11,-6),
+        lambda      = seq(23,11,-6),
+        lambda_bias = c(23) #seq(23,11,-8)
         ),
     output.directory = dir.out
     );
