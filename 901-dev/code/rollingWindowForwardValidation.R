@@ -78,8 +78,10 @@ rollingWindowForwardValidation <- function(
     doParallel::registerDoParallel(cores = num.cores);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    validation.years <- sort(unique(DF.input[,year]));
-    #for (learner.name in names(learner.metadata)) {
+    min.validation.year <- min(DF.input[,year]) + training.window;
+    max.validation.year <- max(DF.input[,year]);
+    validation.years    <- seq(min.validation.year,max.validation.year,1);
+
     foreach ( temp.index = 1:length(learner.metadata) ) %dopar% {
 
         learner.name <- names(learner.metadata)[temp.index];
@@ -87,7 +89,7 @@ rollingWindowForwardValidation <- function(
 
         for (validation.year in validation.years) {
 
-            training.years <- seq(validation.year-training.window,validation.year - 1);
+            training.years <- seq(validation.year - training.window, validation.year - 1);
             DF.training    <- DF.input[DF.input[,year] %in%   training.years,];
             DF.validation  <- DF.input[DF.input[,year] ==   validation.year, ];
 
