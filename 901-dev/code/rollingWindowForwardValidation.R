@@ -107,7 +107,7 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     temp.json  <- jsonlite::read_json(metadata.json);
-    model.name <- gsub(x = names(temp.json)[1], pattern = "_[0-9]+$", replacement = "")
+    model.name <- temp.json[[1]][["learner"]][[1]];
 
     list.prediction.directories <- list();
     list.prediction.directories[[model.name]] <- predictions.directory;
