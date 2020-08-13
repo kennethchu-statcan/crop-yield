@@ -71,13 +71,13 @@ rollingWindowForwardValidation <- function(
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    rollingWindowForwardValidation_generate.predictions(
-        DF.input         = DF.input,
-        year             = year,
-        training.window  = training.window,
-        learner.metadata = learner.metadata,
-        output.directory = predictions.directory
-        );
+#    rollingWindowForwardValidation_generate.predictions(
+#        DF.input         = DF.input,
+#        year             = year,
+#        training.window  = training.window,
+#        learner.metadata = learner.metadata,
+#        output.directory = predictions.directory
+#        );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.performance.metrics <- rollingWindowForwardValidation_generate.performance.metrics(
@@ -171,7 +171,7 @@ rollingWindowForwardValidation_generate.performance.metrics <- function(
     list.mock.production.errors <- get.mock.production.errors(
         list.performance.metrics = list.performance.metrics,
         validation.window        = validation.window,
-        FILE.output              = file.path(output.directory,"list-mock-production-errors.RData")
+        FILE.output              = file.path(output.sub.directory,"list-mock-production-errors.RData")
         );
 
     cat("\nstr(list.mock.production.errors)\n");
