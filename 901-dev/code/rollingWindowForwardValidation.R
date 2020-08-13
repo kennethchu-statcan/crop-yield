@@ -71,13 +71,13 @@ rollingWindowForwardValidation <- function(
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#    rollingWindowForwardValidation_generate.predictions(
-#        DF.input         = DF.input,
-#        year             = year,
-#        training.window  = training.window,
-#        learner.metadata = learner.metadata,
-#        output.directory = predictions.directory
-#        );
+    rollingWindowForwardValidation_generate.predictions(
+        DF.input         = DF.input,
+        year             = year,
+        training.window  = training.window,
+        learner.metadata = learner.metadata,
+        output.directory = predictions.directory
+        );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.performance.metrics <- rollingWindowForwardValidation_generate.performance.metrics(
@@ -85,6 +85,13 @@ rollingWindowForwardValidation <- function(
         validation.window     = validation.window,
         predictions.directory = predictions.directory,
         output.sub.directory  = file.path(output.directory,"performance-metrics")
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    list.mock.production.errors <- rollingWindowForwardValidation_generate.mock.production.errors(
+        validation.window        = validation.window,
+        list.performance.metrics = list.performance.metrics,
+        output.sub.directory     = file.path(output.directory,"mock-productions")
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -143,6 +150,29 @@ rollingWindowForwardValidation_generate.predictions <- function(
 
     }
 
+rollingWindowForwardValidation_generate.mock.production.errors <- function(
+    validation.window        = NULL,
+    list.performance.metrics = NULL,
+    output.sub.directory     = NULL
+    ) {
+    
+    if ( !dir.exists(output.sub.directory) ) {
+        dir.create(path = output.sub.directory, recursive = TRUE);
+        }
+
+    list.mock.production.errors <- get.mock.production.errors(
+        list.performance.metrics = list.performance.metrics,
+        validation.window        = validation.window,
+        output.directory         = output.sub.directory
+        );
+
+    cat("\nstr(list.mock.production.errors)\n");
+    print( str(list.mock.production.errors)   );
+
+    return( list.mock.production.errors );
+
+    }
+
 rollingWindowForwardValidation_generate.performance.metrics <- function(
     metadata.json         = NULL,
     validation.window     = NULL,
@@ -162,25 +192,13 @@ rollingWindowForwardValidation_generate.performance.metrics <- function(
 
     list.performance.metrics <- get.performance.metrics(
         list.prediction.directories = list.prediction.directories,
-        FILE.output                 = file.path(output.sub.directory,"list-performance-metrics.RData")
+        output.directory            = output.sub.directory
         );
 
     cat("\nstr(list.performance.metrics)\n");
     print( str(list.performance.metrics)   );
 
-    list.mock.production.errors <- get.mock.production.errors(
-        list.performance.metrics = list.performance.metrics,
-        validation.window        = validation.window,
-        FILE.output              = file.path(output.sub.directory,"list-mock-production-errors.RData")
-        );
-
-    cat("\nstr(list.mock.production.errors)\n");
-    print( str(list.mock.production.errors)   );
-
-    return(list(
-        performance.metrics    = list.performance.metrics,
-        mock.production.errors = list.mock.production.errors
-        ));
+    return( list.performance.metrics );
 
     }
 

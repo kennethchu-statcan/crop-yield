@@ -2,7 +2,7 @@
 get.mock.production.errors <- function(
     list.performance.metrics = NULL,
     validation.window        = NULL,
-    FILE.output              = "list-mock-production-errors.RData"
+    output.directory         = NULL
     ) {
 
     this.function.name <- "get.mock.production.errors";
@@ -10,34 +10,31 @@ get.mock.production.errors <- function(
     cat(paste0("starting: ",this.function.name,"()\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if (file.exists(FILE.output)) {
-
-        list.mock.production.errors <- base::readRDS(file = FILE.output);
-
-    } else {
-
-        list.mock.production.errors <- list();
-        for ( temp.name in names(list.performance.metrics) ) {
-            cat(paste0("\n### technique: ",temp.name));
-            temp.comparison <- get.mock.production.errors_single.model(
-                prefix                 = temp.name,
-                validation.window      = validation.window,
-                DF.performance.metrics = list.performance.metrics[[ temp.name ]]
-                );
-            list.mock.production.errors[[ temp.name ]] <- temp.comparison;
-            }
-
-        base::saveRDS(
-            file   = FILE.output,
-            object = list.mock.production.errors
-            );
-
+    if ( !dir.exists(output.directory) ) {
+        dir.create(path = output.directory, recursive = TRUE);
         }
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    list.mock.production.errors <- list();
+    for ( temp.name in names(list.performance.metrics) ) {
+        cat(paste0("\n### technique: ",temp.name));
+        temp.comparison <- get.mock.production.errors_single.model(
+            prefix                 = temp.name,
+            validation.window      = validation.window,
+            DF.performance.metrics = list.performance.metrics[[ temp.name ]]
+            );
+        list.mock.production.errors[[ temp.name ]] <- temp.comparison;
+        }
+
+    FILE.output <- file.path(output.directory,"list-mock-production-errors.RData");
+    base::saveRDS(
+        file   = FILE.output,
+        object = list.mock.production.errors
+        );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     for ( prefix in names(list.mock.production.errors) ) {
 
-        temp.filename <- paste0("mock-production-errors-",prefix,"-diagnostics.csv");
+        temp.filename <- file.path(output.directory,paste0("mock-production-errors-",prefix,"-diagnostics.csv"));
         if ( !file.exists(temp.filename) ) {
             write.csv(
                 x         = list.mock.production.errors[[ prefix ]][[ "diagnostics" ]],
@@ -46,7 +43,7 @@ get.mock.production.errors <- function(
                 );
             }
 
-        temp.filename <- paste0("mock-production-errors-",prefix,".csv");
+        temp.filename <- file.path(output.directory,paste0("mock-production-errors-",prefix,".csv"));
         if ( !file.exists(temp.filename) ) {
             write.csv(
                 x         = list.mock.production.errors[[ prefix ]][[ "mock_production_errors" ]],

@@ -1,7 +1,7 @@
 
 get.performance.metrics <- function(
     list.prediction.directories = NULL,
-    FILE.output                 = "list-performance-metrics.RData"
+    output.directory            = NULL
     ) {
 
     this.function.name <- "get.performance.metrics";
@@ -9,33 +9,31 @@ get.performance.metrics <- function(
     cat(paste0("starting: ",this.function.name,"()\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if (file.exists(FILE.output)) {
-
-        list.performance.metrics <- base::readRDS(file = FILE.output);
-
-    } else {
-
-        list.performance.metrics <- list();
-        for ( temp.name in names(list.prediction.directories) ) {
-            cat(paste0("\n### technique: ",temp.name));
-            temp.dir        <- list.prediction.directories[[ temp.name ]];
-            temp.comparison <- get.performance.metrics_single.model(
-                prefix      = temp.name,
-                dir.results = temp.dir
-                );
-            list.performance.metrics[[ temp.name ]] <- temp.comparison;
-            }
-
-        base::saveRDS(
-            file   = FILE.output,
-            object = list.performance.metrics
-            );
-
+    if ( !dir.exists(output.directory) ) {
+        dir.create(path = output.directory, recursive = TRUE);
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    list.performance.metrics <- list();
+    for ( temp.name in names(list.prediction.directories) ) {
+        cat(paste0("\n### technique: ",temp.name));
+        temp.dir        <- list.prediction.directories[[ temp.name ]];
+        temp.comparison <- get.performance.metrics_single.model(
+            prefix      = temp.name,
+            dir.results = temp.dir
+            );
+        list.performance.metrics[[ temp.name ]] <- temp.comparison;
+        }
+
+    FILE.output <- file.path(output.directory,"list-performance-metrics.RData");
+    base::saveRDS(
+        file   = FILE.output,
+        object = list.performance.metrics
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     for ( prefix in names(list.prediction.directories) ) {
-        temp.filename <- paste0("metrics-",prefix,"-model-year.csv");
+        temp.filename <- file.path(output.directory,paste0("metrics-",prefix,"-model-year.csv"));
         if ( !file.exists(temp.filename) ) {
             write.csv(
                 x         = list.performance.metrics[[ prefix ]],
