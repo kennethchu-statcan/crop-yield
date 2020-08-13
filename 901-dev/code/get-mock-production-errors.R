@@ -13,6 +13,7 @@ get.mock.production.errors <- function(
     if ( !dir.exists(output.directory) ) {
         dir.create(path = output.directory, recursive = TRUE);
         }
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.mock.production.errors <- list();
     for ( temp.name in names(list.performance.metrics) ) {
