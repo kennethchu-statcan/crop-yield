@@ -104,7 +104,7 @@ rollingWindowForwardValidation <- function(
         training.window             = training.window,
         learner.metadata            = learner.metadata,
         list.mock.production.errors = list.mock.production.errors,
-        output.sub.directory        = mock.productions.directory
+        output.sub.directory        = output.directory # mock.productions.directory
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
