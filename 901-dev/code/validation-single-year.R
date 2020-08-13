@@ -4,7 +4,8 @@ validation.single.year <- function(
     validation.year  = NULL,
     learner.metadata = NULL,
     DF.training      = NULL,
-    DF.validation    = NULL
+    DF.validation    = NULL,
+    output.directory = NULL
     ) {
 
     this.function.name <- "validation.single.year";
@@ -13,17 +14,13 @@ validation.single.year <- function(
 
     require(dplyr);
 
-    original.wd <- normalizePath(getwd());
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n### validation year: ",validation.year,"\n"));
 
-    output.sub.directory <- file.path(original.wd,"predictions",learner.name,validation.year);
+    output.sub.directory <- file.path(output.directory,learner.name,validation.year);
     if ( !dir.exists(output.sub.directory) ) {
         dir.create(path = output.sub.directory, recursive = TRUE);
         }
-
-    setwd(output.sub.directory);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     current.learner <- getLearner(
@@ -81,7 +78,6 @@ validation.single.year <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    setwd( original.wd );
     cat(paste0("\nexiting: ",this.function.name,"()"));
     cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
     return( NULL );
@@ -143,7 +139,7 @@ do.ftv.diagnostics <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- paste0("plot-predictions-region-crop.png");
+    FILE.png  <- file.path(output.sub.directory,paste0("plot-predictions-region-crop.png"));
     my.ggplot <- initializePlot();
     #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
 
@@ -214,7 +210,7 @@ do.ftv.diagnostics <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- paste0("plot-predictions-region.png");
+    FILE.png  <- file.path(output.sub.directory,paste0("plot-predictions-region.png"));
     my.ggplot <- initializePlot();
     #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
 
@@ -285,7 +281,7 @@ do.ftv.diagnostics <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- paste0("plot-predictions-crop.png");
+    FILE.png  <- file.path(output.sub.directory,paste0("plot-predictions-crop.png"));
     my.ggplot <- initializePlot();
     #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
 

@@ -71,6 +71,73 @@ rollingWindowForwardValidation <- function(
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+#    num.cores <- max(1,parallel::detectCores() - 1);
+#    cat("\nnum.cores\n");
+#    print( num.cores   );
+#
+#    doParallel::registerDoParallel(cores = num.cores);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+#    min.validation.year <- min(DF.input[,year]) + training.window;
+#    max.validation.year <- max(DF.input[,year]);
+#    validation.years    <- seq(min.validation.year,max.validation.year,1);
+#
+#    foreach ( temp.index = 1:length(learner.metadata) ) %dopar% {
+#
+#        learner.name <- names(learner.metadata)[temp.index];
+#        cat(paste0("\n### Learner: ",learner.name,"\n"));
+#
+#        for (validation.year in validation.years) {
+#
+#            training.years <- seq(validation.year - training.window, validation.year - 1);
+#            DF.training    <- DF.input[DF.input[,year] %in%   training.years,];
+#            DF.validation  <- DF.input[DF.input[,year] ==   validation.year, ];
+#
+#            validation.single.year(
+#                learner.name     = learner.name,
+#                validation.year  = validation.year,
+#                learner.metadata = learner.metadata[[learner.name]],
+#                DF.training      = DF.training,
+#                DF.validation    = DF.validation
+#                );
+#
+#            }
+#
+#        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    rollingWindowForwardValidation_generate.predictions(
+        DF.input         = DF.input,
+        year             = year,
+        training.window  = training.window,
+        learner.metadata = learner.metadata,
+        output.directory = predictions.directory
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    list.performance.metrics <- rollingWindowForwardValidation_generate.performance.metrics(
+        metadata.json         = metadata.json,
+        predictions.directory = predictions.directory,
+        output.sub.directory  = file.path(output.directory,"performance-metrics")
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    cat(paste0("\nexiting: ",this.function.name,"()"));
+    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    setwd(original.wd);
+    return( NULL );
+
+    }
+
+##################################################
+rollingWindowForwardValidation_generate.predictions <- function(
+    DF.input         = NULL,
+    year             = NULL,
+    training.window  = NULL,
+    learner.metadata = NULL,
+    output.directory = NULL
+    ) {
+
     num.cores <- max(1,parallel::detectCores() - 1);
     cat("\nnum.cores\n");
     print( num.cores   );
@@ -98,14 +165,31 @@ rollingWindowForwardValidation <- function(
                 validation.year  = validation.year,
                 learner.metadata = learner.metadata[[learner.name]],
                 DF.training      = DF.training,
-                DF.validation    = DF.validation
+                DF.validation    = DF.validation,
+                output.directory = output.directory
                 );
 
             }
 
         }
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    return( NULL );
+
+    }
+
+rollingWindowForwardValidation_generate.performance.metrics <- function(
+    metadata.json         = NULL,
+    predictions.directory = NULL,
+    output.sub.directory  = NULL
+    ) {
+    
+    original.wd <- normalizePath(getwd());
+
+    if ( !dir.exists(output.sub.directory) ) {
+        dir.create(path = output.sub.directory, recursive = TRUE);
+        }
+    setwd(output.sub.directory);
+
     temp.json  <- jsonlite::read_json(metadata.json);
     model.name <- temp.json[[1]][["learner"]][[1]];
 
@@ -129,15 +213,15 @@ rollingWindowForwardValidation <- function(
     cat("\nstr(list.mock.production.errors)\n");
     print( str(list.mock.production.errors)   );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\nexiting: ",this.function.name,"()"));
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
     setwd(original.wd);
-    return( NULL );
+
+    return(list(
+        performance.metrics    = list.performance.metrics,
+        mock.production.errors = list.mock.production.errors
+        ));
 
     }
 
-##################################################
 rollingWindowForwardValidation_input.validity.checks <- function(
     training.window      = NULL,
     validation.window    = NULL,
