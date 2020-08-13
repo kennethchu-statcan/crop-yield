@@ -74,13 +74,13 @@ rollingWindowForwardValidation <- function(
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#    rollingWindowForwardValidation_generate.predictions(
-#        DF.input         = DF.input,
-#        year             = year,
-#        training.window  = training.window,
-#        learner.metadata = learner.metadata,
-#        output.directory = predictions.directory
-#        );
+    rollingWindowForwardValidation_generate.predictions(
+        DF.input         = DF.input,
+        year             = year,
+        training.window  = training.window,
+        learner.metadata = learner.metadata,
+        output.directory = predictions.directory
+        );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.performance.metrics <- rollingWindowForwardValidation_generate.performance.metrics(
