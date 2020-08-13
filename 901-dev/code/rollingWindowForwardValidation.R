@@ -48,7 +48,10 @@ rollingWindowForwardValidation <- function(
     original.wd <- getwd();
     setwd(output.directory);
 
-    predictions.directory <- file.path(output.directory,"predictions");
+            predictions.directory <- file.path(output.directory,"predictions");
+    performance.metrics.directory <- file.path(output.directory,"performance-metrics");
+       mock.productions.directory <- file.path(output.directory,"mock-productions");
+
     metadata.json         <- file.path(predictions.directory,"learner-metadata.json");
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -71,27 +74,37 @@ rollingWindowForwardValidation <- function(
     print( learner.metadata   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    rollingWindowForwardValidation_generate.predictions(
-        DF.input         = DF.input,
-        year             = year,
-        training.window  = training.window,
-        learner.metadata = learner.metadata,
-        output.directory = predictions.directory
-        );
+#    rollingWindowForwardValidation_generate.predictions(
+#        DF.input         = DF.input,
+#        year             = year,
+#        training.window  = training.window,
+#        learner.metadata = learner.metadata,
+#        output.directory = predictions.directory
+#        );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.performance.metrics <- rollingWindowForwardValidation_generate.performance.metrics(
         metadata.json         = metadata.json,
         validation.window     = validation.window,
         predictions.directory = predictions.directory,
-        output.sub.directory  = file.path(output.directory,"performance-metrics")
+        output.sub.directory  = performance.metrics.directory
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.mock.production.errors <- rollingWindowForwardValidation_generate.mock.production.errors(
         validation.window        = validation.window,
         list.performance.metrics = list.performance.metrics,
-        output.sub.directory     = file.path(output.directory,"mock-productions")
+        output.sub.directory     = mock.productions.directory
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    list.optimal.final.models <- rollingWindowForwardValidation_save.optimal.final.models(
+        DF.input                    = DF.input,
+        year                        = year,
+        training.window             = training.window,
+        learner.metadata            = learner.metadata,
+        list.mock.production.errors = list.mock.production.errors,
+        output.sub.directory        = mock.productions.directory
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -103,6 +116,42 @@ rollingWindowForwardValidation <- function(
     }
 
 ##################################################
+rollingWindowForwardValidation_save.optimal.final.models <- function(
+    DF.input                    = NULL,
+    year                        = NULL,
+    training.window             = NULL,
+    learner.metadata            = NULL,
+    list.mock.production.errors = NULL,
+    output.sub.directory        = NULL
+    ) {
+    
+    max.year       <- max(DF.input[,year]);
+    training.years <- seq(max.year - training.window + 1, max.year);
+    DF.training    <- DF.input[DF.input[,year] %in%   training.years,];
+
+    list.optimal.final.models <- list();
+    for ( temp.name in names(list.mock.production.errors) ) {
+        DF.temp       <- as.data.frame(list.mock.production.errors[[temp.name]][["mock_production_errors"]]);
+        temp.year     <- DF.temp[nrow(DF.temp),"production_year"];
+        temp.model.ID <- DF.temp[nrow(DF.temp),"model"];
+        temp.filename <- paste0("production-model-RY",temp.year,"-",temp.model.ID,".RData");
+        temp.metadata <- learner.metadata[[temp.model.ID]];
+        cat("\ntemp.model.ID\n");
+        print( temp.model.ID   );
+        cat("\nstr(temp.metadata)\n");
+        print( str(temp.metadata)   );
+        temp.trained.model    <- crop.yield.train.model(
+            learner.metadata   = temp.metadata,
+            DF.training        = DF.training,
+            FILE.trained.model = file.path(output.sub.directory,paste0(temp.filename))
+            );
+        list.optimal.final.models[[ temp.name ]] <- temp.trained.model;
+        }
+
+    return( list.optimal.final.models );
+
+    }
+
 rollingWindowForwardValidation_generate.predictions <- function(
     DF.input         = NULL,
     year             = NULL,

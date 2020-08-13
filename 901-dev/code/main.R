@@ -17,6 +17,7 @@ cat("\n##################################################\n");
 require(dplyr);
 
 code.files <- c(
+    "crop-yield-train-model.R",
     "getData-synthetic.R",
     "getLearner.R",
     "get-learner-metadata.R",
