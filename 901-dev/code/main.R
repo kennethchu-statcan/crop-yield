@@ -14,7 +14,7 @@ start.proc.time <- proc.time();
 setwd( dir.out );
 
 cat("\n##################################################\n");
-require(dplyr);
+require(logger);
 
 code.files <- c(
     "crop-yield-train-model.R",

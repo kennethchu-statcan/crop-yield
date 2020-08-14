@@ -144,21 +144,20 @@ rollingWindowForwardValidation_save.optimal.final.models <- function(
 
     list.optimal.final.models <- list();
     for ( temp.name in names(list.mock.production.errors) ) {
+
         DF.temp       <- as.data.frame(list.mock.production.errors[[temp.name]][["mock_production_errors"]]);
         temp.year     <- DF.temp[nrow(DF.temp),"production_year"];
         temp.model.ID <- DF.temp[nrow(DF.temp),"model"];
         temp.filename <- paste0("production-model-RY",temp.year,"-",temp.model.ID,".RData");
         temp.metadata <- learner.metadata[[temp.model.ID]];
-        cat("\ntemp.model.ID\n");
-        print( temp.model.ID   );
-        cat("\nstr(temp.metadata)\n");
-        print( str(temp.metadata)   );
+
         temp.trained.model    <- crop.yield.train.model(
             learner.metadata   = temp.metadata,
             DF.training        = DF.training,
             FILE.trained.model = file.path(output.sub.directory,paste0(temp.filename))
             );
         list.optimal.final.models[[ temp.name ]] <- temp.trained.model;
+
         }
 
     return( list.optimal.final.models );
@@ -198,7 +197,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
 
         for (validation.year in validation.years) {
 
-            log.prefix <- '{this.function.name}(): (learner.name,validation.year) = ({learner.name},{validation.year})';
+            log.prefix <- '{this.function.name}(): ({learner.name},{validation.year})';
 
             training.years <- seq(validation.year - training.window, validation.year - 1);
             logger::log_info(paste0(log.prefix,', training.years = c({paste(training.years,collapse=",")})'));
@@ -243,9 +242,6 @@ rollingWindowForwardValidation_generate.mock.production.errors <- function(
         output.directory         = output.sub.directory
         );
 
-    cat("\nstr(list.mock.production.errors)\n");
-    print( str(list.mock.production.errors)   );
-
     return( list.mock.production.errors );
 
     }
@@ -271,9 +267,6 @@ rollingWindowForwardValidation_generate.performance.metrics <- function(
         list.prediction.directories = list.prediction.directories,
         output.directory            = output.sub.directory
         );
-
-    cat("\nstr(list.performance.metrics)\n");
-    print( str(list.performance.metrics)   );
 
     return( list.performance.metrics );
 

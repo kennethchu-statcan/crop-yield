@@ -35,24 +35,13 @@ learner.xgboost.byGroup <- R6Class(
 
             self$training.data <- self$training.data[,setdiff(colnames(self$training.data),self$by.variables)];
 
-            print("Z-1");
-            cat("\nself$learner.metadata\n");
-            print( self$learner.metadata   );
-            print("Z-2");
-            cat("\nself$by.variables\n");
-            print( self$by.variables   );
-            print("Z-3");
-            cat("\nself$response.variable\n");
-            print( self$response.variable   );
-            print("Z-4");
-
             },
 
         fit = function() {
             my.levels <- unique(as.character(self$training.data[,"concatenated_by_variable"]));
             self$trained.machines <- list();
             for ( my.level in my.levels ) {
-                cat(paste0("\n# fitting: ",my.level,"\n"));
+                # cat(paste0("\n# fitting: ",my.level,"\n"));
                 temp.learner <- learner.xgboost$new(
                     learner.metadata = self$learner.metadata,
                     training.data    = self$training.data[self$training.data[,"concatenated_by_variable"] == my.level,c(self$response.variable,self$learner.metadata[["predictors"]])]
@@ -63,41 +52,25 @@ learner.xgboost.byGroup <- R6Class(
             },
 
         predict = function(newdata = NULL) {
-            print("B-1");
             original.colnames.newdata <- colnames(newdata);
-            print("B-2");
             newdata[,"concatenated_by_variable"] <- private$get_concatenated_by_variable(
                 DF.input = newdata[,self$by.variables]
                 );
-            print("B-3");
             DF.output <- data.frame();
-            print("B-4");
             my.levels <- unique(as.character(newdata[,"concatenated_by_variable"]));
-            print("B-5");
             for ( my.level in my.levels ) {
-                cat(paste0("\n# predicting: ",my.level,"\n"));
+                # cat(paste0("\n# predicting: ",my.level,"\n"));
                 if ( my.level %in% names(self$trained.machines) ) {
-                    print("C-1");
-                    cat("\nnames(self$by.variables)\n");
-                    print( names(self$by.variables)   );
-                    cat("\nnames(self$trained.machines)\n");
-                    print( names(self$trained.machines)   );
                     temp.machine <- self$trained.machines[[my.level]];
-                    cat("\nstr(temp.machine)\n");
-                    print( str(temp.machine)   );
                     DF.temp <- self$trained.machines[[my.level]]$predict(newdata = newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata]);
-                    print("C-2");
                 } else {
-                    print("C-3");
                     DF.temp <- newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata];
                     DF.temp[,"predicted_response"] <- NA;
-                    print("C-4");
                     }
                 rownames(DF.temp)   <- NULL;
                 DF.output           <- as.data.frame(dplyr::bind_rows(DF.output,DF.temp));
                 rownames(DF.output) <- NULL;
                 }
-            print("B-6");
             return ( DF.output );
             }
 

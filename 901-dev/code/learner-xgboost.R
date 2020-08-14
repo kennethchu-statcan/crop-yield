@@ -29,6 +29,10 @@ learner.xgboost <- R6Class(
 
         fit = function() {
 
+            this.function.name <- "learner.xgboost$fit";
+            log.prefix <- '{this.function.name}():';
+            logger::log_debug(paste0(log.prefix,' starts'));
+
             self$preprocessor = preprocessor$new(
                 learner.metadata = self$learner.metadata,
                 training.data    = self$training.data
@@ -36,19 +40,16 @@ learner.xgboost <- R6Class(
 
             self$preprocessor$fit();
             self$preprocessed.data <- self$preprocessor$transform(newdata = self$training.data);
+            logger::log_debug(paste0(log.prefix,' dim(self$preprocessed.data) = {dim(self$preprocessed.data)}'));
+            logger::log_debug(paste0(log.prefix,' colnames(self$preprocessed.data) = {colnames(self$preprocessed.data)}'));
 
             DMatrix.training <- xgboost::xgb.DMatrix(
                 data  = as.matrix(self$preprocessed.data[,setdiff(colnames(self$preprocessed.data),self$response_variable)]),
                 label = self$preprocessed.data[,self$response_variable]
                 );
+            logger::log_debug(paste0(log.prefix,' class(DMatrix.training) = {class(DMatrix.training)}'));
 
-            cat("\ndim(self$preprocessed.data)\n");
-            print( dim(self$preprocessed.data)   );
-
-            cat("\ncolnames(self$preprocessed.data)\n");
-            print( colnames(self$preprocessed.data)   );
-
-            cat("\n# calling xgboost::xgb.train() ...");
+            logger::log_debug(paste0(log.prefix,' calling xgboost::xgb.train()'));
             trained.machine <- xgboost::xgb.train(
                 data = DMatrix.training,
                 params = list(
@@ -63,29 +64,20 @@ learner.xgboost <- R6Class(
                 nrounds       = self$learner.metadata[["hyperparameters"]][["nrounds"]],
                 save_period   = NULL
                 );
-            cat("\n# finished: xgboost::xgb.train()");
+            logger::log_debug(paste0(log.prefix,' finished xgboost::xgb.train()'));
 
             self$trained.machine <- trained.machine;
+            logger::log_debug(paste0(log.prefix,' class(self$trained.machine) = {class(self$trained.machine)}'));
 
-            cat("\nstr(self$trained.machine)\n");
-            print( str(self$trained.machine)   );
+            logger::log_debug(paste0(log.prefix,' exits'));
 
             },
 
         predict = function(newdata = NULL) {
 
-            cat("\ncolnames(newdata) -- learner.xgboost$predict()\n");
-            print( colnames(newdata) );
-
             preprocessed.newdata <- self$preprocessor$transform(
                 newdata = newdata[,c(self$response_variable,self$learner.metadata[["predictors"]])]
                 );
-
-            cat("\ndim(preprocessed.newdata) -- learner.xgboost$predict()\n");
-            print( dim(preprocessed.newdata) );
-
-            cat("\ncolnames(preprocessed.newdata) -- learner.xgboost$predict()\n");
-            print( colnames(preprocessed.newdata) );
 
             DMatrix.preprocessed.newdata <- xgboost::xgb.DMatrix(
                 data  = as.matrix(preprocessed.newdata[,setdiff(colnames(preprocessed.newdata),self$response_variable)]),
@@ -98,9 +90,6 @@ learner.xgboost <- R6Class(
 
             DF.output <- newdata;
             DF.output[,"predicted_response"] <- predicted.response;
-
-            cat("\ncolnames(DF.output) -- learner.xgboost$predict()\n");
-            print( colnames(DF.output) );
 
             return ( DF.output );
             }
