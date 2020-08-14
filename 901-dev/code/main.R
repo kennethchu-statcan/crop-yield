@@ -45,9 +45,9 @@ n.crops      <- 15;
 n.predictors <-  7;
 
 DF.synthetic <- getData.synthetic(
-    #years       = seq(2015,2020),
+    years        = seq(2015,2020),
     #years       = seq(2011,2020),
-    years        = seq(2000,2020),
+    #years        = seq(2000,2020),
     n.ecoregions = n.ecoregions,
     n.crops      = n.crops,
     n.predictors = n.predictors,
@@ -63,10 +63,10 @@ print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 rollingWindowForwardValidation(
-    #training.window     = 2,
-    #validation.window   = 3,
-    training.window      =  5,
-    validation.window    = 10,
+    training.window     = 2,
+    validation.window   = 3,
+    #training.window      =  5,
+    #validation.window    = 10,
     DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
@@ -82,7 +82,7 @@ rollingWindowForwardValidation(
         lambda      = seq(23,11,-6),
         lambda_bias = c(23) #seq(23,11,-8)
         ),
-    output.directory = dir.out
+    output.directory = file.path(dir.out,"rwFV")
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
