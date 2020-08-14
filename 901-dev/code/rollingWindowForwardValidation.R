@@ -24,11 +24,12 @@ rollingWindowForwardValidation <- function(
     setwd(output.directory);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    require(logger);
-    log.file <- base::file.path("rollingWindowForwardValidation.log");
-    logger::log_appender(logger::appender_tee(file = log.file));
-
     this.function.name <- "rollingWindowForwardValidation";
+    log.file <- base::file.path(paste0(this.function.names,".log"));
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    require(logger);
+    logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('starting: {this.function.name}()');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
