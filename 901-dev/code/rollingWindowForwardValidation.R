@@ -13,7 +13,8 @@ rollingWindowForwardValidation <- function(
     by.variables.phase02 = c(crop),
     by.variables.phase03 = c(ecoregion),
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
-    output.directory     = "."
+    output.directory     = ".",
+    log.threshold        = INFO
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -29,6 +30,7 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(logger);
+    logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('starting: {this.function.name}()');
 
