@@ -81,9 +81,6 @@ rollingWindowForwardValidation <- function(
         metadata.json        = metadata.json
         );
 
-    cat("\nlearner.metadata\n");
-    print( learner.metadata   );
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     rollingWindowForwardValidation_generate.predictions(
         DF.input         = DF.input,
