@@ -225,7 +225,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
 
         }
 
-    logger::log_info('exiting: {this.function.name}()');
+    logger::log_info('{this.function.name}(): exits');
     return( NULL );
 
     }
