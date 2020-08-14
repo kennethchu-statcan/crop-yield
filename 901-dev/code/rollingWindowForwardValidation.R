@@ -116,7 +116,7 @@ rollingWindowForwardValidation <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('exiting: {this.functiona.name}()');
+    logger::log_info('exiting: {this.function.name}()');
     setwd(original.wd);
     return( NULL );
 
