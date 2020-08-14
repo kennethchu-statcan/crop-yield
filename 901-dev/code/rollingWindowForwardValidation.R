@@ -45,14 +45,19 @@ rollingWindowForwardValidation <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( !dir.exists(output.directory) ) {
+        dir.create(path = output.directory, recursive = TRUE);
+        }
+
     original.wd <- getwd();
     setwd(output.directory);
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             predictions.directory <- file.path(output.directory,"predictions");
     performance.metrics.directory <- file.path(output.directory,"performance-metrics");
        mock.productions.directory <- file.path(output.directory,"mock-productions");
 
-    metadata.json         <- file.path(predictions.directory,"learner-metadata.json");
+    metadata.json <- file.path(predictions.directory,"learner-metadata.json");
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     learner.metadata <- get.learner.metadata(
