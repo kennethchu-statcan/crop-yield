@@ -16,9 +16,20 @@ rollingWindowForwardValidation <- function(
     output.directory     = "."
     ) {
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    original.wd <- getwd();
+    if ( !dir.exists(output.directory) ) {
+        dir.create(path = output.directory, recursive = TRUE);
+        }
+    setwd(output.directory);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    require(logger);
+    log.file <- base::file.path("rollingWindowForwardValidation.log");
+    logger::log_appender(logger::appender_tee(file = log.file));
+
     this.function.name <- "rollingWindowForwardValidation";
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
-    cat(paste0("starting: ",this.function.name,"()\n"));
+    logger::log_info('starting: {this.function.name}()');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(jsonlite);
@@ -45,17 +56,9 @@ rollingWindowForwardValidation <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( !dir.exists(output.directory) ) {
-        dir.create(path = output.directory, recursive = TRUE);
-        }
-
-    original.wd <- getwd();
-    setwd(output.directory);
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            predictions.directory <- file.path(output.directory,"predictions");
-    performance.metrics.directory <- file.path(output.directory,"performance-metrics");
-       mock.productions.directory <- file.path(output.directory,"mock-productions");
+            predictions.directory <- file.path(output.directory,"010-predictions");
+    performance.metrics.directory <- file.path(output.directory,"020-performance-metrics");
+       mock.productions.directory <- file.path(output.directory,"030-mock-productions");
 
     metadata.json <- file.path(predictions.directory,"learner-metadata.json");
 
@@ -109,12 +112,11 @@ rollingWindowForwardValidation <- function(
         training.window             = training.window,
         learner.metadata            = learner.metadata,
         list.mock.production.errors = list.mock.production.errors,
-        output.sub.directory        = output.directory # mock.productions.directory
+        output.sub.directory        = output.directory
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\nexiting: ",this.function.name,"()"));
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    logger::log_info('exiting: {this.functiona.name}()');
     setwd(original.wd);
     return( NULL );
 
