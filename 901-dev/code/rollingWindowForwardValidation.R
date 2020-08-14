@@ -116,6 +116,12 @@ rollingWindowForwardValidation <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_info("getOption('repos'):\n{getOption('repos')}");
+    logger::log_info(".libPaths():\n{base::paste(.libPaths(),collapse='\n')}");
+    logger::log_info("warnings():\n{base::paste(utils::capture.output(base::warnings()),collapse='\n')}");
+    logger::log_info("sessionInfo():\n{base::paste(utils::capture.output(utils::sessionInfo()),collapse='\n')}");
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_info('exiting: {this.function.name}()');
     setwd(original.wd);
     return( NULL );
