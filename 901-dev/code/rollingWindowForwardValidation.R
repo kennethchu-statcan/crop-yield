@@ -26,13 +26,13 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     this.function.name <- "rollingWindowForwardValidation";
-    log.file <- base::file.path(paste0(this.function.names,".log"));
+    log.file <- base::file.path(paste0(this.function.name,".log"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(logger);
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
-    logger::log_info('starting: {this.function.name}()');
+    logger::log_info('this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(jsonlite);
@@ -119,13 +119,13 @@ rollingWindowForwardValidation <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info("getOption('repos'):\n{getOption('repos')}");
-    logger::log_info(".libPaths():\n{base::paste(.libPaths(),collapse='\n')}");
-    logger::log_info("warnings():\n{base::paste(utils::capture.output(base::warnings()),collapse='\n')}");
-    logger::log_info("sessionInfo():\n{base::paste(utils::capture.output(utils::sessionInfo()),collapse='\n')}");
+    logger::log_info("{this.function.name}(): getOption('repos'):\n{getOption('repos')}");
+    logger::log_info("{this.function.name}(): .libPaths():\n{base::paste(.libPaths(),collapse='\n')}");
+    logger::log_info("{this.function.name}(): warnings():\n{base::paste(utils::capture.output(base::warnings()),collapse='\n')}");
+    logger::log_info("{this.function.name}(): sessionInfo():\n{base::paste(utils::capture.output(utils::sessionInfo()),collapse='\n')}");
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('exiting: {this.function.name}()');
+    logger::log_info('{this.function.name}(): exits');
     setwd(original.wd);
     return( NULL );
 
@@ -176,9 +176,12 @@ rollingWindowForwardValidation_generate.predictions <- function(
     output.directory = NULL
     ) {
 
+    this.function.name <- "rollingWindowForwardValidation_generate.predictions";
+    logger::log_info('{this.function.name}(): starts');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     num.cores <- max(1,parallel::detectCores() - 1);
-    cat("\nnum.cores\n");
-    print( num.cores   );
+    logger::log_info('{this.function.name}(): number of cores to be used in parallel: {num.cores}');
 
     doParallel::registerDoParallel(cores = num.cores);
 
@@ -187,16 +190,27 @@ rollingWindowForwardValidation_generate.predictions <- function(
     max.validation.year <- max(DF.input[,year]);
     validation.years    <- seq(min.validation.year,max.validation.year,1);
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_info('{this.function.name}(): training window: {training.window}');
+    logger::log_info('{this.function.name}(): validation years: c({paste(validation.years,collapse=",")})');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     foreach ( temp.index = 1:length(learner.metadata) ) %dopar% {
 
         learner.name <- names(learner.metadata)[temp.index];
-        cat(paste0("\n### Learner: ",learner.name,"\n"));
 
         for (validation.year in validation.years) {
 
+            log.prefix <- '{this.function.name}(): (learner.name,validation.year) = ({learner.name},{validation.year})';
+
             training.years <- seq(validation.year - training.window, validation.year - 1);
-            DF.training    <- DF.input[DF.input[,year] %in%   training.years,];
-            DF.validation  <- DF.input[DF.input[,year] ==   validation.year, ];
+            logger::log_info(paste0(log.prefix,', training.years = c({paste(training.years,collapse=",")})'));
+
+            DF.training <- DF.input[DF.input[,year] %in%   training.years,];
+            logger::log_info(paste0(log.prefix,', nrow(DF.training) = {nrow(DF.training)})'));
+
+            DF.validation <- DF.input[DF.input[,year] ==   validation.year, ];
+            logger::log_info(paste0(log.prefix,', nrow(DF.validation) = {nrow(DF.validation)})'));
 
             validation.single.year(
                 learner.name     = learner.name,
@@ -211,6 +225,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
 
         }
 
+    logger::log_info('exiting: {this.function.name}()');
     return( NULL );
 
     }

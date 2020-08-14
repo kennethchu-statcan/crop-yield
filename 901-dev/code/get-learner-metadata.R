@@ -15,8 +15,7 @@ get.learner.metadata <- function(
     ) {
 
     this.function.name <- "get.learner.metadata";
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
-    cat(paste0("starting: ",this.function.name,"()\n"));
+    logger::log_info('{this.function.name}(): starts');
 
     require(jsonlite);
     require(stringr);
@@ -37,6 +36,9 @@ get.learner.metadata <- function(
             )
         );
 
+    logger::log_info( '{this.function.name}(): length(learner.metadata): {length(learner.metadata)}');
+    logger::log_debug('{this.function.name}(): names(learner.metadata):\n{paste(names(learner.metadata),collapse="\n")}');
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !dir.exists(output.directory) ) {
         dir.create(path = output.directory, recursive = TRUE);
@@ -49,8 +51,7 @@ get.learner.metadata <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\nexiting: ",this.function.name,"()"));
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    logger::log_info('{this.function.name}(): exits');
     return( learner.metadata );
 
     }
