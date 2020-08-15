@@ -5,9 +5,14 @@ getLearner <- function(
     ) {
 
     this.function.name <- "getLearner";
-    cat(paste0("\n# starting: ",this.function.name,"()\n"));
+    logger::log_debug('{this.function.name}(): starts');
+
+    log.prefix <- '{this.function.name}():';
+    log.prefix <- paste0(log.prefix,' learner.metadata[["learner"]] = {learner.metadata[["learner"]]}');
+    logger::log_debug(log.prefix);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_debug(paste0(log.prefix,', instantiation begins'));
     if ( "xgboost" == learner.metadata[["learner"]] ) {
 
         instantiated.learner <- learner.xgboost$new(
@@ -30,9 +35,10 @@ getLearner <- function(
             );
 
         }
+    logger::log_debug(paste0(log.prefix,', instantiation complete'));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\n# exiting: ",this.function.name,"()\n"));
+    logger::log_debug('{this.function.name}(): exits');
     return( instantiated.learner );
 
     }
