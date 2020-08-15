@@ -9,13 +9,13 @@ validation.single.year <- function(
     ) {
 
     this.function.name <- "validation.single.year";
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
-    cat(paste0("starting: ",this.function.name,"()\n"));
+    logger::log_info('{this.function.name}(): starts');
 
     require(dplyr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n### validation year: ",validation.year,"\n"));
+    logger::log_info('{this.function.name}(): learner.name = {learner.name}, validation.year = {validation.year}');
 
     output.sub.directory <- file.path(output.directory,learner.name,validation.year);
     if ( !dir.exists(output.sub.directory) ) {
@@ -28,28 +28,22 @@ validation.single.year <- function(
         DF.training      = DF.training
         );
 
-    cat("\n# fitting ...\n");
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), fitting begins');
     current.learner$fit();
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), fitting complete');
 
-    cat("\n# predicting ...\n");
-    cat("\ndim(DF.validation)\n");
-    print( dim(DF.validation)   );
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.validation) = c({paste0(dim(DF.validation),collapse=",")})');
 
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), predicting begins');
     DF.predictions.parcel <- current.learner$predict(newdata = DF.validation);
-
-    cat("\ndim(DF.predictions.parcel)\n");
-    print( dim(DF.predictions.parcel)   );
-    cat("\ncolnames(DF.predictions.parcel)\n");
-    print( colnames(DF.predictions.parcel)   );
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), predicting complete');
 
     DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
 
     DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,"predicted_response"];
 
-    cat("\ndim(DF.predictions.parcel)\n");
-    print( dim(DF.predictions.parcel)   );
-    cat("\nstr(DF.predictions.parcel)\n");
-    print( str(DF.predictions.parcel)   );
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), str(DF.validation)\n{paste0(capture.output(str(DF.validation)),collapse="\n")}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.filename <- paste0("predictions-",learner.name);
@@ -78,8 +72,7 @@ validation.single.year <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\nexiting: ",this.function.name,"()"));
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    logger::log_info('{this.function.name}(): exits');
     return( NULL );
 
     }

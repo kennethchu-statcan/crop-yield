@@ -2,30 +2,33 @@
 require(R6);
 require(xgboost);
 
-learner.xgboost <- R6Class(
+learner.xgboost <- R6::R6Class(
 
     classname = 'learner.xgboost',
 
+    inherit = learner.abstract,
+
     public = list(
 
-        # instantiation parameters
-        learner.metadata = NULL,
-        training.data    = NULL,
+        ### instantiation parameters (inherited)
+        # learner.metadata = NULL,
+        # training.data    = NULL,
 
-        # class attributes
-        response_variable = NULL,
-        preprocessor      = NULL,
-        preprocessed.data = NULL,
-        trained.machine   = NULL,
+        ### class attributes (inherited)
+        # response_variable = NULL,
+        # preprocessor      = NULL,
+        # preprocessed.data = NULL,
+        # trained.machine   = NULL,
 
-        initialize = function(
-            learner.metadata = NULL,
-            training.data    = NULL
-            ) {
-            self$learner.metadata  <- learner.metadata;
-            self$response_variable <- self$learner.metadata[["response_variable"]];
-            self$training.data     <- training.data[,c(self$response_variable,self$learner.metadata[["predictors"]])];
-            },
+        ### inherited initialize()
+        # initialize = function(
+        #     learner.metadata = NULL,
+        #     training.data    = NULL
+        #     ) {
+        #     self$learner.metadata  <- learner.metadata;
+        #     self$response_variable <- self$learner.metadata[["response_variable"]];
+        #     self$training.data     <- training.data[,c(self$response_variable,self$learner.metadata[["predictors"]])];
+        #     },
 
         fit = function() {
 
@@ -40,8 +43,8 @@ learner.xgboost <- R6Class(
 
             self$preprocessor$fit();
             self$preprocessed.data <- self$preprocessor$transform(newdata = self$training.data);
-            logger::log_debug(paste0(log.prefix,' dim(self$preprocessed.data) = {dim(self$preprocessed.data)}'));
-            logger::log_debug(paste0(log.prefix,' colnames(self$preprocessed.data) = {colnames(self$preprocessed.data)}'));
+            logger::log_debug(paste0(log.prefix,' dim(self$preprocessed.data) = c({paste0(dim(self$preprocessed.data),collapse=",")})'));
+            logger::log_debug(paste0(log.prefix,' colnames(self$preprocessed.data) = c({paste0(colnames(self$preprocessed.data),collapse=",")})'));
 
             DMatrix.training <- xgboost::xgb.DMatrix(
                 data  = as.matrix(self$preprocessed.data[,setdiff(colnames(self$preprocessed.data),self$response_variable)]),
@@ -83,6 +86,7 @@ learner.xgboost <- R6Class(
                 data  = as.matrix(preprocessed.newdata[,setdiff(colnames(preprocessed.newdata),self$response_variable)]),
                 label = preprocessed.newdata[,self$response_variable]
                 );
+
             predicted.response <- predict(
                 object  = self$trained.machine,
                 newdata = DMatrix.preprocessed.newdata

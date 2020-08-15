@@ -25,6 +25,9 @@ code.files <- c(
     "get-performance-metrics.R",
     "initializePlot.R",
     "preprocessor.R",
+    "learner-abstract.R",
+    "learner-abstract-byGroup.R",
+    "learner-abstract-multiphase.R",
     "learner-xgboost.R",
     "learner-xgboost-byGroup.R",
     "learner-xgboost-multiphase.R",
@@ -82,7 +85,8 @@ rollingWindowForwardValidation(
         lambda      = seq(23,11,-6),
         lambda_bias = c(23) #seq(23,11,-8)
         ),
-    output.directory = file.path(dir.out,"rwFV")
+    output.directory = file.path(dir.out,"rwFV"),
+    log.threshold    = TRACE
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

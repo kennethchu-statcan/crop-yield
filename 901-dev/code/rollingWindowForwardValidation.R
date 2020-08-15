@@ -1,4 +1,6 @@
 
+require(logger);
+
 rollingWindowForwardValidation <- function(
     training.window      = NULL,
     validation.window    = NULL,
@@ -14,7 +16,7 @@ rollingWindowForwardValidation <- function(
     by.variables.phase03 = c(ecoregion),
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
     output.directory     = ".",
-    log.threshold        = INFO
+    log.threshold        = logger::INFO
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -29,10 +31,9 @@ rollingWindowForwardValidation <- function(
     log.file <- base::file.path(paste0(this.function.name,".log"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    require(logger);
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
-    logger::log_info('this.function.name}(): starts');
+    logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     require(jsonlite);
@@ -176,7 +177,12 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    num.cores <- max(1,parallel::detectCores() - 1);
+    if ( logger::log_threshold() >= logger::DEBUG ) {
+        num.cores <- 1;
+    } else {
+        num.cores <- max(1,parallel::detectCores() - 1);
+        }
+
     logger::log_info('{this.function.name}(): number of cores to be used in parallel: {num.cores}');
 
     doParallel::registerDoParallel(cores = num.cores);
