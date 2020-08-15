@@ -85,8 +85,8 @@ rollingWindowForwardValidation(
         lambda      = seq(23,11,-6),
         lambda_bias = c(23) #seq(23,11,-8)
         ),
-    output.directory = file.path(dir.out,"rwFV"),
-    log.threshold    = TRACE
+    output.directory = file.path(dir.out,"rwFV")
+    #,log.threshold  = logger::TRACE
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
