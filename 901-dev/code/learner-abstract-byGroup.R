@@ -41,14 +41,12 @@ learner.abstract.byGroup <- R6::R6Class(
             my.levels <- unique(as.character(self$training.data[,"concatenated_by_variable"]));
             self$trained.machines <- list();
             for ( my.level in my.levels ) {
-                # cat(paste0("\n# fitting: ",my.level,"\n"));
                 temp.learner.metadata              <- self$learner.metadata;
                 temp.learner.metadata[["learner"]] <- self$learner.single.group;
                 temp.learner <- getLearner(
                     learner.metadata = temp.learner.metadata,
                     DF.training      = self$training.data[self$training.data[,"concatenated_by_variable"] == my.level,c(self$response.variable,self$learner.metadata[["predictors"]])]
                     );
-
                 temp.learner$fit();
                 self$trained.machines[[my.level]] <- temp.learner;
                 }
@@ -62,7 +60,6 @@ learner.abstract.byGroup <- R6::R6Class(
             DF.output <- data.frame();
             my.levels <- unique(as.character(newdata[,"concatenated_by_variable"]));
             for ( my.level in my.levels ) {
-                # cat(paste0("\n# predicting: ",my.level,"\n"));
                 if ( my.level %in% names(self$trained.machines) ) {
                     temp.machine <- self$trained.machines[[my.level]];
                     DF.temp <- self$trained.machines[[my.level]]$predict(newdata = newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata]);
