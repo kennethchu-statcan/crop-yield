@@ -28,22 +28,26 @@ validation.single.year <- function(
         DF.training      = DF.training
         );
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), fitting begins');
     current.learner$fit();
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), fitting complete');
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.validation) = c({paste0(dim(DF.validation),collapse=",")})');
+    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), str(DF.validation):\n{paste0(capture.output(str(DF.validation)),collapse="\n")}');
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), predicting begins');
     DF.predictions.parcel <- current.learner$predict(newdata = DF.validation);
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), predicting complete');
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
 
     DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,"predicted_response"];
 
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), str(DF.validation)\n{paste0(capture.output(str(DF.validation)),collapse="\n")}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.filename <- paste0("predictions-",learner.name);
