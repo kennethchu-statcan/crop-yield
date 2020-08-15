@@ -5,8 +5,7 @@ get.performance.metrics <- function(
     ) {
 
     this.function.name <- "get.performance.metrics";
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
-    cat(paste0("starting: ",this.function.name,"()\n"));
+    logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !dir.exists(output.directory) ) {
@@ -16,7 +15,6 @@ get.performance.metrics <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.performance.metrics <- list();
     for ( temp.name in names(list.prediction.directories) ) {
-        cat(paste0("\n### technique: ",temp.name));
         temp.dir        <- list.prediction.directories[[ temp.name ]];
         temp.comparison <- get.performance.metrics_single.model(
             prefix      = temp.name,
@@ -44,8 +42,7 @@ get.performance.metrics <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\nexiting: ",this.function.name,"()"));
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    logger::log_info('{this.function.name}(): exits');
     return( list.performance.metrics );
 
     }
@@ -68,7 +65,7 @@ get.performance.metrics_single.model <- function(
 
         for ( validation.year in validation.years ) {
 
-            cat(paste0("\n(modelID, validation.year): (",modelID,", ",validation.year,")"));
+            logger::log_info('get.performance.metrics_single.model(): ({modelID},{validation.year})');
 
             folder.year <- file.path(folder.model,validation.year);
             errors.csv  <- list.files(path = folder.year, pattern = 'region-crop.csv');
@@ -96,7 +93,6 @@ get.performance.metrics_single.model <- function(
     #    FUN    = function(x) { return(sum(x)/sqrt(2)); }
     #    );
 
-    cat("\n");
     return( DF.errors.model.year );
 
     }

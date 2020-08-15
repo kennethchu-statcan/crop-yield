@@ -6,8 +6,7 @@ get.mock.production.errors <- function(
     ) {
 
     this.function.name <- "get.mock.production.errors";
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
-    cat(paste0("starting: ",this.function.name,"()\n"));
+    logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !dir.exists(output.directory) ) {
@@ -17,7 +16,6 @@ get.mock.production.errors <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.mock.production.errors <- list();
     for ( temp.name in names(list.performance.metrics) ) {
-        cat(paste0("\n### technique: ",temp.name));
         temp.comparison <- get.mock.production.errors_single.model(
             prefix                 = temp.name,
             validation.window      = validation.window,
@@ -56,8 +54,7 @@ get.mock.production.errors <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\nexiting: ",this.function.name,"()"));
-    cat(paste0("\n",paste(rep("#",50),collapse=""),"\n"));
+    logger::log_info('{this.function.name}(): exits');
     return( list.mock.production.errors );
 
     }
