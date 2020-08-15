@@ -128,6 +128,9 @@ learner.xgboost.multiphase <- R6Class(
                 );
             remove( list = c("DF.predictions.parcel.phase03") );
             ### ~~~~~~~~~~ ###
+            # For each record, we now have a seequence of intermediate predicted responses, one from each phase.
+            # The final predicted response is the first one that is not NA.
+            # If all the intermediate predicted responses are NA, then the final predicted response is NA.
             DF.output[,"predicted_response"] <- apply(
                 X      = DF.output[,grep(x=colnames(DF.output),pattern="predicted_response_phase.+",value=TRUE)],
                 MARGIN = 1,
@@ -142,7 +145,7 @@ learner.xgboost.multiphase <- R6Class(
             DF.output <- DF.output[order(DF.output[,"synthetic.rowID"]),];
             DF.output <- DF.output[,setdiff(colnames(DF.output),"synthetic.rowID")];
             ### ~~~~~~~~~~ ###
-			return ( DF.output );
+            return ( DF.output );
             }
 
         ) # public = list()
