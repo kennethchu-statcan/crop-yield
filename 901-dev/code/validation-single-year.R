@@ -14,7 +14,6 @@ validation.single.year <- function(
     require(dplyr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\n### validation year: ",validation.year,"\n"));
     logger::log_info('{this.function.name}(): learner.name = {learner.name}, validation.year = {validation.year}');
 
     output.sub.directory <- file.path(output.directory,learner.name,validation.year);
@@ -68,7 +67,7 @@ validation.single.year <- function(
     #    );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    do.ftv.diagnostics(
+    validation.single.year_diagnostics(
         DF.input             = DF.predictions.parcel,
         learner.metadata     = learner.metadata,
         output.sub.directory = output.sub.directory,
@@ -82,7 +81,7 @@ validation.single.year <- function(
     }
 
 ##################################################
-do.ftv.diagnostics <- function(
+validation.single.year_diagnostics <- function(
     DF.input             = NULL,
     learner.metadata     = NULL,
     output.sub.directory = NULL,
@@ -99,12 +98,6 @@ do.ftv.diagnostics <- function(
         "predicted_production"
         );
 
-    cat("\nselected.colnames\n");
-    print( selected.colnames   );
-
-    cat("\ncolnames(DF.input)\n");
-    print( colnames(DF.input)   );
-
     DF.region.crop <- DF.input[,selected.colnames];
 
     temp.vars <- c("year","ecoregion","crop","harvested_area");
@@ -115,7 +108,7 @@ do.ftv.diagnostics <- function(
             replacement = temp.var
             );
         }
-    
+ 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.region.crop <- DF.region.crop %>%
         select( year, ecoregion, crop, harvested_area, actual_production, predicted_production ) %>%
