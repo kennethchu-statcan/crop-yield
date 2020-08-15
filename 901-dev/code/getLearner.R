@@ -5,11 +5,11 @@ getLearner <- function(
     ) {
 
     this.function.name <- "getLearner";
-    logger::log_info('{this.function.name}(): starts');
+    logger::log_debug('{this.function.name}(): starts');
 
     log.prefix <- '{this.function.name}():';
     log.prefix <- paste0(log.prefix,' learner.metadata[["learner"]] = {learner.metadata[["learner"]]}');
-    logger::log_info(log.prefix);
+    logger::log_debug(log.prefix);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_debug(paste0(log.prefix,', instantiation begins'));
@@ -38,7 +38,7 @@ getLearner <- function(
     logger::log_debug(paste0(log.prefix,', instantiation complete'));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('{this.function.name}(): exits');
+    logger::log_debug('{this.function.name}(): exits');
     return( instantiated.learner );
 
     }
