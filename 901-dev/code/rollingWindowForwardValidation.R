@@ -11,11 +11,11 @@ rollingWindowForwardValidation <- function(
     response.variable    = "yield",
     harvested.area       = "harvested_area",
     predictors           = NULL,
-    by.variables.phase01 = c(ecoregion,crop),
-    by.variables.phase02 = c(crop),
-    by.variables.phase03 = c(ecoregion),
+    by.variables.phase01 = base::c(ecoregion,crop),
+    by.variables.phase02 = base::c(crop),
+    by.variables.phase03 = base::c(ecoregion),
     learner              = "xgboost_multiphase",
-    search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
+    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
     output.directory     = ".",
     log.threshold        = logger::INFO
     ) {
