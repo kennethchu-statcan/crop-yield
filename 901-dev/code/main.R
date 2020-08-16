@@ -66,16 +66,17 @@ print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 rollingWindowForwardValidation(
-    training.window     = 2,
-    validation.window   = 3,
-    #training.window      =  5,
-    #validation.window    = 10,
+    training.window      = 2,
+    validation.window    = 3,
+    #training.window     =  5,
+    #validation.window   = 10,
     DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
+    #predictors          = c("my_year",grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE)),
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
