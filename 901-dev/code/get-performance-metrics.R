@@ -14,7 +14,7 @@ get.performance.metrics <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     list.performance.metrics <- base::list();
-    for ( temp.name in baes::names(list.prediction.directories) ) {
+    for ( temp.name in base::names(list.prediction.directories) ) {
         temp.dir        <- list.prediction.directories[[ temp.name ]];
         temp.comparison <- get.performance.metrics_single.model(
             prefix      = temp.name,
