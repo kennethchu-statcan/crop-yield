@@ -50,7 +50,7 @@ n.predictors <-  7;
 DF.synthetic <- getData.synthetic(
     years        = seq(2015,2020),
     #years       = seq(2011,2020),
-    #years        = seq(2000,2020),
+    #years       = seq(2000,2020),
     n.ecoregions = n.ecoregions,
     n.crops      = n.crops,
     n.predictors = n.predictors,
