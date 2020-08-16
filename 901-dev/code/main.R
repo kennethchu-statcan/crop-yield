@@ -26,11 +26,9 @@ code.files <- c(
     "initializePlot.R",
     "preprocessor.R",
     "learner-abstract.R",
-    "learner-abstract-byGroup.R",
-    "learner-abstract-multiphase.R",
+    "learner-byGroup.R",
+    "learner-multiphase.R",
     "learner-xgboost.R",
-    "learner-xgboost-byGroup.R",
-    "learner-xgboost-multiphase.R",
     "rollingWindowForwardValidation.R",
     "validation-single-year.R",
     "weighted-statistics.R"

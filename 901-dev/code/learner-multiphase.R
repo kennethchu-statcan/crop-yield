@@ -1,9 +1,9 @@
 
 require(R6);
 
-learner.abstract.multiphase <- R6::R6Class(
+learner.multiphase <- R6::R6Class(
 
-    classname = 'learner.abstract.multiphase',
+    classname = 'learner.multiphase',
 
     public = list(
 
@@ -20,12 +20,14 @@ learner.abstract.multiphase <- R6::R6Class(
         learner.phase03   = NULL,
 
         initialize = function(
+            learner.single.phase = NULL,
             learner.metadata     = NULL,
             training.data        = NULL
             ) {
-            self$learner.metadata  <- learner.metadata;
-            self$response.variable <- self$learner.metadata[["response_variable"]];
-            self$training.data     <- training.data;
+            self$learner.single.phase <- learner.single.phase;
+            self$learner.metadata     <- learner.metadata;
+            self$response.variable    <- self$learner.metadata[["response_variable"]];
+            self$training.data        <- training.data;
             },
 
         fit = function() {

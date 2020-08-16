@@ -22,16 +22,18 @@ getLearner <- function(
 
     } else if ( "xgboost_byGroup" == learner.metadata[["learner"]] ) {
 
-        instantiated.learner <- learner.xgboost.byGroup$new(
-            learner.metadata = learner.metadata,
-            training.data    = DF.training
+        instantiated.learner <- learner.byGroup$new(
+            learner.single.group = "xgboost",
+            learner.metadata     = learner.metadata,
+            training.data        = DF.training
             );
 
     } else if ( "xgboost_multiphase" == learner.metadata[["learner"]] ) {
 
-        instantiated.learner <- learner.xgboost.multiphase$new(
-            learner.metadata = learner.metadata,
-            training.data    = DF.training
+        instantiated.learner <- learner.multiphase$new(
+            learner.single.phase = "xgboost_byGroup",
+            learner.metadata     = learner.metadata,
+            training.data        = DF.training
             );
 
         }

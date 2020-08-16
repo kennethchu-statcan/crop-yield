@@ -1,9 +1,9 @@
 
 require(R6);
 
-learner.abstract.byGroup <- R6::R6Class(
+learner.byGroup <- R6::R6Class(
 
-    classname = 'learner.abstract.byGroup',
+    classname = 'learner.byGroup',
 
     public = list(
 
@@ -18,13 +18,15 @@ learner.abstract.byGroup <- R6::R6Class(
         trained.machines  = NULL,
 
         initialize = function(
-            learner.metadata = NULL,
-            training.data    = NULL
+            learner.single.group = NULL,
+            learner.metadata     = NULL,
+            training.data        = NULL
             ) {
 
-            self$learner.metadata  <- learner.metadata;
-            self$by.variables      <- self$learner.metadata[["by_variables"]];
-            self$response.variable <- self$learner.metadata[["response_variable"]];
+            self$learner.single.group <- learner.single.group;
+            self$learner.metadata     <- learner.metadata;
+            self$by.variables         <- self$learner.metadata[["by_variables"]];
+            self$response.variable    <- self$learner.metadata[["response_variable"]];
 
             colnames.training  <- c(self$response.variable,self$by.variables,self$learner.metadata[["predictors"]]);
             self$training.data <- training.data[,colnames.training];
