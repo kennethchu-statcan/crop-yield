@@ -14,6 +14,7 @@ rollingWindowForwardValidation <- function(
     by.variables.phase01 = c(ecoregion,crop),
     by.variables.phase02 = c(crop),
     by.variables.phase03 = c(ecoregion),
+    learner              = "xgboost_multiphase",
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
     output.directory     = ".",
     log.threshold        = logger::INFO
@@ -55,6 +56,7 @@ rollingWindowForwardValidation <- function(
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
+        learner              = learner,
         search.grid          = search.grid,
         output.directory     = output.directory
         );
@@ -77,6 +79,7 @@ rollingWindowForwardValidation <- function(
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
+        learner              = learner,
         search.grid          = search.grid,
         output.directory     = predictions.directory,
         metadata.json        = metadata.json
@@ -291,6 +294,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     by.variables.phase01 = NULL,
     by.variables.phase02 = NULL,
     by.variables.phase03 = NULL,
+    learner              = NULL,
     search.grid          = NULL,
     output.directory     = NULL
     ) {

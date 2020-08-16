@@ -80,6 +80,7 @@ rollingWindowForwardValidation(
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
     by.variables.phase03 = c("my_ecoregion"),
+    learner     = "xgboost_multiphase",
     search.grid = list(
         alpha       = seq(23,11,-6),
         lambda      = seq(23,11,-6),

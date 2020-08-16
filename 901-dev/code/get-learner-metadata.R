@@ -9,6 +9,7 @@ get.learner.metadata <- function(
     by.variables.phase01 = c(ecoregion,crop),
     by.variables.phase02 = c(crop),
     by.variables.phase03 = c(ecoregion),
+    learner              = "xgboost_multiphase",
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4)),
     output.directory     = "predictions",
     metadata.json        = file.path(output.directory,"learner-metadata.json")
@@ -21,19 +22,18 @@ get.learner.metadata <- function(
     require(stringr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    learner.metadata <- c(
-        get.learner.metadata_xgboost.multiphase(
-            year                 = year,
-            ecoregion            = ecoregion,
-            crop                 = crop,
-            response.variable    = response.variable,
-            harvested.area       = harvested.area,
-            predictors           = predictors,
-            by.variables.phase01 = by.variables.phase01,
-            by.variables.phase02 = by.variables.phase02,
-            by.variables.phase03 = by.variables.phase03,
-            search.grid          = search.grid
-            )
+    learner.metadata <- get.learner.metadata_private.helper(
+        year                 = year,
+        ecoregion            = ecoregion,
+        crop                 = crop,
+        response.variable    = response.variable,
+        harvested.area       = harvested.area,
+        predictors           = predictors,
+        by.variables.phase01 = by.variables.phase01,
+        by.variables.phase02 = by.variables.phase02,
+        by.variables.phase03 = by.variables.phase03,
+        learner              = learner,
+        search.grid          = search.grid
         );
 
     logger::log_info( '{this.function.name}(): length(learner.metadata): {length(learner.metadata)}');
@@ -57,7 +57,7 @@ get.learner.metadata <- function(
     }
 
 ##################################################
-get.learner.metadata_xgboost.multiphase <- function(
+get.learner.metadata_private.helper <- function(
     year                 = NULL,
     ecoregion            = NULL,
     crop                 = NULL,
@@ -67,12 +67,13 @@ get.learner.metadata_xgboost.multiphase <- function(
     by.variables.phase01 = c(ecoregion,crop),
     by.variables.phase02 = c(crop),
     by.variables.phase03 = c(ecoregion),
+    learner              = "xgboost_multiphase",
     search.grid          = list(alpha = seq(23,11,-4), lambda = seq(23,11,-4), lambda_bias = seq(23,11,-4))
     ) {
 
     temp.list     <- list();
     expanded.grid <- base::expand.grid(search.grid);
-    for ( metadata.count in 1:nrow(expanded.grid)) {
+    for ( metadata.count in 1:nrow(expanded.grid) ) {
 
         metadata.suffix <- stringr::str_pad(
             string = metadata.count,
@@ -80,7 +81,7 @@ get.learner.metadata_xgboost.multiphase <- function(
             pad    = "0"
             );
 
-        metadata.ID <- paste0("xgboost_multiphase","_",metadata.suffix);
+        metadata.ID <- paste0(learner,"_",metadata.suffix);
 
         inner.list <- list();
         for ( temp.colname in colnames(expanded.grid) ) {
@@ -102,7 +103,7 @@ get.learner.metadata_xgboost.multiphase <- function(
         FUN = function(x) {
             return(
                 list(
-                    learner              = "xgboost_multiphase",
+                    learner              = learner,
                     year                 = year,
                     ecoregion            = ecoregion,
                     crop                 = crop,
@@ -112,8 +113,8 @@ get.learner.metadata_xgboost.multiphase <- function(
                     by_variables_phase01 = by.variables.phase01,
                     by_variables_phase02 = by.variables.phase02,
                     by_variables_phase03 = by.variables.phase03,
-                    hyperparameters      = x,
-                    binarize_factors     = TRUE
+                    hyperparameters      = x
+                    #,binarize_factors     = TRUE
                     )
                 );
             }
