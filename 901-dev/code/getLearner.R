@@ -8,11 +8,11 @@ getLearner <- function(
     logger::log_debug('{this.function.name}(): starts');
 
     log.prefix <- '{this.function.name}():';
-    log.prefix <- paste0(log.prefix,' learner.metadata[["learner"]] = {learner.metadata[["learner"]]}');
+    log.prefix <- base::paste0(log.prefix,' learner.metadata[["learner"]] = {learner.metadata[["learner"]]}');
     logger::log_debug(log.prefix);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_debug(paste0(log.prefix,', instantiation begins'));
+    logger::log_debug(base::paste0(log.prefix,', instantiation begins'));
     if ( "xgboost" == learner.metadata[["learner"]] ) {
 
         instantiated.learner <- learner.xgboost$new(
