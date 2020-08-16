@@ -12,10 +12,14 @@ crop.yield.train.model <- function(
 
     current.learner$fit();
 
-    base::saveRDS(
-        object = current.learner,
-        file   = FILE.trained.model
-        );
+    if ( !base::is.null(FILE.trained.model) ) {
+        base::saveRDS(
+            object = current.learner,
+            file   = FILE.trained.model
+            );
+        }
+
+    base::return( current.learner );
 
     }
 

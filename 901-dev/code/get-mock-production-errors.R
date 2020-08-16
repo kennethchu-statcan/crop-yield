@@ -9,13 +9,13 @@ get.mock.production.errors <- function(
     logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( !dir.exists(output.directory) ) {
-        dir.create(path = output.directory, recursive = TRUE);
+    if ( !base::dir.exists(output.directory) ) {
+        base::dir.create(path = output.directory, recursive = TRUE);
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    list.mock.production.errors <- list();
-    for ( temp.name in names(list.performance.metrics) ) {
+    list.mock.production.errors <- base::list();
+    for ( temp.name in base::names(list.performance.metrics) ) {
         temp.comparison <- get.mock.production.errors_single.model(
             prefix                 = temp.name,
             validation.window      = validation.window,
@@ -24,27 +24,27 @@ get.mock.production.errors <- function(
         list.mock.production.errors[[ temp.name ]] <- temp.comparison;
         }
 
-    FILE.output <- file.path(output.directory,"list-mock-production-errors.RData");
+    FILE.output <- base::file.path(output.directory,"list-mock-production-errors.RData");
     base::saveRDS(
         file   = FILE.output,
         object = list.mock.production.errors
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    for ( prefix in names(list.mock.production.errors) ) {
+    for ( prefix in base::names(list.mock.production.errors) ) {
 
-        temp.filename <- file.path(output.directory,paste0("mock-production-errors-",prefix,"-diagnostics.csv"));
-        if ( !file.exists(temp.filename) ) {
-            write.csv(
+        temp.filename <- base::file.path(output.directory,base::paste0("mock-production-errors-",prefix,"-diagnostics.csv"));
+        if ( !base::file.exists(temp.filename) ) {
+            utils::write.csv(
                 x         = list.mock.production.errors[[ prefix ]][[ "diagnostics" ]],
                 file      = temp.filename,
                 row.names = FALSE
                 );
             }
 
-        temp.filename <- file.path(output.directory,paste0("mock-production-errors-",prefix,".csv"));
-        if ( !file.exists(temp.filename) ) {
-            write.csv(
+        temp.filename <- base::file.path(output.directory,base::paste0("mock-production-errors-",prefix,".csv"));
+        if ( !base::file.exists(temp.filename) ) {
+            utils::write.csv(
                 x         = list.mock.production.errors[[ prefix ]][[ "mock_production_errors" ]],
                 file      = temp.filename,
                 row.names = FALSE
@@ -55,7 +55,7 @@ get.mock.production.errors <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_info('{this.function.name}(): exits');
-    return( list.mock.production.errors );
+    base::return( list.mock.production.errors );
 
     }
 
@@ -66,18 +66,18 @@ get.mock.production.errors_single.model <- function(
     DF.performance.metrics = NULL
     ) {
 
-    require(dplyr);
+    base::require(dplyr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     production.years <- get.mock.production.errors_get.production.years(
-        years             = sort(unique(DF.performance.metrics[,"year"])),
+        years             = base::sort(base::unique(DF.performance.metrics[,"year"])),
         validation.window = validation.window
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.diagnostics <- data.frame();
+    DF.diagnostics <- base::data.frame();
     for ( production.year in production.years ) {
-        temp.validation.years <- seq(production.year-validation.window,production.year-1,1);
+        temp.validation.years <- base::seq(production.year-validation.window,production.year-1,1);
         DF.temp <- DF.performance.metrics %>%
             dplyr::filter( year %in% temp.validation.years ) %>%
             dplyr::select( model, weighted_error, weighted_std ) %>%
@@ -86,42 +86,42 @@ get.mock.production.errors_single.model <- function(
                 mean_weighted_error = mean(weighted_error), 
                 mean_weighted_std   = mean(weighted_std)
                 );
-        DF.temp <- as.data.frame(DF.temp);
+        DF.temp <- base::as.data.frame(DF.temp);
         DF.temp[,"production_year"] <- production.year;
-        DF.diagnostics <- rbind(DF.diagnostics,DF.temp);
+        DF.diagnostics <- base::rbind(DF.diagnostics,DF.temp);
         }
 
-    DF.diagnostics[,"composite_metric"] <- apply(
-        X      = DF.diagnostics[,c("mean_weighted_error","mean_weighted_std")],
+    DF.diagnostics[,"composite_metric"] <- base::apply(
+        X      = DF.diagnostics[,base::c("mean_weighted_error","mean_weighted_std")],
         MARGIN = 1,
-        FUN    = function(x) { return(sum(x)/sqrt(2)); }
+        FUN    = function(x) { return(base::sum(x)/base::sqrt(2)); }
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.diagnostics <- dplyr::left_join(
         x  = DF.diagnostics,
-        y  = DF.performance.metrics[,c("model","year","weighted_error")],
-        by = c("production_year" = "year", "model" = "model") 
+        y  = DF.performance.metrics[,base::c("model","year","weighted_error")],
+        by = base::c("production_year" = "year", "model" = "model") 
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    reordered.colnames <- c("production_year",setdiff(colnames(DF.diagnostics),"production_year"));
+    reordered.colnames <- base::c("production_year",base::setdiff(base::colnames(DF.diagnostics),"production_year"));
     DF.diagnostics     <- DF.diagnostics[,reordered.colnames];
 
-    colnames(DF.diagnostics) <- base::gsub(
-        x           = colnames(DF.diagnostics),
+    base::colnames(DF.diagnostics) <- base::gsub(
+        x           = base::colnames(DF.diagnostics),
         pattern     = "mean_weighted_error",
         replacement = "validation_error"
         );
 
-    colnames(DF.diagnostics) <- base::gsub(
-        x           = colnames(DF.diagnostics),
+    base::colnames(DF.diagnostics) <- base::gsub(
+        x           = base::colnames(DF.diagnostics),
         pattern     = "mean_weighted_std",
         replacement = "validation_std"
         );
 
-    colnames(DF.diagnostics) <- base::gsub(
-        x           = colnames(DF.diagnostics),
+    base::colnames(DF.diagnostics) <- base::gsub(
+        x           = base::colnames(DF.diagnostics),
         pattern     = "weighted_error",
         replacement = "mock_production_error"
         );
@@ -133,8 +133,8 @@ get.mock.production.errors_single.model <- function(
         dplyr::filter(     composite_metric == min_composite_metric  );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    return(
-        list(
+    base::return(
+        base::list(
             diagnostics            = DF.diagnostics,
             mock_production_errors = DF.mock.production.errors
             )
@@ -146,8 +146,8 @@ get.mock.production.errors_get.production.years <- function(
     years             = NULL,
     validation.window = NULL
     ) {
-    first.production.year <- min(years) + validation.window;
-     last.production.year <- max(years) + 1;
-    return( seq(first.production.year,last.production.year,1) );
+    first.production.year <- base::min(years) + validation.window;
+     last.production.year <- base::max(years) + 1;
+    base::return( seq(first.production.year,last.production.year,1) );
     }
 

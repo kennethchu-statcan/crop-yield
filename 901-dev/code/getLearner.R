@@ -41,7 +41,7 @@ getLearner <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_debug('{this.function.name}(): exits');
-    return( instantiated.learner );
+    base::return( instantiated.learner );
 
     }
 

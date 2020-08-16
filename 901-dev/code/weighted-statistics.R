@@ -1,21 +1,21 @@
 
 weighted.mean <- function(x = NULL, weights = NULL) {
-    return( sum( weights * x ) / sum(weights) );
+    base::return( base::sum( weights * x ) / base::sum(weights) );
     }
 
 weighted.var <- function(x = NULL, weights = NULL) {
 
     my.weighted.mean <- weighted.mean(x = x, weights = weights);
-    pre.weighted.var <- sum( weights * ((x - my.weighted.mean)^2) ) / sum(weights) ;
+    pre.weighted.var <- base::sum( weights * ((x - my.weighted.mean)^2) ) / base::sum(weights) ;
 
-    n.nonzero.weights <- sum( weights > 0 );
+    n.nonzero.weights <- base::sum( weights > 0 );
     my.factor <- n.nonzero.weights / (n.nonzero.weights - 1); 
 
-    return( my.factor * pre.weighted.var );
+    base::return( my.factor * pre.weighted.var );
 
     }
 
 weighted.sd <- function(x = NULL, weights = NULL) {
-    return( sqrt( weighted.var(x = x, weights = weights) ) );
+    base::return( base::sqrt( weighted.var(x = x, weights = weights) ) );
     }
 
