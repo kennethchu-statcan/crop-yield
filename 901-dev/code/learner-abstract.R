@@ -1,11 +1,11 @@
 
-require(R6);
+base::require(R6);
 
 learner.abstract <- R6::R6Class(
 
     classname = 'learner.abstract',
 
-    public = list(
+    public = base::list(
 
         # instantiation parameters
         learner.metadata = NULL,
@@ -23,7 +23,7 @@ learner.abstract <- R6::R6Class(
             ) {
             self$learner.metadata  <- learner.metadata;
             self$response_variable <- self$learner.metadata[["response_variable"]];
-            self$training.data     <- training.data[,c(self$response_variable,self$learner.metadata[["predictors"]])];
+            self$training.data     <- training.data[,base::c(self$response_variable,self$learner.metadata[["predictors"]])];
             },
 
         fit = function() {
@@ -32,8 +32,8 @@ learner.abstract <- R6::R6Class(
 
         predict = function(newdata = NULL) {
             DF.output <- newdata;
-            DF.output[,"predicted_response"] <- rep(x = NA, times = nrow(DF.output));
-            return ( DF.output );
+            DF.output[,"predicted_response"] <- base::rep(x = NA, times = base::nrow(DF.output));
+            base::return ( DF.output );
             }
 
         ) # public = list()

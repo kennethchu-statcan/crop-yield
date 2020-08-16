@@ -1,11 +1,11 @@
 
-require(R6);
+base::require(R6);
 
 learner.byGroup <- R6::R6Class(
 
     classname = 'learner.byGroup',
 
-    public = list(
+    public = base::list(
 
         # instantiation parameters
         learner.single.group = NULL,
@@ -35,13 +35,13 @@ learner.byGroup <- R6::R6Class(
                 DF.input = self$training.data[,self$by.variables]
                 );
 
-            self$training.data <- self$training.data[,setdiff(colnames(self$training.data),self$by.variables)];
+            self$training.data <- self$training.data[,base::setdiff(base::colnames(self$training.data),self$by.variables)];
 
             },
 
         fit = function() {
-            my.levels <- unique(as.character(self$training.data[,"concatenated_by_variable"]));
-            self$trained.machines <- list();
+            my.levels <- base::unique(base::as.character(self$training.data[,"concatenated_by_variable"]));
+            self$trained.machines <- base::list();
             for ( my.level in my.levels ) {
                 temp.learner.metadata              <- self$learner.metadata;
                 temp.learner.metadata[["learner"]] <- self$learner.single.group;
@@ -55,25 +55,25 @@ learner.byGroup <- R6::R6Class(
             },
 
         predict = function(newdata = NULL) {
-            original.colnames.newdata <- colnames(newdata);
+            original.colnames.newdata <- base::colnames(newdata);
             newdata[,"concatenated_by_variable"] <- private$get_concatenated_by_variable(
                 DF.input = newdata[,self$by.variables]
                 );
-            DF.output <- data.frame();
-            my.levels <- unique(as.character(newdata[,"concatenated_by_variable"]));
+            DF.output <- base::data.frame();
+            my.levels <- base::unique(base::as.character(newdata[,"concatenated_by_variable"]));
             for ( my.level in my.levels ) {
-                if ( my.level %in% names(self$trained.machines) ) {
+                if ( my.level %in% base::names(self$trained.machines) ) {
                     temp.machine <- self$trained.machines[[my.level]];
                     DF.temp <- self$trained.machines[[my.level]]$predict(newdata = newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata]);
                 } else {
                     DF.temp <- newdata[newdata[,"concatenated_by_variable"] == my.level,original.colnames.newdata];
                     DF.temp[,"predicted_response"] <- NA;
                     }
-                rownames(DF.temp)   <- NULL;
-                DF.output           <- as.data.frame(dplyr::bind_rows(DF.output,DF.temp));
-                rownames(DF.output) <- NULL;
+                base::rownames(DF.temp)   <- NULL;
+                DF.output                 <- base::as.data.frame(dplyr::bind_rows(DF.output,DF.temp));
+                base::rownames(DF.output) <- NULL;
                 }
-            return ( DF.output );
+            base::return ( DF.output );
             }
 
         ), # public = list()
@@ -81,14 +81,14 @@ learner.byGroup <- R6::R6Class(
     private = list(
     
         get_concatenated_by_variable = function(DF.input = NULL) {
-            if ( is.character(DF.input) ) {
-                output.factor <- factor(as.character(DF.input));
+            if ( base::is.character(DF.input) ) {
+                output.factor <- base::factor(base::as.character(DF.input));
             } else {
-                output.factor <- factor(
-                    apply(
+                output.factor <- base::factor(
+                    base::apply(
                         X      = DF.input[,self$by.variables],
                         MARGIN = 1,
-                        FUN    = function(x) { paste0(x,collapse="_") }
+                        FUN    = function(x) { base::paste0(x,collapse="_") }
                         )
                     );
                 }

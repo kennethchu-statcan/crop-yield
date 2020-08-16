@@ -1,6 +1,6 @@
 
-require(R6);
-require(xgboost);
+base::require(R6);
+base:require(xgboost);
 
 learner.xgboost <- R6::R6Class(
 
@@ -8,7 +8,7 @@ learner.xgboost <- R6::R6Class(
 
     inherit = learner.abstract,
 
-    public = list(
+    public = base::list(
 
         ### instantiation parameters (inherited)
         # learner.metadata = NULL,
@@ -50,9 +50,9 @@ learner.xgboost <- R6::R6Class(
                 data  = base::as.matrix(self$preprocessed.data[,base::setdiff(base::colnames(self$preprocessed.data),self$response_variable)]),
                 label = self$preprocessed.data[,self$response_variable]
                 );
-            logger::log_debug(paste0(log.prefix,' class(DMatrix.training) = {class(DMatrix.training)}'));
+            logger::log_debug(base::paste0(log.prefix,' class(DMatrix.training) = {class(DMatrix.training)}'));
 
-            logger::log_debug(paste0(log.prefix,' calling xgboost::xgb.train()'));
+            logger::log_debug(base::paste0(log.prefix,' calling xgboost::xgb.train()'));
             trained.machine <- xgboost::xgb.train(
                 data = DMatrix.training,
                 params = list(
@@ -67,12 +67,12 @@ learner.xgboost <- R6::R6Class(
                 nrounds       = self$learner.metadata[["hyperparameters"]][["nrounds"]],
                 save_period   = NULL
                 );
-            logger::log_debug(paste0(log.prefix,' finished xgboost::xgb.train()'));
+            logger::log_debug(base::paste0(log.prefix,' finished xgboost::xgb.train()'));
 
             self$trained.machine <- trained.machine;
-            logger::log_debug(paste0(log.prefix,' class(self$trained.machine) = {class(self$trained.machine)}'));
+            logger::log_debug(base::paste0(log.prefix,' class(self$trained.machine) = {class(self$trained.machine)}'));
 
-            logger::log_debug(paste0(log.prefix,' exits'));
+            logger::log_debug(base::paste0(log.prefix,' exits'));
 
             },
 
