@@ -58,8 +58,10 @@
 #' @export
 
 crop.yield.train.model <- function(
-    training.window      = NULL,
+    FILE.trained.model   = NULL,
     DF.training          = NULL,
+    learner.metadata     = NULL,
+    training.window      = NULL,
     year                 = "year",
     ecoregion            = "ecoregion",
     crop                 = "crop",
@@ -70,26 +72,28 @@ crop.yield.train.model <- function(
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
     learner              = "xgboost_multiphase",
-    hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23),
-    FILE.trained.model   = NULL
+    hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
     ) {
 
-    learner.metadata <- get.learner.metadata_private.helper(
-        year                 = year,
-        ecoregion            = ecoregion,
-        crop                 = crop,
-        response.variable    = response.variable,
-        harvested.area       = harvested.area,
-        predictors           = predictors,
-        by.variables.phase01 = by.variables.phase01,
-        by.variables.phase02 = by.variables.phase02,
-        by.variables.phase03 = by.variables.phase03,
-        learner              = learner,
-        search.grid          = hyperparameters
-        );
+    if ( is.null(learner.metadata) ) {
+        learner.metadata <- get.learner.metadata_private.helper(
+            year                 = year,
+            ecoregion            = ecoregion,
+            crop                 = crop,
+            response.variable    = response.variable,
+            harvested.area       = harvested.area,
+            predictors           = predictors,
+            by.variables.phase01 = by.variables.phase01,
+            by.variables.phase02 = by.variables.phase02,
+            by.variables.phase03 = by.variables.phase03,
+            learner              = learner,
+            search.grid          = hyperparameters
+            );
+        learner.metadata <- learner.metadata[[1]],
+        }
 
     trained.model <- getLearner(
-        learner.metadata = learner.metadata[[1]],
+        learner.metadata = learner.metadata,
         DF.training      = DF.training
         );
 
