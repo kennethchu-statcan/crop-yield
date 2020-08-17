@@ -14,7 +14,7 @@ cp    $0         ${outputDIR}/code
 ########################################################
 ##### Assemble contents of R package
 packageName=stcCropYield
-Rscript ${codeDIR}/main.R ${codeDIR} ${outputDIR} ${packageName} > ${outputDIR}/stdout.R.main 2> ${outputDIR}/stderr.R.main
+Rscript ${codeDIR}/main-build-package.R ${codeDIR} ${outputDIR} ${packageName} > ${outputDIR}/stdout.R.main-build-package 2> ${outputDIR}/stderr.R.main-build-package
 
 ##### Build the R package (create *.tar.gz file)
 cd ${outputDIR}
