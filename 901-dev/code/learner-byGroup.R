@@ -1,5 +1,5 @@
 
-base::require(R6);
+#base::require(R6);
 
 learner.byGroup <- R6::R6Class(
 

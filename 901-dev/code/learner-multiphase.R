@@ -1,5 +1,5 @@
 
-base::require(R6);
+#base::require(R6);
 
 learner.multiphase <- R6::R6Class(
 
