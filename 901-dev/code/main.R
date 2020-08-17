@@ -30,6 +30,7 @@ code.files <- c(
     "learner-multiphase.R",
     "learner-xgboost.R",
     "rollingWindowForwardValidation.R",
+    "test-correctness.R",
     "validation-single-year.R",
     "weighted-statistics.R"
     );
@@ -39,55 +40,58 @@ for ( code.file in code.files ) {
     }
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-set.seed(7654321);
+#set.seed(7654321);
 
-n.ecoregions <-  7;
-n.crops      <- 15;
-n.predictors <-  7;
+#n.ecoregions <-  7;
+#n.crops      <- 15;
+#n.predictors <-  7;
 
-DF.synthetic <- getData.synthetic(
-    years        = seq(2015,2020),
-    #years       = seq(2011,2020),
-    #years       = seq(2000,2020),
-    n.ecoregions = n.ecoregions,
-    n.crops      = n.crops,
-    n.predictors = n.predictors,
-    output.RData = "raw-synthetic.RData",
-    output.csv   = "raw-synthetic.csv"
-    );
+#DF.synthetic <- getData.synthetic(
+#    years        = seq(2015,2020),
+#    #years       = seq(2011,2020),
+#    #years       = seq(2000,2020),
+#    n.ecoregions = n.ecoregions,
+#    n.crops      = n.crops,
+#    n.predictors = n.predictors,
+#    output.RData = "raw-synthetic.RData",
+#    output.csv   = "raw-synthetic.csv"
+#    );
 
-cat("\nstr(DF.synthetic)\n");
-print( str(DF.synthetic)   );
+#cat("\nstr(DF.synthetic)\n");
+#print( str(DF.synthetic)   );
 
-cat("\nsummary(DF.synthetic)\n");
-print( summary(DF.synthetic)   );
+#cat("\nsummary(DF.synthetic)\n");
+#print( summary(DF.synthetic)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-rollingWindowForwardValidation(
-    training.window      = 2,
-    validation.window    = 3,
-    #training.window     =  5,
-    #validation.window   = 10,
-    DF.input             = DF.synthetic,
-    year                 = "my_year",
-    ecoregion            = "my_ecoregion",
-    crop                 = "my_crop",
-    response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
-    #predictors          = c("my_year",grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE)),
-    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-    by.variables.phase01 = c("my_ecoregion","my_crop"),
-    by.variables.phase02 = c("my_crop"),
-    by.variables.phase03 = c("my_ecoregion"),
-    learner     = "xgboost_multiphase",
-    search.grid = list(
-        alpha       = seq(23,11,-6),
-        lambda      = seq(23,11,-6),
-        lambda_bias = c(23) #seq(23,11,-8)
-        ),
-    output.directory = file.path(dir.out,"rwFV")
-    #,log.threshold  = logger::TRACE
-    );
+#rollingWindowForwardValidation(
+#    training.window      = 2,
+#    validation.window    = 3,
+#    #training.window     =  5,
+#    #validation.window   = 10,
+#    DF.input             = DF.synthetic,
+#    year                 = "my_year",
+#    ecoregion            = "my_ecoregion",
+#    crop                 = "my_crop",
+#    response.variable    = "my_yield",
+#    harvested.area       = "my_harvested_area",
+#    #predictors          = c("my_year",grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE)),
+#    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+#    by.variables.phase01 = c("my_ecoregion","my_crop"),
+#    by.variables.phase02 = c("my_crop"),
+#    by.variables.phase03 = c("my_ecoregion"),
+#    learner     = "xgboost_multiphase",
+#    search.grid = list(
+#        alpha       = seq(23,11,-6),
+#        lambda      = seq(23,11,-6),
+#        lambda_bias = c(23) #seq(23,11,-8)
+#        ),
+#    output.directory = file.path(dir.out,"rwFV")
+#    #,log.threshold  = logger::TRACE
+#    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+test.correctness();
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
