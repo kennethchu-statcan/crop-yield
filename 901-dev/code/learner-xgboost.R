@@ -55,7 +55,7 @@ learner.xgboost <- R6::R6Class(
             logger::log_debug(base::paste0(log.prefix,' calling xgboost::xgb.train()'));
             trained.machine <- xgboost::xgb.train(
                 data = DMatrix.training,
-                params = list(
+                params = base::list(
                     booster     = 'gblinear',
                     objective   = 'reg:linear',
                     alpha       = self$learner.metadata[["hyperparameters"]][["alpha"]],
