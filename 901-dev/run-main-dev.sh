@@ -1,7 +1,6 @@
 #!/bin/bash
 
 currentDIR=`pwd`
-#  codeDIR=${currentDIR}/code
    codeDIR=../101-package-stcCropYield/code
  outputDIR=${currentDIR}/output
 
