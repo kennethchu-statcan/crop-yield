@@ -100,8 +100,6 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     DF.validation    = NULL
     ) {
 
-    base::require(dplyr);
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.training <- DF.training;
     DF.training[,"ecoregion.crop"] <- base::apply(
@@ -175,7 +173,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
             }
 
-        DF.output <- DF.output %>% dplyr::left_join(
+        DF.output <- dplyr::left_join(
             x  = DF.output,
             y  = DF.temp.output[,base::c("syntheticID",colname.prediction)],
             by = "syntheticID"
