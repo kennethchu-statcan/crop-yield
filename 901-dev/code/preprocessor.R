@@ -1,10 +1,11 @@
-require(R6)
 
-preprocessor = R6Class(
+#base::require(R6)
+
+preprocessor = R6::R6Class(
 
     classname = 'preprocessor',
 
-    public = list(
+    public = base::list(
 
         # instantiation parameters
         learner.metadata = NULL,
@@ -23,11 +24,11 @@ preprocessor = R6Class(
 
         fit = function() {},
 
-        transform = function(newdata = NULL) { return( newdata ); }
+        transform = function(newdata = NULL) { base::return( newdata ); }
 
         ),
 
-    private = list()
+    private = base::list()
 
     ) # R6Class()
 
