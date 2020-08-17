@@ -84,7 +84,6 @@ learner.xgboost <- R6::R6Class(
 
             DMatrix.preprocessed.newdata <- xgboost::xgb.DMatrix(
                 data  = base::as.matrix(preprocessed.newdata[,base::setdiff(base::colnames(preprocessed.newdata),self$response_variable)]),
-                #label= preprocessed.newdata[,self$response_variable]
                 label = base::rep(NA,base::nrow(preprocessed.newdata))
                 );
 
