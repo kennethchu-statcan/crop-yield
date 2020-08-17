@@ -15,13 +15,19 @@ getData.synthetic <- function(
     base::require(stringr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if (base::file.exists(output.RData)) {
+    if ( base::ifelse(base::is.null(output.RData),FALSE,base::file.exists(output.RData)) ) {
 
-        logger::log_info('{this.function.name}(): loading file: {output.RData}');
+        ### (output.RData != NULL) and (output.RData already exists)
+        logger::log_info('{this.function.name}(): {output.RData} already exists; loading the file ...');
         DF.output <- base::readRDS(file = output.RData);
+        logger::log_info('{this.function.name}(): {output.RData} already exists; loading complete');
 
     } else {
 
+        ### either (output.RData == NULL) or (output.RData does not yet exist)
+        logger::log_info('{this.function.name}(): synthetic data generation begins');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         ecoregions   <- base::paste0("er0",base::seq(1,n.ecoregions));
         list.parcels <- getData.synthetic_parcels.by.ecoregion(
             ecoregions    = ecoregions,
@@ -60,13 +66,20 @@ getData.synthetic <- function(
         
             }}
 
-        logger::log_info('{this.function.name}(): saving file: {output.RData}');
-        base::saveRDS(object = DF.output, file = output.RData);
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_info('{this.function.name}(): synthetic data generation complete');
+        logger::log_info('{this.function.name}(): dim(DF.output) = c({paste0(dim(DF.output),collapse=",")})');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        if ( !base::is.null(output.RData) ) {
+            logger::log_info('{this.function.name}(): saving file: {output.RData}');
+            base::saveRDS(object = DF.output, file = output.RData);
+            }
 
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( !base::file.exists(output.csv) ) {
+    if ( base::ifelse(base::is.null(output.csv),FALSE,!base::file.exists(output.csv)) ) {
         logger::log_info('{this.function.name}(): saving file: {output.csv}');
         utils::write.csv(
             file      = output.csv,
