@@ -12,7 +12,7 @@ getData.synthetic <- function(
     logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    base::require(stringr);
+    #base::require(stringr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( base::ifelse(base::is.null(output.RData),FALSE,base::file.exists(output.RData)) ) {
@@ -96,7 +96,7 @@ getData.synthetic <- function(
 
 ##################################################
 getData.synthetic_predictors <- function(n.predictors = NULL) {
-    base::require(stringr);
+    #base::require(stringr);
     predictors <- base::paste0(
         "x",
         stringr::str_pad(
@@ -121,7 +121,7 @@ getData.synthetic_parcels.by.ecoregion <- function(
     ecoregions    = NULL,
     avg.n.parcels = 1000
     ) {
-    base::require(stringi);
+    #base::require(stringi);
     list.output <- base::list();
     for ( temp.ecoregion in ecoregions ) {
         n.parcels    <- stats::rpois(n = 1, lambda = avg.n.parcels);
