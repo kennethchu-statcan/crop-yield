@@ -69,7 +69,7 @@ test.correctness_xgboost.multiphase <- function(
 
             DF.expected <- test.correctness_xgboost.multiphase_get.expected.output(
                 DF.training          = DF.training,
-                DF.validation        = DF.validation
+                DF.validation        = DF.validation,
                 year                 = "my_year",
                 ecoregion            = "my_ecoregion",
                 crop                 = "my_crop",
