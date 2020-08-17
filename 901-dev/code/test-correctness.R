@@ -3,7 +3,7 @@ testthat::context(desc = "correctness test suite");
 
 test.correctness <- function() {
 
-    base::require(testthat);
+    #base::require(testthat);
 
     test.correctness_xgboost.multiphase();
 
@@ -16,7 +16,7 @@ test.correctness_xgboost.multiphase <- function(
     n.predictors = 7
     ) {
 
-    base::require(xgboost);
+    #base::require(xgboost);
 
     testthat::test_that(
         desc = "correctness of xgboost.multiphase",
@@ -99,7 +99,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     DF.validation    = NULL
     ) {
 
-    require(dplyr);
+    base::require(dplyr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.training <- DF.training;
@@ -121,17 +121,17 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    byVars <- list(
+    byVars <- base::list(
         "01" = "ecoregion.crop",
         "02" = "my_crop",
         "03" = "my_ecoregion"
         );
 
-    for ( temp.phase in names(byVars) ) {
+    for ( temp.phase in base::names(byVars) ) {
 
-        colname.prediction <- paste0("predicted_response_phase",temp.phase);
+        colname.prediction <- base::paste0("predicted_response_phase",temp.phase);
 
-        DF.temp.output <- data.frame();
+        DF.temp.output <- base::data.frame();
         temp.groups <- base::unique(DF.training[,byVars[[temp.phase]]]);
 
         for ( temp.group in temp.groups ) {
@@ -200,7 +200,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
     DF.output <- DF.output[,setdiff(colnames(DF.output),"syntheticID")];
 
-    return( DF.output );
+    base::return( DF.output );
 
     }
 
