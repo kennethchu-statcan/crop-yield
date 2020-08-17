@@ -17,7 +17,7 @@ learner.xgboost <- R6::R6Class(
         # preprocessed.data = NULL,
         # trained.machine   = NULL,
 
-        ### inherited initialize()
+        ### initialize() -- inherited
         # initialize = function(
         #     learner.metadata = NULL,
         #     training.data    = NULL
