@@ -11,14 +11,14 @@ validation.single.year <- function(
     this.function.name <- "validation.single.year";
     logger::log_info('{this.function.name}(): starts');
 
-    require(dplyr);
+    base::require(dplyr);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_info('{this.function.name}(): learner.name = {learner.name}, validation.year = {validation.year}');
 
-    output.sub.directory <- file.path(output.directory,learner.name,validation.year);
-    if ( !dir.exists(output.sub.directory) ) {
-        dir.create(path = output.sub.directory, recursive = TRUE);
+    output.sub.directory <- base::file.path(output.directory,learner.name,validation.year);
+    if ( !base::dir.exists(output.sub.directory) ) {
+        base::dir.create(path = output.sub.directory, recursive = TRUE);
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -47,9 +47,9 @@ validation.single.year <- function(
     logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    output.filename <- paste0("predictions-",learner.name);
-    output.RData    <- file.path(output.sub.directory,paste0(output.filename,"-parcel.RData"));
-    saveRDS( object = DF.predictions.parcel, file = output.RData );
+    output.filename <- base::paste0("predictions-",learner.name);
+    output.RData    <- base::file.path(output.sub.directory,base::paste0(output.filename,"-parcel.RData"));
+    base::saveRDS( object = DF.predictions.parcel, file = output.RData );
 
     #output.CSV <- file.path(output.sub.directory,paste0(output.filename,".csv"));
     # write.csv(
@@ -87,7 +87,7 @@ validation.single.year_diagnostics <- function(
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c(
+    selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
         learner.metadata[["crop"]],
@@ -98,10 +98,10 @@ validation.single.year_diagnostics <- function(
 
     DF.region.crop <- DF.input[,selected.colnames];
 
-    temp.vars <- c("year","ecoregion","crop","harvested_area");
+    temp.vars <- base::c("year","ecoregion","crop","harvested_area");
     for ( temp.var in temp.vars ) {
-        colnames(DF.region.crop) <- gsub(
-            x           = colnames(DF.region.crop),
+        base::colnames(DF.region.crop) <- base::gsub(
+            x           = base::colnames(DF.region.crop),
             pattern     = learner.metadata[[temp.var]],
             replacement = temp.var
             );
@@ -109,25 +109,25 @@ validation.single.year_diagnostics <- function(
  
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.region.crop <- DF.region.crop %>%
-        select( year, ecoregion, crop, harvested_area, actual_production, predicted_production ) %>%
-        group_by( ecoregion, crop ) %>%
-        summarize(
+        dplyr::select( year, ecoregion, crop, harvested_area, actual_production, predicted_production ) %>%
+        dplyr::group_by( ecoregion, crop ) %>%
+        dplyr::summarize(
             harvested_area       = sum(harvested_area),
             actual_production    = sum(actual_production),
             predicted_production = sum(predicted_production)
             ) %>%
-        mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
+        dplyr::mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
         ;
 
-    output.CSV <- file.path(output.sub.directory,paste0(output.filename,"-region-crop.csv"));
-    write.csv(
+    output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region-crop.csv"));
+    utils::write.csv(
         file      = output.CSV,
         x         = DF.region.crop,
         row.names = FALSE
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- file.path(output.sub.directory,paste0("plot-predictions-region-crop.png"));
+    FILE.png  <- base::file.path(output.sub.directory,base::paste0("plot-predictions-region-crop.png"));
     my.ggplot <- initializePlot();
     #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
 
@@ -141,25 +141,25 @@ validation.single.year_diagnostics <- function(
 #        breaks = (1e7) * seq(0,10,2)
 #        );
 
-    my.ggplot <- my.ggplot + geom_point(
+    my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.region.crop,
-        mapping = aes(
+        mapping = ggplot2::aes(
             x = actual_production,
             y = predicted_production
             ),
         alpha = 0.9
         );
 
-    my.ggplot <- my.ggplot + geom_abline(
+    my.ggplot <- my.ggplot + ggplot2::geom_abline(
         slope     = 1,
         intercept = 0
         );
 
-    ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
+    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c(
+    selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
         learner.metadata[["harvested_area"]],
@@ -169,10 +169,10 @@ validation.single.year_diagnostics <- function(
 
     DF.region <- DF.input[,selected.colnames];
 
-    temp.vars <- c("year","ecoregion","harvested_area");
+    temp.vars <- base::c("year","ecoregion","harvested_area");
     for ( temp.var in temp.vars ) {
-        colnames(DF.region) <- gsub(
-            x           = colnames(DF.region),
+        base::colnames(DF.region) <- base::gsub(
+            x           = base::colnames(DF.region),
             pattern     = learner.metadata[[temp.var]],
             replacement = temp.var
             );
@@ -180,25 +180,25 @@ validation.single.year_diagnostics <- function(
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.region <- DF.region %>%
-        select( year, ecoregion, harvested_area, actual_production, predicted_production ) %>%
-        group_by( ecoregion ) %>%
-        summarize(
+        dplyr::select( year, ecoregion, harvested_area, actual_production, predicted_production ) %>%
+        dplyr::group_by( ecoregion ) %>%
+        dplyr::summarize(
             harvested_area       = sum(harvested_area),
             actual_production    = sum(actual_production),
             predicted_production = sum(predicted_production)
             ) %>%
-        mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
+        dplyr::mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
         ;
 
-    output.CSV <- file.path(output.sub.directory,paste0(output.filename,"-region.csv"));
-    write.csv(
+    output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region.csv"));
+    utils::write.csv(
         file      = output.CSV,
         x         = DF.region,
         row.names = FALSE
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- file.path(output.sub.directory,paste0("plot-predictions-region.png"));
+    FILE.png  <- base::file.path(output.sub.directory,base::paste0("plot-predictions-region.png"));
     my.ggplot <- initializePlot();
     #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
 
@@ -212,25 +212,25 @@ validation.single.year_diagnostics <- function(
 #        breaks = (1e7) * seq(0,10,2)
 #        );
 
-    my.ggplot <- my.ggplot + geom_point(
+    my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.region,
-        mapping = aes(
+        mapping = ggplot2::aes(
             x = actual_production,
             y = predicted_production
             ),
         alpha = 0.9
         );
 
-    my.ggplot <- my.ggplot + geom_abline(
+    my.ggplot <- my.ggplot + ggplot2::geom_abline(
         slope     = 1,
         intercept = 0
         );
 
-    ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
+    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c(
+    selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["crop"]],
         learner.metadata[["harvested_area"]],
@@ -240,10 +240,10 @@ validation.single.year_diagnostics <- function(
 
     DF.crop <- DF.input[,selected.colnames];
 
-    temp.vars <- c("year","crop","harvested_area");
+    temp.vars <- base::c("year","crop","harvested_area");
     for ( temp.var in temp.vars ) {
-        colnames(DF.crop) <- gsub(
-            x           = colnames(DF.crop),
+        base::colnames(DF.crop) <- base::gsub(
+            x           = base::colnames(DF.crop),
             pattern     = learner.metadata[[temp.var]],
             replacement = temp.var
             );
@@ -251,25 +251,25 @@ validation.single.year_diagnostics <- function(
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.crop <- DF.crop %>%
-        select( year, crop, harvested_area, actual_production, predicted_production ) %>%
-        group_by( crop ) %>%
-        summarize(
+        dplyr::select( year, crop, harvested_area, actual_production, predicted_production ) %>%
+        dplyr::group_by( crop ) %>%
+        dplyr::summarize(
             harvested_area       = sum(harvested_area),
             actual_production    = sum(actual_production),
             predicted_production = sum(predicted_production)
             ) %>%
-        mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
+        dplyr::mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
         ;
 
-    output.CSV <- file.path(output.sub.directory,paste0(output.filename,"-crop.csv"));
-    write.csv(
+    output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-crop.csv"));
+    utils::write.csv(
         file      = output.CSV,
         x         = DF.crop,
         row.names = FALSE
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- file.path(output.sub.directory,paste0("plot-predictions-crop.png"));
+    FILE.png  <- base::file.path(output.sub.directory,base::paste0("plot-predictions-crop.png"));
     my.ggplot <- initializePlot();
     #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
 
@@ -283,25 +283,25 @@ validation.single.year_diagnostics <- function(
 #        breaks = (1e7) * seq(0,10,2)
 #        );
 
-    my.ggplot <- my.ggplot + geom_point(
+    my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.crop,
-        mapping = aes(
+        mapping = ggplot2::aes(
             x = actual_production,
             y = predicted_production
             ),
         alpha = 0.9
         );
 
-    my.ggplot <- my.ggplot + geom_abline(
+    my.ggplot <- my.ggplot + ggplot2::geom_abline(
         slope     = 1,
         intercept = 0
         );
 
-    ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
+    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c(
+    selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["harvested_area"]],
         "actual_production",
@@ -310,10 +310,10 @@ validation.single.year_diagnostics <- function(
 
     DF.province <- DF.input[,selected.colnames];
 
-    temp.vars <- c("year","harvested_area");
+    temp.vars <- base::c("year","harvested_area");
     for ( temp.var in temp.vars ) {
-        colnames(DF.province) <- gsub(
-            x           = colnames(DF.province),
+        base::colnames(DF.province) <- base::gsub(
+            x           = base::colnames(DF.province),
             pattern     = learner.metadata[[temp.var]],
             replacement = temp.var
             );
@@ -321,24 +321,24 @@ validation.single.year_diagnostics <- function(
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.province <- DF.province %>%
-        select( year, harvested_area, actual_production, predicted_production ) %>%
-        summarize(
+        dplyr::select( year, harvested_area, actual_production, predicted_production ) %>%
+        dplyr::summarize(
             harvested_area       = sum(harvested_area),
             actual_production    = sum(actual_production),
             predicted_production = sum(predicted_production)
             ) %>%
-        mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
+        dplyr::mutate( relative_error = abs(predicted_production - actual_production) / actual_production )
         ;
 
-    output.CSV <- file.path(output.sub.directory,paste0(output.filename,"-province.csv"));
-    write.csv(
+    output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-province.csv"));
+    utils::write.csv(
         file      = output.CSV,
         x         = DF.province,
         row.names = FALSE
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    return( NULL );
+    base::return( NULL );
 
     }
 
