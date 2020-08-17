@@ -1,5 +1,5 @@
 
-base::require(logger);
+#base::require(logger);
 
 rollingWindowForwardValidation <- function(
     training.window      = NULL,
@@ -37,10 +37,9 @@ rollingWindowForwardValidation <- function(
     logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    base::require(jsonlite);
-    base::require(parallel);
-    base::require(foreach);
-    base::require(doParallel);
+    #base::require(jsonlite);
+    #base::require(parallel);
+    #base::require(doParallel);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     rollingWindowForwardValidation_input.validity.checks(
@@ -200,6 +199,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_info('{this.function.name}(): validation years: c({paste(validation.years,collapse=",")})');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    base::require(foreach);
     foreach::foreach ( temp.index = 1:base::length(learner.metadata) ) %dopar% {
 
         learner.name <- base::names(learner.metadata)[temp.index];
