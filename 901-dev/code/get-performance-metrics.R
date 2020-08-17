@@ -53,8 +53,6 @@ get.performance.metrics_single.model <- function(
     dir.results = NULL
     ) {
 
-    base::require(dplyr);
-
     modelIDs <- base::list.files(dir.results);
 
     DF.errors.model.year <- base::data.frame();

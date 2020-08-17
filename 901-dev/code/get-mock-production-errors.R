@@ -66,8 +66,6 @@ get.mock.production.errors_single.model <- function(
     DF.performance.metrics = NULL
     ) {
 
-    base::require(dplyr);
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     production.years <- get.mock.production.errors_get.production.years(
         years             = base::sort(base::unique(DF.performance.metrics[,"year"])),
@@ -78,14 +76,14 @@ get.mock.production.errors_single.model <- function(
     DF.diagnostics <- base::data.frame();
     for ( production.year in production.years ) {
         temp.validation.years <- base::seq(production.year-validation.window,production.year-1,1);
-        DF.temp <- DF.performance.metrics %>%
-            dplyr::filter( year %in% temp.validation.years ) %>%
-            dplyr::select( model, weighted_error, weighted_std ) %>%
-            dplyr::group_by( model ) %>%
-            dplyr::summarize(
-                mean_weighted_error = mean(weighted_error), 
-                mean_weighted_std   = mean(weighted_std)
-                );
+        DF.temp <- dplyr::filter(DF.performance.metrics, year %in% temp.validation.years);
+        DF.temp <- dplyr::select(DF.temp,model,weighted_error,weighted_std);
+        DF.temp <- dplyr::group_by(DF.temp,model);
+        DF.temp <- dplyr::summarize(
+            DF.temp,
+            mean_weighted_error = mean(weighted_error),
+            mean_weighted_std   = mean(weighted_std)
+            );
         DF.temp <- base::as.data.frame(DF.temp);
         DF.temp[,"production_year"] <- production.year;
         DF.diagnostics <- base::rbind(DF.diagnostics,DF.temp);
@@ -103,6 +101,7 @@ get.mock.production.errors_single.model <- function(
         y  = DF.performance.metrics[,base::c("model","year","weighted_error")],
         by = base::c("production_year" = "year", "model" = "model") 
         );
+    DF.diagnostics <- base::as.data.frame(DF.diagnostics);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     reordered.colnames <- base::c("production_year",base::setdiff(base::colnames(DF.diagnostics),"production_year"));
@@ -127,10 +126,16 @@ get.mock.production.errors_single.model <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.mock.production.errors = DF.diagnostics %>%
-        dplyr::group_by( production_year ) %>%
-        dplyr::mutate( min_composite_metric =  min(composite_metric) ) %>%
-        dplyr::filter(     composite_metric == min_composite_metric  );
+    DF.mock.production.errors <- dplyr::group_by(DF.diagnostics, production_year);
+    DF.mock.production.errors <- dplyr::mutate(
+        DF.mock.production.errors,
+        min_composite_metric = min(composite_metric)
+        );
+    DF.mock.production.errors <- dplyr::filter(
+        DF.mock.production.errors,
+        composite_metric == min_composite_metric
+        );
+    DF.mock.production.errors <- as.data.frame(DF.mock.production.errors);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     base::return(
