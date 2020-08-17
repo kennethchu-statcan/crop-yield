@@ -5,6 +5,7 @@ test.correctness <- function(
     log.threshold = logger::WARN
     ) {
 
+    logger::log_appender(logger::appender_console);
     logger::log_threshold(level = log.threshold);
 
     test.correctness_xgboost.multiphase();
