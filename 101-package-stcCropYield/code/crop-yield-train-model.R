@@ -89,7 +89,7 @@ crop.yield.train.model <- function(
             learner              = learner,
             search.grid          = hyperparameters
             );
-        learner.metadata <- learner.metadata[[1]],
+        learner.metadata <- learner.metadata[[1]];
         }
 
     trained.model <- getLearner(
