@@ -7,11 +7,15 @@
 #' This function trains the model subject to this chosen hyperparameter
 #' configuration. 
 #' 
-#' @param training.window integer vector of length 1.
-#' The number of years to use for each round of training. See Details below.
+#' @param FILE.trained.model data frame containing crop yield data. See Details below for more information.
 #'
 #' @param DF.training data frame containing crop yield data. See Details below for more information.
 #' 
+#' @param learner.metadata list of key-value pairs, specifying learner metadata. See Details below.
+#'
+#' @param training.window integer vector of length 1.
+#' The number of years to use for each round of training. See Details below.
+#'
 #' @param year character vector of length 1,
 #' indicating the column name in \code{DF.input} for the calendar year variable.
 #' 
@@ -31,6 +35,9 @@
 #' indicating the column names in \code{DF.input} for the predictor variables
 #' (such as NVDI measurements, weather measurements, etc.)
 #' 
+#' @param learner character vector of length 1,
+#' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
+#'
 #' @param by.variables.phase01 character vector indicating the by-variables to use for Phase 1 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion,crop).
@@ -43,14 +50,9 @@
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion)
 # 
-#' @param learner character vector of length 1,
-#' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
-#'
 #' @param hyperparameters list of numeric vectors each of length 1,
 #' indicating the single hyperparameter configuration to be used for training.
 #' 
-#' @param FILE.trained.model data frame containing crop yield data. See Details below for more information.
-#'
 #' @return an instance of class \code{learner}, e.g. "xgboost_multiphase".
 #' 
 #' @examples
@@ -68,10 +70,10 @@ crop.yield.train.model <- function(
     response.variable    = "yield",
     harvested.area       = "harvested_area",
     predictors           = NULL,
+    learner              = "xgboost_multiphase",
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    learner              = "xgboost_multiphase",
     hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
     ) {
 
@@ -83,10 +85,10 @@ crop.yield.train.model <- function(
             response.variable    = response.variable,
             harvested.area       = harvested.area,
             predictors           = predictors,
+            learner              = learner,
             by.variables.phase01 = by.variables.phase01,
             by.variables.phase02 = by.variables.phase02,
             by.variables.phase03 = by.variables.phase03,
-            learner              = learner,
             search.grid          = hyperparameters
             );
         learner.metadata <- learner.metadata[[1]];
