@@ -1,7 +1,4 @@
 
-#base::require(R6);
-#base::require(xgboost);
-
 learner.xgboost <- R6::R6Class(
 
     classname = 'learner.xgboost',

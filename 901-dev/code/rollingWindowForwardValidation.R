@@ -1,6 +1,4 @@
 
-#base::require(logger);
-
 rollingWindowForwardValidation <- function(
     training.window      = NULL,
     validation.window    = NULL,
@@ -35,11 +33,6 @@ rollingWindowForwardValidation <- function(
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('{this.function.name}(): starts');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    #base::require(jsonlite);
-    #base::require(parallel);
-    #base::require(doParallel);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     rollingWindowForwardValidation_input.validity.checks(

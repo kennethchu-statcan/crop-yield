@@ -1,6 +1,4 @@
 
-#base::require(R6);
-
 learner.abstract <- R6::R6Class(
 
     classname = 'learner.abstract',

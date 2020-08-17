@@ -1,9 +1,11 @@
 
 testthat::context(desc = "correctness test suite");
 
-test.correctness <- function() {
+test.correctness <- function(
+    log.threshold = logger::WARN
+    ) {
 
-    #base::require(testthat);
+    logger::log_threshold(level = log.threshold);
 
     test.correctness_xgboost.multiphase();
 
@@ -15,8 +17,6 @@ test.correctness_xgboost.multiphase <- function(
     n.crops      = 3,
     n.predictors = 7
     ) {
-
-    #base::require(xgboost);
 
     testthat::test_that(
         desc = "correctness of xgboost.multiphase",

@@ -1,6 +1,4 @@
 
-#base::require(R6)
-
 preprocessor = R6::R6Class(
 
     classname = 'preprocessor',

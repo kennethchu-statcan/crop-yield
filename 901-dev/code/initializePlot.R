@@ -4,8 +4,6 @@ initializePlot <- function(
     textsize.axis  = 20
     ) {
 
-    #base::require(ggplot2);
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.ggplot <- ggplot2::ggplot(data = NULL) + ggplot2::theme_bw();
     output.ggplot <- output.ggplot + ggplot2::theme(

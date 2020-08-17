@@ -18,9 +18,6 @@ get.learner.metadata <- function(
     this.function.name <- "get.learner.metadata";
     logger::log_info('{this.function.name}(): starts');
 
-    #base::require(jsonlite);
-    #base::require(stringr);
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     learner.metadata <- get.learner.metadata_private.helper(
         year                 = year,

@@ -1,6 +1,4 @@
 
-#base::require(R6);
-
 learner.byGroup <- R6::R6Class(
 
     classname = 'learner.byGroup',
