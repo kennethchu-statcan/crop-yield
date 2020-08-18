@@ -15,6 +15,7 @@ setwd( dir.out );
 
 cat("\n##################################################\n");
 require(dplyr);
+require(foreach);
 
 code.files <- c(
     "crop-yield-train-model.R",

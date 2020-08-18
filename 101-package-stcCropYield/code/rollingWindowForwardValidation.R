@@ -293,7 +293,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_info('{this.function.name}(): validation years: c({paste(validation.years,collapse=",")})');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    base::require(foreach);
+    #base::require(foreach);
     foreach::foreach ( temp.index = 1:base::length(learner.metadata) ) %dopar% {
 
         learner.name <- base::names(learner.metadata)[temp.index];
