@@ -84,7 +84,7 @@ learner.xgboost <- R6::R6Class(
                 label = base::rep(NA,base::nrow(preprocessed.newdata))
                 );
 
-            predicted.response <- predict(
+            predicted.response <- stats::predict(
                 object  = self$trained.machine,
                 newdata = DMatrix.preprocessed.newdata
                 );

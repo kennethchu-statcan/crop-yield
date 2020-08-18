@@ -1,8 +1,10 @@
 
 testthat::context(desc = "correctness test suite");
+test.correctness();
 
+###################################################
 test.correctness <- function(
-    log.threshold = logger::WARN
+    log.threshold = logger::TRACE
     ) {
 
     logger::log_appender(logger::appender_console);
@@ -12,7 +14,6 @@ test.correctness <- function(
 
     }
 
-###################################################
 test.correctness_xgboost.multiphase <- function(
     n.ecoregions = 2,
     n.crops      = 3,
@@ -35,16 +36,9 @@ test.correctness_xgboost.multiphase <- function(
                 output.RData = NULL,
                 output.csv   = NULL
                 );
-            cat("\nstr(DF.synthetic)\n");
-            print( str(DF.synthetic)   );
 
             DF.training   <- DF.synthetic[DF.synthetic[,"my_year"] != 2020,];
-            cat("\nstr(DF.training)\n");
-            print( str(DF.training)   );
-
             DF.validation <- DF.synthetic[DF.synthetic[,"my_year"] == 2020,];
-            cat("\nstr(DF.validation)\n");
-            print( str(DF.validation)   );
 
             trained.model <- crop.yield.train.model(
                 DF.training          = DF.training,
@@ -60,12 +54,8 @@ test.correctness_xgboost.multiphase <- function(
                 by.variables.phase03 = base::c("my_ecoregion"),
                 hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
                 );
-            cat("\nclass(trained.model)\n");
-            print( class(trained.model)   );
 
             DF.computed <- trained.model$predict(newdata = DF.validation);
-            cat("\nstr(DF.computed)\n");
-            print( str(DF.computed)   );
 
             DF.expected <- test.correctness_xgboost.multiphase_get.expected.output(
                 DF.training          = DF.training,
@@ -82,11 +72,9 @@ test.correctness_xgboost.multiphase <- function(
                 by.variables.phase03 = base::c("my_ecoregion"),
                 hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
                 );
-            cat("\nstr(DF.expected)\n");
-            print( str(DF.expected)   );
 
-            cat("\nall.equal(DF.computed,DF.expected)\n");
-            print( all.equal(DF.computed,DF.expected)   );
+            #base::cat("\nbase::all.equal(DF.computed,DF.expected)\n");
+            #base::print( base::all.equal(DF.computed,DF.expected)   );
             testthat::expect_equal( DF.computed, DF.expected );
 
             }
@@ -190,7 +178,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 label = rep(NA,base::nrow(DF.temp.validation))
                 );
 
-            predicted.response <- predict(
+            predicted.response <- stats::predict(
                 object  = trained.machine,
                 newdata = DMatrix.validation
                 );

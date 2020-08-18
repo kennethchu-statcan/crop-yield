@@ -123,7 +123,7 @@ buildRPackage <- function(
            );
         }
 
-    base::unlink(x = base::file.path(".","doc"), recurse = TRUE);
+    base::unlink(x = base::file.path(".","doc"), recursive = TRUE);
 
     # ~~~~~~~~~~ #
     base::setwd(initial.wd);

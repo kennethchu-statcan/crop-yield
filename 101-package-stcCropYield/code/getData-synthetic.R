@@ -1,3 +1,45 @@
+#' Generate synthetic crop yield data
+#'
+#' This function can be used to generate synthetic crop yield data
+#' in the format expected by in this package.
+#'
+#' @param years integer vector indicating reference years for which crop yield
+#' data are to be synthesized.
+#'
+#' @param n.ecoregions a positive integer, indicating the number of ecoregions
+#' to simulate. 
+#' 
+#' @param n.crops a positive integer, indicating the number of crop types
+#' to simulate. 
+#'
+#' @param n.predictors a positive integer, indicating the number of predictor
+#' variables to simulate.
+#'
+#' @param output.RData character vector of length 1,
+#' indicating file path to store in RData format the generated synthetic data.
+#' If NULL, generated data will not be persisted in RData format.
+#'
+#' @param output.csv character vector of length 1,
+#' indicating file path to store in CSV format the generated synthetic data.
+#' If NULL, generated data will not be persisted in RData format.
+#'
+#' @return data frame containing synthesized crop yield data
+#'
+#' @examples
+#' n.ecoregions <- 3;
+#' n.crops      <- 5;
+#' n.predictors <- 7;
+#'
+#' DF.synthetic <- getData.synthetic(
+#'     years        = seq(2015,2020),
+#'     n.ecoregions = n.ecoregions,
+#'     n.crops      = n.crops,
+#'     n.predictors = n.predictors,
+#'     output.RData = NULL,
+#'     output.csv   = NULL
+#'     );
+#'
+#' @export
 
 getData.synthetic <- function(
     years        = base::seq(2000,2018),

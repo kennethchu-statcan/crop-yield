@@ -57,9 +57,9 @@
 #' indicating file path of the (output) directory to which all results will be written.
 #' 
 #' @param log.threshold log threshold.
-#' Must be one of the log levels supported by the \{link\{looger}} package. Default: logger::INFO
+#' Must be one of the log levels supported by the \code{looger} package. Default: logger::INFO
 #'
-#' @return NULL. This function writes all output to file within the given \link{\code{output.directory}}.
+#' @return NULL. This function writes all output to file within the given \code{output.directory}.
 #' 
 #' @examples
 #' n.ecoregions <- 3;
