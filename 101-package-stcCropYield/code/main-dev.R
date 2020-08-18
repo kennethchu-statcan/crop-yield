@@ -29,7 +29,6 @@ code.files <- c(
     "learner-multiphase.R",
     "learner-xgboost.R",
     "rollingWindowForwardValidation.R",
-    "test-correctness.R",
     "validation-single-year.R",
     "weighted-statistics.R"
     );
