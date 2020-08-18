@@ -111,7 +111,7 @@ validation.single.year_diagnostics <- function(
     DF.region.crop <- stats::aggregate(
         x   = DF.region.crop[,base::setdiff(base::colnames(DF.region.crop),base::c("ecoregion","crop"))],
         by  = base::list(DF.region.crop$ecoregion,DF.region.crop$crop),
-        FUN = sum
+        FUN = base::sum
         );
     base::colnames(DF.region.crop) <- base::gsub(
         x           = base::colnames(DF.region.crop),
@@ -193,7 +193,7 @@ validation.single.year_diagnostics <- function(
     DF.region <- stats::aggregate(
         x   = DF.region[,base::setdiff(base::colnames(DF.region),base::c("ecoregion"))],
         by  = base::list(DF.region$ecoregion),
-        FUN = sum
+        FUN = base::sum
         );
     base::colnames(DF.region) <- base::gsub(
         x           = base::colnames(DF.region),
@@ -270,7 +270,7 @@ validation.single.year_diagnostics <- function(
     DF.crop <- stats::aggregate(
         x   = DF.crop[,base::setdiff(base::colnames(DF.crop),c("crop"))],
         by  = list(DF.crop$crop),
-        FUN = sum
+        FUN = base::sum
         );
     base::colnames(DF.crop) <- base::gsub(
         x           = base::colnames(DF.crop),
@@ -344,7 +344,7 @@ validation.single.year_diagnostics <- function(
     DF.province <- base::apply(
         X      = DF.province[,base::c("harvested_area","actual_production","predicted_production")],
         MARGIN = 2,
-        FUN    = sum
+        FUN    = base::sum
         );
     DF.province[,"relative_error"] <- base::abs(
         DF.province[,"predicted_production"] - DF.province[,"actual_production"]

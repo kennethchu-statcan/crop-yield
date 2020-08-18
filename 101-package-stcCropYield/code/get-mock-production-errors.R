@@ -162,7 +162,7 @@ get.mock.production.errors_single.model <- function(
     DF.min.composite.metric <- stats::aggregate(
         x   = DF.diagnostics[,c("composite_metric","validation_error")],
         by  = base::list(DF.diagnostics$production_year),
-        FUN = min
+        FUN = base::min
         );
     base::colnames(DF.min.composite.metric) <- base::gsub(
         x           = base::colnames(DF.min.composite.metric),
