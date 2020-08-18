@@ -19,6 +19,9 @@ test.correctness_xgboost.multiphase <- function(
     n.predictors = 7
     ) {
 
+    this.function.name <- "test.correctness_xgboost.multiphase";
+    logger::log_debug('{this.function.name}(): starts');
+
     testthat::test_that(
         desc = "correctness of xgboost.multiphase",
         code = {
@@ -72,13 +75,18 @@ test.correctness_xgboost.multiphase <- function(
                 hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
                 );
 
-            #base::cat("\nbase::all.equal(DF.computed,DF.expected)\n");
-            #base::print( base::all.equal(DF.computed,DF.expected)   );
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            test.result <- base::all.equal(DF.computed,DF.expected);
+            logger::log_debug('{this.function.name}(): all.equal(DF.computed,DF.expected) = {test.result}');
+
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             testthat::expect_equal( DF.computed, DF.expected );
 
             }
-        );
+        ); # testthat::test_that()
     
+    logger::log_debug('{this.function.name}(): exits');
+
     }
 
 test.correctness_xgboost.multiphase_get.expected.output <- function(
