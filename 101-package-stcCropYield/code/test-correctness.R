@@ -89,6 +89,7 @@ test.correctness_xgboost.multiphase <- function(
 
     }
 
+#' @importFrom rlang .data
 test.correctness_xgboost.multiphase_get.expected.output <- function(
     DF.training          = NULL,
     DF.validation        = NULL,
@@ -105,7 +106,12 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     hyperparameters      = NULL
     ) {
 
+    this.function.name <- "test.correctness_xgboost.multiphase_get.expected.output";
+    logger::log_debug('{this.function.name}(): starts');
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_debug('{this.function.name}(): learner metadata starts');
+
     learner.metadata <- get.learner.metadata_private.helper(
         year                 = year,
         ecoregion            = ecoregion,
@@ -122,7 +128,11 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
     learner.metadata <- learner.metadata[[1]];
 
+    logger::log_debug('{this.function.name}(): learner metadata generation complete');
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_debug('{this.function.name}(): assembling of DF.training and DF.validation starts');
+
     DF.training <- DF.training;
     DF.training[,"ecoregion.crop"] <- base::apply(
         X      = ,DF.training[,base::c(ecoregion,crop)],
@@ -141,6 +151,8 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         FUN    = function(x) { base::paste(x, collapse = "_") }
         );
 
+    logger::log_debug('{this.function.name}(): assembling of DF.training and DF.validation complete');
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     byVars <- base::list(
         "01" = "ecoregion.crop",
@@ -157,6 +169,8 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
         for ( temp.group in temp.groups ) {
 
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}) starts');
+
             DF.temp.training   <- DF.training[  temp.group == DF.training[,  byVars[[temp.phase]]],];
             DF.temp.validation <- DF.validation[temp.group == DF.validation[,byVars[[temp.phase]]],];
 
@@ -164,6 +178,8 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 data  = base::as.matrix(DF.temp.training[,learner.metadata[["predictors"]]]),
                 label = DF.temp.training[,learner.metadata[["response_variable"]]]
                 );
+
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.training');
 
             trained.machine <- xgboost::xgb.train(
                 data = DMatrix.training,
@@ -180,18 +196,28 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 save_period   = NULL
                 );
 
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of trained.machine');
+
             DMatrix.validation <- xgboost::xgb.DMatrix(
                 data  = base::as.matrix(DF.temp.validation[,learner.metadata[["predictors"]]]),
                 label = rep(NA,base::nrow(DF.temp.validation))
                 );
+
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.validation');
 
             predicted.response <- stats::predict(
                 object  = trained.machine,
                 newdata = DMatrix.validation
                 );
 
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of predicted.response');
+
             DF.temp.validation[,colname.prediction] <- predicted.response;
             DF.temp.output <- base::rbind(DF.temp.output,DF.temp.validation);
+
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DF.temp.output');
+
+            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}) complete');
 
             }
 
@@ -200,6 +226,8 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
             y  = DF.temp.output[,base::c("syntheticID",colname.prediction)],
             by = "syntheticID"
             );
+
+        logger::log_debug('{this.function.name}(): training/prediction for Phase {temp.phase} complete');
 
         }
 
@@ -221,6 +249,9 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
     DF.output <- DF.output[,setdiff(colnames(DF.output),"syntheticID")];
 
+    logger::log_debug('{this.function.name}(): creation of DF.output complete');
+
+    logger::log_debug('{this.function.name}(): exits');
     base::return( DF.output );
 
     }
