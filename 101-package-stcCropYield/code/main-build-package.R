@@ -45,6 +45,7 @@ packages.import <- base::c(
     "jsonlite",
     "logger",
     "magrittr",
+    "rlang",
     "R6",
     "stats",
     "stringi",
