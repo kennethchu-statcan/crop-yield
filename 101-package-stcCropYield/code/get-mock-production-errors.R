@@ -98,8 +98,13 @@ get.mock.production.errors_single.model <- function(
 #            );
 #        DF.temp <- base::as.data.frame(DF.temp);
 
-        DF.temp <- DF.performance.metrics %>%
-            dplyr::filter(rlang::.data$year %in% temp.validation.years) %>%
+        is.selected <- (DF.performance.metrics[,"year"] %in% temp.validation.years);
+        DF.temp     <- DF.performance.metrics[is.selected,];
+        logger::log_debug('{this.function.name}(): production.year = {production.year}, str(DF.temp):\n{paste(capture.output(str(DF.temp)),collapse="\n")}');
+
+        #DF.temp <- DF.performance.metrics %>%
+        #    dplyr::filter(rlang::.data$year %in% temp.validation.years) %>%
+        DF.temp <- DF.temp %>%
             dplyr::select(
                 rlang::.data$model,
                 rlang::.data$weighted_error,

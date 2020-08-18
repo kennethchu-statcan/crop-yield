@@ -258,6 +258,7 @@ rollingWindowForwardValidation_save.optimal.final.models <- function(
 
     }
 
+#' @importFrom foreach foreach %dopar%
 rollingWindowForwardValidation_generate.predictions <- function(
     DF.input         = NULL,
     year             = NULL,
