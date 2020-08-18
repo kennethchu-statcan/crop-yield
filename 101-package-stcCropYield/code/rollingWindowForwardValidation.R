@@ -120,7 +120,6 @@ rollingWindowForwardValidation <- function(
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    output.directory <- base::normalizePath(output.directory);
     if ( !base::dir.exists(output.directory) ) {
         base::dir.create(path = output.directory, recursive = TRUE);
         }
