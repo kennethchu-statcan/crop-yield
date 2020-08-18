@@ -173,8 +173,8 @@ validation.single.year_diagnostics <- function(
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.region.crop,
         mapping = ggplot2::aes(
-            x = actual_production,
-            y = predicted_production
+            x = rlang::.data$actual_production,
+            y = rlang::.data$predicted_production
             ),
         alpha = 0.9
         );
@@ -268,8 +268,8 @@ validation.single.year_diagnostics <- function(
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.region,
         mapping = ggplot2::aes(
-            x = actual_production,
-            y = predicted_production
+            x = rlang::.data$actual_production,
+            y = rlang::.data$predicted_production
             ),
         alpha = 0.9
         );
@@ -363,8 +363,8 @@ validation.single.year_diagnostics <- function(
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.crop,
         mapping = ggplot2::aes(
-            x = actual_production,
-            y = predicted_production
+            x = rlang::.data$actual_production,
+            y = rlang::.data$predicted_production
             ),
         alpha = 0.9
         );
