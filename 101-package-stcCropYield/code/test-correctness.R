@@ -185,7 +185,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 data = DMatrix.training,
                 params = base::list(
                     booster     = 'gblinear',
-                    objective   = 'reg:squared', # deprecated: 'reg:linear',
+                    objective   = 'reg:squarederror', # deprecated: 'reg:linear',
                     alpha       = learner.metadata[["hyperparameters"]][["alpha"]],
                     lambda      = learner.metadata[["hyperparameters"]][["lambda"]],
                     lambda_bias = learner.metadata[["hyperparameters"]][["lambda_bias"]]
