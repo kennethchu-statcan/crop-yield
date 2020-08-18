@@ -1,6 +1,5 @@
 
 testthat::context(desc = "correctness test suite");
-test.correctness();
 
 ###################################################
 test.correctness <- function(
@@ -217,4 +216,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     base::return( DF.output );
 
     }
+
+###################################################
+test.correctness();
 
