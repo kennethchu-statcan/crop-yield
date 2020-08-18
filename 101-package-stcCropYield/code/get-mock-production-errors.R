@@ -208,7 +208,7 @@ get.mock.production.errors_single.model <- function(
         );
     base::colnames(DF.min.composite.metric) <- base::gsub(
         x           = base::colnames(DF.min.composite.metric),
-        pattern     =     "composite_metric",
+        pattern     = "x",
         replacement = "min_composite_metric"
         );
 
