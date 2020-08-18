@@ -346,6 +346,8 @@ validation.single.year_diagnostics <- function(
         MARGIN = 2,
         FUN    = base::sum
         );
+    DF.province <- as.data.frame(DF.province);
+    if (nrow(DF.province)>1) { DF.province <- t(DF.province) };
     DF.province[,"relative_error"] <- base::abs(
         DF.province[,"predicted_production"] - DF.province[,"actual_production"]
         ) / DF.province[,"actual_production"];
