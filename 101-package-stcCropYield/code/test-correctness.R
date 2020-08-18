@@ -187,8 +187,8 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                     booster     = 'gblinear',
                     objective   = 'reg:squarederror', # deprecated: 'reg:linear',
                     alpha       = learner.metadata[["hyperparameters"]][["alpha"]],
-                    lambda      = learner.metadata[["hyperparameters"]][["lambda"]],
-                    lambda_bias = learner.metadata[["hyperparameters"]][["lambda_bias"]]
+                    lambda      = learner.metadata[["hyperparameters"]][["lambda"]]
+                    #,lambda_bias = learner.metadata[["hyperparameters"]][["lambda_bias"]]
                     ),
                 verbose       = learner.metadata[["hyperparameters"]][["verbose"]],
                 print_every_n = learner.metadata[["hyperparameters"]][["print_every_n"]],
