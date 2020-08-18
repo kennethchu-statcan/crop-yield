@@ -120,15 +120,14 @@ rollingWindowForwardValidation <- function(
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    original.wd <- base::getwd();
+    output.directory <- base::normalizePath(output.directory);
     if ( !base::dir.exists(output.directory) ) {
         base::dir.create(path = output.directory, recursive = TRUE);
         }
-    base::setwd(output.directory);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     this.function.name <- "rollingWindowForwardValidation";
-    log.file <- base::file.path(paste0(this.function.name,".log"));
+    log.file <- base::file.path(output.directory,paste0(this.function.name,".log"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_threshold(level = log.threshold);
@@ -220,7 +219,6 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_info('{this.function.name}(): exits');
-    base::setwd(original.wd);
     base::return( NULL );
 
     }
