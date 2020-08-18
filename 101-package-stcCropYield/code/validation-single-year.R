@@ -208,18 +208,39 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.region <- dplyr::select(DF.region,
-        year,ecoregion,harvested_area,actual_production,predicted_production
-        );
-    DF.region <- dplyr::group_by(DF.region,ecoregion);
-    DF.region <- dplyr::summarize(DF.region,
-        harvested_area       = sum(harvested_area),
-        actual_production    = sum(actual_production),
-        predicted_production = sum(predicted_production)
-        );
-    DF.region <- dplyr::mutate(DF.region,
-        relative_error = abs(predicted_production - actual_production) / actual_production 
-        );
+#    DF.region <- dplyr::select(DF.region,
+#        year,ecoregion,harvested_area,actual_production,predicted_production
+#        );
+#    DF.region <- dplyr::group_by(DF.region,ecoregion);
+#    DF.region <- dplyr::summarize(DF.region,
+#        harvested_area       = sum(harvested_area),
+#        actual_production    = sum(actual_production),
+#        predicted_production = sum(predicted_production)
+#        );
+#    DF.region <- dplyr::mutate(DF.region,
+#        relative_error = abs(predicted_production - actual_production) / actual_production 
+#        );
+
+    DF.region <- DF.region %>%
+        dplyr::select(
+            rlang::.data$year,
+            rlang::.data$ecoregion,
+            rlang::.data$harvested_area,
+            rlang::.data$actual_production,
+            rlang::.data$predicted_production
+            ) %>%
+        dplyr::group_by(rlang::.data$ecoregion) %>%
+        dplyr::summarize(
+            harvested_area       = sum(rlang::.data$harvested_area),
+            actual_production    = sum(rlang::.data$actual_production),
+            predicted_production = sum(rlang::.data$predicted_production)
+            ) %>%
+        dplyr::mutate(
+            relative_error = abs(
+                rlang::.data$predicted_production - rlang::.data$actual_production
+                ) / rlang::.data$actual_production
+            );
+
     DF.region <- base::as.data.frame(DF.region);
 
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region.csv"));
@@ -282,18 +303,39 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.crop <- dplyr::select(DF.crop,
-        year,crop,harvested_area,actual_production,predicted_production
-        );
-    DF.crop <- dplyr::group_by(DF.crop,crop);
-    DF.crop <- dplyr::summarize(DF.crop,crop,
-        harvested_area       = sum(harvested_area),
-        actual_production    = sum(actual_production),
-        predicted_production = sum(predicted_production)
-        );
-    DF.crop <- dplyr::mutate(DF.crop,
-        relative_error = abs(predicted_production - actual_production) / actual_production
-        );
+#    DF.crop <- dplyr::select(DF.crop,
+#        year,crop,harvested_area,actual_production,predicted_production
+#        );
+#    DF.crop <- dplyr::group_by(DF.crop,crop);
+#    DF.crop <- dplyr::summarize(DF.crop,
+#        harvested_area       = sum(harvested_area),
+#        actual_production    = sum(actual_production),
+#        predicted_production = sum(predicted_production)
+#        );
+#    DF.crop <- dplyr::mutate(DF.crop,
+#        relative_error = abs(predicted_production - actual_production) / actual_production
+#        );
+
+    DF.crop <- DF.crop %>%
+        dplyr::select(
+            rlang::.data$year,
+            rlang::.data$crop,
+            rlang::.data$harvested_area,
+            rlang::.data$actual_production,
+            rlang::.data$predicted_production
+            ) %>%
+        dplyr::group_by(rlang::.data$crop) %>%
+        dplyr::summarize(
+            harvested_area       = sum(rlang::.data$harvested_area),
+            actual_production    = sum(rlang::.data$actual_production),
+            predicted_production = sum(rlang::.data$predicted_production)
+            ) %>%
+        dplyr::mutate(
+            relative_error = abs(
+                rlang::.data$predicted_production - rlang::.data$actual_production
+                ) / rlang::.data$actual_production
+            );
+
     DF.crop <- base::as.data.frame(DF.crop);
 
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-crop.csv"));
@@ -355,17 +397,36 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.province <- dplyr::select(DF.province,
-        year,harvested_area,actual_production,predicted_production
-        );
-    DF.province <- dplyr::summarize(DF.province,
-        harvested_area       = sum(harvested_area),
-        actual_production    = sum(actual_production),
-        predicted_production = sum(predicted_production)
-        );
-    DF.province <- dplyr::mutate(DF.province,
-        relative_error = abs(predicted_production - actual_production) / actual_production
-        );
+#    DF.province <- dplyr::select(DF.province,
+#        year,harvested_area,actual_production,predicted_production
+#        );
+#    DF.province <- dplyr::summarize(DF.province,
+#        harvested_area       = sum(harvested_area),
+#        actual_production    = sum(actual_production),
+#        predicted_production = sum(predicted_production)
+#        );
+#    DF.province <- dplyr::mutate(DF.province,
+#        relative_error = abs(predicted_production - actual_production) / actual_production
+#        );
+
+    DF.province <- DF.province %>%
+        dplyr::select(
+            rlang::.data$year,
+            rlang::.data$harvested_area,
+            rlang::.data$actual_production,
+            rlang::.data$predicted_production
+            ) %>%
+        dplyr::summarize(
+            harvested_area       = sum(rlang::.data$harvested_area),
+            actual_production    = sum(rlang::.data$actual_production),
+            predicted_production = sum(rlang::.data$predicted_production)
+            ) %>%
+        dplyr::mutate(
+            relative_error = abs(
+                rlang::.data$predicted_production - rlang::.data$actual_production
+                ) / rlang::.data$actual_production
+            );
+
     DF.province <- base::as.data.frame(DF.province);
 
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-province.csv"));
