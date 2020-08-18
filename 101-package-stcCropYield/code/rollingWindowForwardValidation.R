@@ -46,7 +46,7 @@
 #' @param by.variables.phase03 character vector indicating the by-variables to use for Phase 3 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion)
-# 
+#' 
 #' @param learner character vector of length 1,
 #' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
 #' 
