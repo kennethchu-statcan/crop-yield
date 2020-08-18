@@ -34,9 +34,7 @@
 #'     years        = seq(2015,2020),
 #'     n.ecoregions = n.ecoregions,
 #'     n.crops      = n.crops,
-#'     n.predictors = n.predictors,
-#'     output.RData = NULL,
-#'     output.csv   = NULL
+#'     n.predictors = n.predictors
 #'     );
 #'
 #' @export
