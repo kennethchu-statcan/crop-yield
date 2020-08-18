@@ -54,10 +54,10 @@ learner.xgboost <- R6::R6Class(
                 data = DMatrix.training,
                 params = base::list(
                     booster     = 'gblinear',
-                    objective   = 'reg:linear',
+                    objective   = 'reg:squarederror', # deprecated: 'reg:linear',
                     alpha       = self$learner.metadata[["hyperparameters"]][["alpha"]],
-                    lambda      = self$learner.metadata[["hyperparameters"]][["lambda"]],
-                    lambda_bias = self$learner.metadata[["hyperparameters"]][["lambda_bias"]]
+                    lambda      = self$learner.metadata[["hyperparameters"]][["lambda"]]
+                    #,lambda_bias = self$learner.metadata[["hyperparameters"]][["lambda_bias"]]
                     ),
                 verbose       = self$learner.metadata[["hyperparameters"]][["verbose"]],
                 print_every_n = self$learner.metadata[["hyperparameters"]][["print_every_n"]],
