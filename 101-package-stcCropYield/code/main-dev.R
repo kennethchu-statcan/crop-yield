@@ -39,6 +39,16 @@ for ( code.file in code.files ) {
     }
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+# running unit tests
+test.files <- c(
+    "test-correctness.R"
+    );
+
+for ( test.file in test.files ) {
+    source(file.path(dir.code,test.file));
+    }
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(7654321);
 
 n.ecoregions <-  7;
