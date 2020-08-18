@@ -89,12 +89,12 @@ get.mock.production.errors_single.model <- function(
 
         DF.temp <- base::suppressMessages(
             expr = DF.performance.metrics %>%
-                dplyr::filter(year %in% temp.validation.years) %>%
-                dplyr::select(model,weighted_error,weighted_std) %>%
-                dplyr::group_by(model) %>%
+                dplyr::filter(.data[[year]] %in% temp.validation.years) %>%
+                dplyr::select(.data[[model]],.data[[weighted_error]],.data[[weighted_std]]) %>%
+                dplyr::group_by(.data[[model]]) %>%
                 dplyr::summarize(
-                    mean_weighted_error = mean(weighted_error),
-                    mean_weighted_std   = mean(weighted_std)
+                    mean_weighted_error = mean(.data[[weighted_error]]),
+                    mean_weighted_std   = mean(.data[[weighted_std]])
                     )
             ); 
         DF.temp <- base::as.data.frame(DF.temp);
@@ -150,9 +150,9 @@ get.mock.production.errors_single.model <- function(
 #        composite_metric == min_composite_metric
 #        );
     DF.mock.production.errors <- base::suppressMessages(
-        expr = DF.diagnostics %>% dplyr::group_by(production_year) %>%
-            dplyr::mutate(min_composite_metric =  min(composite_metric)) %>%
-            dplyr::filter(    composite_metric == min_composite_metric )
+        expr = DF.diagnostics %>% dplyr::group_by(.data[[production_year]]) %>%
+            dplyr::mutate(min_composite_metric =  min(.data[[composite_metric]])) %>%
+            dplyr::filter(    composite_metric == .data[[min_composite_metric]] )
         );
     DF.mock.production.errors <- as.data.frame(DF.mock.production.errors);
 
