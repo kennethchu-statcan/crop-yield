@@ -106,24 +106,24 @@ validation.single.year_diagnostics <- function(
         }
  
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c("year","ecoregion","crop","harvested_area","actual_production","predicted_production");
+    selected.colnames <- base::c("year","ecoregion","crop","harvested_area","actual_production","predicted_production");
     DF.region.crop <- DF.region.crop[,selected.colnames];
-    DF.region.crop <- aggregate(
-        x   = DF.region.crop[,setdiff(colnames(DF.region.crop),c("ecoregion","crop"))],
-        by  = list(DF.region.crop$ecoregion,DF.region.crop$crop),
+    DF.region.crop <- stats::aggregate(
+        x   = DF.region.crop[,base::setdiff(base::colnames(DF.region.crop),base::c("ecoregion","crop"))],
+        by  = base::list(DF.region.crop$ecoregion,DF.region.crop$crop),
         FUN = sum
         );
-    colnames(DF.region.crop) <- gsub(
-        x           = colnames(DF.region.crop),
+    base::colnames(DF.region.crop) <- base::gsub(
+        x           = base::colnames(DF.region.crop),
         pattern     = "Group\\.1",
         replacement = "ecoregion"
         );
-    colnames(DF.region.crop) <- gsub(
-        x           = colnames(DF.region.crop),
+    base::colnames(DF.region.crop) <- base::gsub(
+        x           = base::colnames(DF.region.crop),
         pattern     = "Group\\.2",
         replacement = "crop"
         );
-    DF.region.crop[,"relative_error"] <- abs(
+    DF.region.crop[,"relative_error"] <- base::abs(
         DF.region.crop[,"predicted_production"] - DF.region.crop[,"actual_production"]
         ) / DF.region.crop[,"actual_production"];
 
@@ -188,19 +188,19 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c("year","ecoregion","harvested_area","actual_production","predicted_production");
+    selected.colnames <- base::c("year","ecoregion","harvested_area","actual_production","predicted_production");
     DF.region <- DF.region[,selected.colnames];
-    DF.region <- aggregate(
-        x   = DF.region[,setdiff(colnames(DF.region),c("ecoregion"))],
-        by  = list(DF.region$ecoregion),
+    DF.region <- stats::aggregate(
+        x   = DF.region[,base::setdiff(base::colnames(DF.region),base::c("ecoregion"))],
+        by  = base::list(DF.region$ecoregion),
         FUN = sum
         );
-    colnames(DF.region) <- gsub(
-        x           = colnames(DF.region),
+    base::colnames(DF.region) <- base::gsub(
+        x           = base::colnames(DF.region),
         pattern     = "Group\\.1",
         replacement = "ecoregion"
         );
-    DF.region[,"relative_error"] <- abs(
+    DF.region[,"relative_error"] <- base::abs(
         DF.region[,"predicted_production"] - DF.region[,"actual_production"]
         ) / DF.region[,"actual_production"];
 
@@ -265,19 +265,19 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- c("year","crop","harvested_area","actual_production","predicted_production");
+    selected.colnames <- base::c("year","crop","harvested_area","actual_production","predicted_production");
     DF.crop <- DF.crop[,selected.colnames];
-    DF.crop <- aggregate(
-        x   = DF.crop[,setdiff(colnames(DF.crop),c("crop"))],
+    DF.crop <- stats::aggregate(
+        x   = DF.crop[,base::setdiff(base::colnames(DF.crop),c("crop"))],
         by  = list(DF.crop$crop),
         FUN = sum
         );
-    colnames(DF.crop) <- gsub(
-        x           = colnames(DF.crop),
+    base::colnames(DF.crop) <- base::gsub(
+        x           = base::colnames(DF.crop),
         pattern     = "Group\\.1",
         replacement = "crop"
         );
-    DF.crop[,"relative_error"] <- abs(
+    DF.crop[,"relative_error"] <- base::abs(
         DF.crop[,"predicted_production"] - DF.crop[,"actual_production"]
         ) / DF.crop[,"actual_production"];
 
@@ -341,12 +341,12 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.province <- apply(
-        X      = DF.province[,c("harvested_area","actual_production","predicted_production")],
+    DF.province <- base::apply(
+        X      = DF.province[,base::c("harvested_area","actual_production","predicted_production")],
         MARGIN = 2,
         FUN    = sum
         );
-    DF.province[,"relative_error"] <- abs(
+    DF.province[,"relative_error"] <- base::abs(
         DF.province[,"predicted_production"] - DF.province[,"actual_production"]
         ) / DF.province[,"actual_production"];
 
