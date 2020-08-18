@@ -61,7 +61,7 @@ get.mock.production.errors <- function(
 
 ##################################################
 
-#' @importFrom magrittr %>%
+# #' @importFrom magrittr %>%
 get.mock.production.errors_single.model <- function(
     prefix                 = NULL,
     validation.window      = NULL,
@@ -100,22 +100,37 @@ get.mock.production.errors_single.model <- function(
 
         is.selected <- (DF.performance.metrics[,"year"] %in% temp.validation.years);
         DF.temp     <- DF.performance.metrics[is.selected,];
+        DF.temp     <- DF.temp[,c("model","weighted_error","weighted_std")];
+
         logger::log_debug('{this.function.name}(): production.year = {production.year}, str(DF.temp):\n{paste(capture.output(str(DF.temp)),collapse="\n")}');
+
+        DF.temp <- stats::aggregate(
+            x   = DF.temp[,c("weighted_error","weighted_std")],
+            by  = base::list(DF.temp$model),
+            FUN = mean
+            );
+
+        base::colnames(DF.temp) <- base::gsub(
+            x           = base::colnames(DF.temp),
+            pattern     = "Group\\.1",
+            replacement = "model"
+            );
+
+        base::colnames(DF.temp) <- base::gsub(
+            x           = base::colnames(DF.temp),
+            pattern     =      "weighted_",
+            replacement = "mean_weighted_"
+            );
 
         #DF.temp <- DF.performance.metrics %>%
         #    dplyr::filter(rlang::.data$year %in% temp.validation.years) %>%
-        DF.temp <- DF.temp %>%
-            dplyr::select(
-                rlang::.data$model,
-                rlang::.data$weighted_error,
-                rlang::.data$weighted_std
-                ) %>%
-            dplyr::group_by(rlang::.data$model) %>%
-            dplyr::summarize(
-                mean_weighted_error = mean(rlang::.data$weighted_error),
-                mean_weighted_std   = mean(rlang::.data$weighted_std)
-                );
-        DF.temp <- base::as.data.frame(DF.temp);
+        #DF.temp <- DF.temp %>%
+        #    dplyr::group_by(rlang::.data$model) %>%
+        #    dplyr::summarize(
+        #        mean_weighted_error = mean(rlang::.data$weighted_error),
+        #        mean_weighted_std   = mean(rlang::.data$weighted_std)
+        #        );
+        #DF.temp <- base::as.data.frame(DF.temp);
 
         DF.temp[,"production_year"] <- production.year;
         DF.diagnostics <- base::rbind(DF.diagnostics,DF.temp);
@@ -174,12 +189,44 @@ get.mock.production.errors_single.model <- function(
 #        DF.mock.production.errors,
 #        composite_metric == min_composite_metric
 #        );
-    DF.mock.production.errors <- DF.diagnostics %>%
-        dplyr::group_by(rlang::.data$production_year) %>%
-        dplyr::mutate(         min_composite_metric =  min(rlang::.data$composite_metric)) %>%
-        dplyr::filter(rlang::.data$composite_metric == rlang::.data$min_composite_metric );
-        
-    DF.mock.production.errors <- as.data.frame(DF.mock.production.errors);
+
+#    DF.mock.production.errors <- DF.diagnostics %>%
+#        dplyr::group_by(rlang::.data$production_year) %>%
+#        dplyr::mutate(         min_composite_metric =  min(rlang::.data$composite_metric)) %>%
+#        dplyr::filter(rlang::.data$composite_metric == rlang::.data$min_composite_metric );
+#    DF.mock.production.errors <- as.data.frame(DF.mock.production.errors);
+
+    DF.min.composite.metric <- stats::aggregate(
+        x   = DF.diagnostics$composite_metric,
+        by  = base::list(DF.diagnostics$production_year),
+        FUN = min
+        );
+    base::colnames(DF.min.composite.metric) <- base::gsub(
+        x           = base::colnames(DF.min.composite.metric),
+        pattern     = "Group\\.1",
+        replacement = "production_year"
+        );
+    base::colnames(DF.min.composite.metric) <- base::gsub(
+        x           = base::colnames(DF.min.composite.metric),
+        pattern     =     "composite_metric",
+        replacement = "min_composite_metric"
+        );
+
+    DF.mock.production.errors <- dplyr::left_join(
+        x  = DF.diagnostics,
+        y  = DF.min.composite.metric,
+        by = "production_year"
+        );
+    DF.mock.production.errors <- base::as.data.frame(DF.mock.production.errors);
+
+    is.selected <- (DF.mock.production.errors$composite_metric == DF.mock.production.errors$min_composite_metric);
+    DF.mock.production.errors <- DF.mock.production.errors[is.selected,];
+
+    #DF.mock.production.errors <- DF.diagnostics %>%
+    #    dplyr::group_by(rlang::.data$production_year) %>%
+    #    dplyr::mutate(         min_composite_metric =  min(rlang::.data$composite_metric)) %>%
+    #    dplyr::filter(rlang::.data$composite_metric == rlang::.data$min_composite_metric );
+    #DF.mock.production.errors <- base::as.data.frame(DF.mock.production.errors);
 
     logger::log_debug('{this.function.name}(): creation of DF.mock.production.errors complete');
 
@@ -200,6 +247,6 @@ get.mock.production.errors_get.production.years <- function(
     ) {
     first.production.year <- base::min(years) + validation.window;
      last.production.year <- base::max(years) + 1;
-    base::return( seq(first.production.year,last.production.year,1) );
+    base::return( base::seq(first.production.year,last.production.year,1) );
     }
 
