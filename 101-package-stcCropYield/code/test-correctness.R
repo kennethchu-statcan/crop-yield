@@ -53,7 +53,7 @@ test.correctness_group.then.add.relative.error <- function(
 #               #        ) / rlang::.data$actual_production
 #               #    );
             DF.expected <- my.DF.input %>%
-               dplyr::select(harvested_area,actual_prediction,predicted_production) %>%
+               dplyr::select(harvested_area,actual_production,predicted_production) %>%
                dplyr::summarize(
                    harvested_area       = sum(harvested_area),
                    predicted_production = sum(predicted_production),
