@@ -77,6 +77,8 @@ validation.single.year <- function(
     }
 
 ##################################################
+
+#' @importFrom rlang .data
 validation.single.year_diagnostics <- function(
     DF.input             = NULL,
     learner.metadata     = NULL,
@@ -105,34 +107,11 @@ validation.single.year_diagnostics <- function(
             );
         }
  
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#    selected.colnames <- base::c("year","ecoregion","crop","harvested_area","actual_production","predicted_production");
-#    DF.region.crop <- DF.region.crop[,selected.colnames];
-#    DF.region.crop <- stats::aggregate(
-#        x   = DF.region.crop[,base::setdiff(base::colnames(DF.region.crop),base::c("ecoregion","crop"))],
-#        by  = base::list(DF.region.crop$ecoregion,DF.region.crop$crop),
-#        FUN = base::sum
-#        );
-#    base::colnames(DF.region.crop) <- base::gsub(
-#        x           = base::colnames(DF.region.crop),
-#        pattern     = "Group\\.1",
-#        replacement = "ecoregion"
-#        );
-#    base::colnames(DF.region.crop) <- base::gsub(
-#        x           = base::colnames(DF.region.crop),
-#        pattern     = "Group\\.2",
-#        replacement = "crop"
-#        );
-#    DF.region.crop[,"relative_error"] <- base::abs(
-#        DF.region.crop[,"predicted_production"] - DF.region.crop[,"actual_production"]
-#        ) / DF.region.crop[,"actual_production"];
-
     DF.region.crop <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.region.crop,
         by.variables = c("ecoregion","crop")
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region-crop.csv"));
     utils::write.csv(
         file      = output.CSV,
@@ -158,8 +137,8 @@ validation.single.year_diagnostics <- function(
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.region.crop,
         mapping = ggplot2::aes(
-            x = actual_production,
-            y = predicted_production
+            x = .data$actual_production,
+            y = .data$predicted_production
             ),
         alpha = 0.9
         );
@@ -192,29 +171,11 @@ validation.single.year_diagnostics <- function(
             );
         }
     
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#    selected.colnames <- base::c("year","ecoregion","harvested_area","actual_production","predicted_production");
-#    DF.region <- DF.region[,selected.colnames];
-#    DF.region <- stats::aggregate(
-#        x   = DF.region[,base::setdiff(base::colnames(DF.region),base::c("ecoregion"))],
-#        by  = base::list(DF.region$ecoregion),
-#        FUN = base::sum
-#        );
-#    base::colnames(DF.region) <- base::gsub(
-#        x           = base::colnames(DF.region),
-#        pattern     = "Group\\.1",
-#        replacement = "ecoregion"
-#        );
-#    DF.region[,"relative_error"] <- base::abs(
-#        DF.region[,"predicted_production"] - DF.region[,"actual_production"]
-#        ) / DF.region[,"actual_production"];
-
     DF.region <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.region,
         by.variables = c("ecoregion")
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region.csv"));
     utils::write.csv(
         file      = output.CSV,
@@ -240,8 +201,8 @@ validation.single.year_diagnostics <- function(
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.region,
         mapping = ggplot2::aes(
-            x = actual_production,
-            y = predicted_production
+            x = .data$actual_production,
+            y = .data$predicted_production
             ),
         alpha = 0.9
         );
@@ -274,29 +235,11 @@ validation.single.year_diagnostics <- function(
             );
         }
     
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#    selected.colnames <- base::c("year","crop","harvested_area","actual_production","predicted_production");
-#    DF.crop <- DF.crop[,selected.colnames];
-#    DF.crop <- stats::aggregate(
-#        x   = DF.crop[,base::setdiff(base::colnames(DF.crop),c("crop"))],
-#        by  = list(DF.crop$crop),
-#        FUN = base::sum
-#        );
-#    base::colnames(DF.crop) <- base::gsub(
-#        x           = base::colnames(DF.crop),
-#        pattern     = "Group\\.1",
-#        replacement = "crop"
-#        );
-#    DF.crop[,"relative_error"] <- base::abs(
-#        DF.crop[,"predicted_production"] - DF.crop[,"actual_production"]
-#        ) / DF.crop[,"actual_production"];
-
     DF.crop <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.crop,
         by.variables = c("crop")
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-crop.csv"));
     utils::write.csv(
         file      = output.CSV,
@@ -322,8 +265,8 @@ validation.single.year_diagnostics <- function(
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.crop,
         mapping = ggplot2::aes(
-            x = actual_production,
-            y = predicted_production
+            x = .data$actual_production,
+            y = .data$predicted_production
             ),
         alpha = 0.9
         );
@@ -355,24 +298,11 @@ validation.single.year_diagnostics <- function(
             );
         }
     
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#    DF.province <- base::apply(
-#        X      = DF.province[,base::c("harvested_area","actual_production","predicted_production")],
-#        MARGIN = 2,
-#        FUN    = base::sum
-#        );
-#    DF.province <- as.data.frame(DF.province);
-#    if (nrow(DF.province)>1) { DF.province <- as.data.frame(t(DF.province)) };
-#    DF.province[,"relative_error"] <- base::abs(
-#        DF.province[,"predicted_production"] - DF.province[,"actual_production"]
-#        ) / DF.province[,"actual_production"];
-
     DF.province <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.province,
         by.variables = NULL
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-province.csv"));
     utils::write.csv(
         file      = output.CSV,
