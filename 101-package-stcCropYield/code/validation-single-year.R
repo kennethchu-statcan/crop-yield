@@ -106,26 +106,31 @@ validation.single.year_diagnostics <- function(
         }
  
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- base::c("year","ecoregion","crop","harvested_area","actual_production","predicted_production");
-    DF.region.crop <- DF.region.crop[,selected.colnames];
-    DF.region.crop <- stats::aggregate(
-        x   = DF.region.crop[,base::setdiff(base::colnames(DF.region.crop),base::c("ecoregion","crop"))],
-        by  = base::list(DF.region.crop$ecoregion,DF.region.crop$crop),
-        FUN = base::sum
+#    selected.colnames <- base::c("year","ecoregion","crop","harvested_area","actual_production","predicted_production");
+#    DF.region.crop <- DF.region.crop[,selected.colnames];
+#    DF.region.crop <- stats::aggregate(
+#        x   = DF.region.crop[,base::setdiff(base::colnames(DF.region.crop),base::c("ecoregion","crop"))],
+#        by  = base::list(DF.region.crop$ecoregion,DF.region.crop$crop),
+#        FUN = base::sum
+#        );
+#    base::colnames(DF.region.crop) <- base::gsub(
+#        x           = base::colnames(DF.region.crop),
+#        pattern     = "Group\\.1",
+#        replacement = "ecoregion"
+#        );
+#    base::colnames(DF.region.crop) <- base::gsub(
+#        x           = base::colnames(DF.region.crop),
+#        pattern     = "Group\\.2",
+#        replacement = "crop"
+#        );
+#    DF.region.crop[,"relative_error"] <- base::abs(
+#        DF.region.crop[,"predicted_production"] - DF.region.crop[,"actual_production"]
+#        ) / DF.region.crop[,"actual_production"];
+
+    DF.region.crop <- validation.single.year_group.then.add.relative.error(
+        DF.input     = DF.region.crop,
+        by.variables = c("ecoregion","crop")
         );
-    base::colnames(DF.region.crop) <- base::gsub(
-        x           = base::colnames(DF.region.crop),
-        pattern     = "Group\\.1",
-        replacement = "ecoregion"
-        );
-    base::colnames(DF.region.crop) <- base::gsub(
-        x           = base::colnames(DF.region.crop),
-        pattern     = "Group\\.2",
-        replacement = "crop"
-        );
-    DF.region.crop[,"relative_error"] <- base::abs(
-        DF.region.crop[,"predicted_production"] - DF.region.crop[,"actual_production"]
-        ) / DF.region.crop[,"actual_production"];
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region-crop.csv"));
@@ -188,21 +193,26 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- base::c("year","ecoregion","harvested_area","actual_production","predicted_production");
-    DF.region <- DF.region[,selected.colnames];
-    DF.region <- stats::aggregate(
-        x   = DF.region[,base::setdiff(base::colnames(DF.region),base::c("ecoregion"))],
-        by  = base::list(DF.region$ecoregion),
-        FUN = base::sum
+#    selected.colnames <- base::c("year","ecoregion","harvested_area","actual_production","predicted_production");
+#    DF.region <- DF.region[,selected.colnames];
+#    DF.region <- stats::aggregate(
+#        x   = DF.region[,base::setdiff(base::colnames(DF.region),base::c("ecoregion"))],
+#        by  = base::list(DF.region$ecoregion),
+#        FUN = base::sum
+#        );
+#    base::colnames(DF.region) <- base::gsub(
+#        x           = base::colnames(DF.region),
+#        pattern     = "Group\\.1",
+#        replacement = "ecoregion"
+#        );
+#    DF.region[,"relative_error"] <- base::abs(
+#        DF.region[,"predicted_production"] - DF.region[,"actual_production"]
+#        ) / DF.region[,"actual_production"];
+
+    DF.region <- validation.single.year_group.then.add.relative.error(
+        DF.input     = DF.region,
+        by.variables = c("ecoregion")
         );
-    base::colnames(DF.region) <- base::gsub(
-        x           = base::colnames(DF.region),
-        pattern     = "Group\\.1",
-        replacement = "ecoregion"
-        );
-    DF.region[,"relative_error"] <- base::abs(
-        DF.region[,"predicted_production"] - DF.region[,"actual_production"]
-        ) / DF.region[,"actual_production"];
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-region.csv"));
@@ -265,21 +275,26 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    selected.colnames <- base::c("year","crop","harvested_area","actual_production","predicted_production");
-    DF.crop <- DF.crop[,selected.colnames];
-    DF.crop <- stats::aggregate(
-        x   = DF.crop[,base::setdiff(base::colnames(DF.crop),c("crop"))],
-        by  = list(DF.crop$crop),
-        FUN = base::sum
+#    selected.colnames <- base::c("year","crop","harvested_area","actual_production","predicted_production");
+#    DF.crop <- DF.crop[,selected.colnames];
+#    DF.crop <- stats::aggregate(
+#        x   = DF.crop[,base::setdiff(base::colnames(DF.crop),c("crop"))],
+#        by  = list(DF.crop$crop),
+#        FUN = base::sum
+#        );
+#    base::colnames(DF.crop) <- base::gsub(
+#        x           = base::colnames(DF.crop),
+#        pattern     = "Group\\.1",
+#        replacement = "crop"
+#        );
+#    DF.crop[,"relative_error"] <- base::abs(
+#        DF.crop[,"predicted_production"] - DF.crop[,"actual_production"]
+#        ) / DF.crop[,"actual_production"];
+
+    DF.crop <- validation.single.year_group.then.add.relative.error(
+        DF.input     = DF.crop,
+        by.variables = c("crop")
         );
-    base::colnames(DF.crop) <- base::gsub(
-        x           = base::colnames(DF.crop),
-        pattern     = "Group\\.1",
-        replacement = "crop"
-        );
-    DF.crop[,"relative_error"] <- base::abs(
-        DF.crop[,"predicted_production"] - DF.crop[,"actual_production"]
-        ) / DF.crop[,"actual_production"];
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-crop.csv"));
@@ -341,16 +356,21 @@ validation.single.year_diagnostics <- function(
         }
     
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.province <- base::apply(
-        X      = DF.province[,base::c("harvested_area","actual_production","predicted_production")],
-        MARGIN = 2,
-        FUN    = base::sum
+#    DF.province <- base::apply(
+#        X      = DF.province[,base::c("harvested_area","actual_production","predicted_production")],
+#        MARGIN = 2,
+#        FUN    = base::sum
+#        );
+#    DF.province <- as.data.frame(DF.province);
+#    if (nrow(DF.province)>1) { DF.province <- as.data.frame(t(DF.province)) };
+#    DF.province[,"relative_error"] <- base::abs(
+#        DF.province[,"predicted_production"] - DF.province[,"actual_production"]
+#        ) / DF.province[,"actual_production"];
+
+    DF.province <- validation.single.year_group.then.add.relative.error(
+        DF.input     = DF.province,
+        by.variables = NULL
         );
-    DF.province <- as.data.frame(DF.province);
-    if (nrow(DF.province)>1) { DF.province <- as.data.frame(t(DF.province)) };
-    DF.province[,"relative_error"] <- base::abs(
-        DF.province[,"predicted_production"] - DF.province[,"actual_production"]
-        ) / DF.province[,"actual_production"];
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.CSV <- base::file.path(output.sub.directory,base::paste0(output.filename,"-province.csv"));
@@ -362,6 +382,58 @@ validation.single.year_diagnostics <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     base::return( NULL );
+
+    }
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+validation.single.year_group.then.add.relative.error <- function(
+    DF.input     = NULL,
+    by.variables = NULL
+    ) {
+
+    DF.output <- DF.input;
+
+    if ( is.null(by.variables) ) {
+    
+        DF.output <- base::apply(
+            X      = DF.output[,base::c("harvested_area","actual_production","predicted_production")],
+            MARGIN = 2,
+            FUN    = base::sum
+            );
+        DF.output <- as.data.frame(DF.output);
+        if (nrow(DF.output)>1) { DF.output <- as.data.frame(t(DF.output)) };
+
+    } else {
+    
+        selected.colnames <- base::c(by.variables,"harvested_area","actual_production","predicted_production");
+        DF.output <- DF.output[,selected.colnames];
+
+        by.list <- list();
+        for ( i in 1:length(by.variables) ) {
+            by.list[[i]] <- DF.output[,by.variables[i]];
+            }
+
+        DF.output <- stats::aggregate(
+            x   = DF.output[,base::setdiff(base::colnames(DF.output),by.variables)],
+            by  = by.list,
+            FUN = base::sum
+            );
+
+        for ( i in 1:length(by.variables) ) {
+            base::colnames(DF.output) <- base::gsub(
+                x           = base::colnames(DF.output),
+                pattern     = paste0("Group\\.",i),
+                replacement = by.variables[i]
+                );
+            }
+
+        }
+
+    DF.output[,"relative_error"] <- base::abs(
+        DF.output[,"predicted_production"] - DF.output[,"actual_production"]
+        ) / DF.output[,"actual_production"];
+
+    return( DF.output );
 
     }
 
