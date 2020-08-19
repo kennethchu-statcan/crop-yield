@@ -10,7 +10,7 @@ test.correctness <- function(
     logger::log_threshold(level = log.threshold);
 
     test.correctness_xgboost.multiphase();
-    test.correctness_group.and.add.relative.error();
+    test.correctness_group.then.add.relative.error();
 
     }
 
