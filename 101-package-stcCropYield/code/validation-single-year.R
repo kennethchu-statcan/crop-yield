@@ -402,6 +402,7 @@ validation.single.year_group.then.add.relative.error <- function(
             );
         DF.output <- as.data.frame(DF.output);
         if (nrow(DF.output)>1) { DF.output <- as.data.frame(t(DF.output)) };
+        rownames(DF.output) <- NULL;
 
     } else {
     
