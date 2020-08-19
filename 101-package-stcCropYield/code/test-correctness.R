@@ -31,7 +31,7 @@ test.correctness_group.then.add.relative.error <- function(
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = NULL",
         code = {
-            DF.computed <- validation.single.year_group.then.add.relative.error(
+            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = NULL
                 );
@@ -63,7 +63,7 @@ test.correctness_group.then.add.relative.error <- function(
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = 'crop'",
         code = {
-            DF.computed <- validation.single.year_group.then.add.relative.error(
+            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = "crop"
                 );
@@ -98,7 +98,7 @@ test.correctness_group.then.add.relative.error <- function(
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = 'ecoregion'",
         code = {
-            DF.computed <- validation.single.year_group.then.add.relative.error(
+            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = "ecoregion"
                 );
@@ -133,7 +133,7 @@ test.correctness_group.then.add.relative.error <- function(
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = c('ecoregion','crop')",
         code = {
-            DF.computed <- validation.single.year_group.then.add.relative.error(
+            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = c("ecoregion","crop")
                 );
