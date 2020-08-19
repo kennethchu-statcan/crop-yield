@@ -10,6 +10,47 @@ test.correctness <- function(
     logger::log_threshold(level = log.threshold);
 
     test.correctness_xgboost.multiphase();
+    test.correctness_group.and.add.relative.error();
+
+    }
+
+test.correctness_group.then.add.relative.error <- function(
+    ) {
+
+    my.DF.input <- base::data.frame(
+        ecoregion            = sample(paste0(   "r0",1:5),size=100,replace=TRUE),
+        crop                 = sample(paste0("crop0",1:9),size=100,replace=TRUE),
+        harvested_area       = abs(rnorm(100)),
+        predicted_production = abs(rnorm(100)),
+        actual_production    = abs(rnorm(100))
+        );
+
+    testthat::test_that(
+        desc = "group.then.add.relative.error(): no by-variables",
+        code = {
+            DF.computed <- validation.single.year_group.then.add.relative.error(
+                DF.input     = my.DF.input,
+                by.variables = NULL
+                );
+            DF.expected <- my.DF.input %>%
+               dplyr::select(
+                   rlang::.data$harvested_area,
+                   rlang::.data$predicted_production,
+                   rlang::.data$actual_production
+                   ) %>%
+               dplyr::summarize(
+                   harvested_area       = sum(rlang::.data$harvested_area),
+                   predicted_production = sum(rlang::.data$predicted_production),
+                   actual_production    = sum(rlang::.data$actual_production)
+                   ) %>%
+               dplyr::mutate(
+                   relative_error = abs(
+                       rlang::.data$predicted_production - rlang::.data$actual_production
+                       ) / rlang::.data$actual_production
+                   );
+            testthat::expect_equal( DF.computed, DF.expected );
+            }
+        );
 
     }
 
