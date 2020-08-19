@@ -9,13 +9,16 @@ test.correctness <- function(
     logger::log_appender(logger::appender_console);
     logger::log_threshold(level = log.threshold);
 
-    test.correctness_xgboost.multiphase();
+    #test.correctness_xgboost.multiphase();
     test.correctness_group.then.add.relative.error();
 
     }
 
+#' @importFrom rlang .data
 test.correctness_group.then.add.relative.error <- function(
     ) {
+
+    this.function.name <- "test.correctness_group.then.add.relative.error";
 
     my.DF.input <- base::data.frame(
         ecoregion            = sample(paste0(   "r0",1:5),size=100,replace=TRUE),
@@ -26,48 +29,141 @@ test.correctness_group.then.add.relative.error <- function(
         );
 
     testthat::test_that(
-        desc = "group.then.add.relative.error(): no by-variables",
+        desc = "group.then.add.relative.error(): by.variables = NULL",
         code = {
             DF.computed <- validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = NULL
                 );
-            cat("\nstr(DF.computed)\n");
-            print( str(DF.computed)   );
-            cat("\nDF.computed\n");
-            print( DF.computed   );
-#            DF.expected <- my.DF.input %>%
-#               dplyr::select(
-#                   rlang::.data$harvested_area,
-#                   rlang::.data$predicted_production,
-#                   rlang::.data$actual_production
-#                   ) %>%
-#               dplyr::summarize(
-#                   harvested_area       = sum(rlang::.data$harvested_area),
-#                   predicted_production = sum(rlang::.data$predicted_production),
-#                   actual_production    = sum(rlang::.data$actual_production)
-#                   ) #%>%
-#               #dplyr::mutate(
-#               #    relative_error = abs(
-#               #        rlang::.data$predicted_production - rlang::.data$actual_production
-#               #        ) / rlang::.data$actual_production
-#               #    );
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             DF.expected <- my.DF.input %>%
-               dplyr::select(harvested_area,actual_production,predicted_production) %>%
+               dplyr::select(
+                   .data[["harvested_area"]],
+                   .data[["actual_production"]],
+                   .data[["predicted_production"]]
+                   ) %>%
                dplyr::summarize(
-                   harvested_area       = sum(harvested_area),
-                   actual_production    = sum(actual_production),
-                   predicted_production = sum(predicted_production)
+                   harvested_area       = sum(.data$harvested_area),
+                   actual_production    = sum(.data$actual_production),
+                   predicted_production = sum(.data$predicted_production)
                    ) %>%
                dplyr::mutate(
                    relative_error = abs(
-                       predicted_production - actual_production
-                       ) / actual_production
+                       .data$predicted_production - .data$actual_production
+                       ) / .data$actual_production
                    );
-            cat("\nstr(DF.expected)\n");
-            print( str(DF.expected)   );
-            cat("\nDF.expected\n");
-            print( DF.expected   );
+            DF.expected <- as.data.frame(DF.expected);
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            test.result <- base::all.equal(DF.computed,DF.expected);
+            logger::log_debug('{this.function.name}(): by.variables = NULL, all.equal(DF.computed,DF.expected) = {test.result}');
+            testthat::expect_equal( DF.computed, DF.expected );
+            }
+        );
+
+    testthat::test_that(
+        desc = "group.then.add.relative.error(): by.variables = 'crop'",
+        code = {
+            DF.computed <- validation.single.year_group.then.add.relative.error(
+                DF.input     = my.DF.input,
+                by.variables = "crop"
+                );
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            DF.expected <- my.DF.input %>%
+               dplyr::group_by(
+                   .data[["crop"]]
+                   ) %>%
+               dplyr::select(
+                   .data[["harvested_area"]],
+                   .data[["actual_production"]],
+                   .data[["predicted_production"]]
+                   ) %>%
+               dplyr::summarize(
+                   harvested_area       = sum(.data$harvested_area),
+                   actual_production    = sum(.data$actual_production),
+                   predicted_production = sum(.data$predicted_production)
+                   ) %>%
+               dplyr::mutate(
+                   relative_error = abs(
+                       .data$predicted_production - .data$actual_production
+                       ) / .data$actual_production
+                   );
+            DF.expected <- as.data.frame(DF.expected);
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            test.result <- base::all.equal(DF.computed,DF.expected);
+            logger::log_debug("{this.function.name}(): by.variables = 'crop', all.equal(DF.computed,DF.expected) = {test.result}");
+            testthat::expect_equal( DF.computed, DF.expected );
+            }
+        );
+
+    testthat::test_that(
+        desc = "group.then.add.relative.error(): by.variables = 'ecoregion'",
+        code = {
+            DF.computed <- validation.single.year_group.then.add.relative.error(
+                DF.input     = my.DF.input,
+                by.variables = "ecoregion"
+                );
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            DF.expected <- my.DF.input %>%
+               dplyr::group_by(
+                   .data[["ecoregion"]]
+                   ) %>%
+               dplyr::select(
+                   .data[["harvested_area"]],
+                   .data[["actual_production"]],
+                   .data[["predicted_production"]]
+                   ) %>%
+               dplyr::summarize(
+                   harvested_area       = sum(.data$harvested_area),
+                   actual_production    = sum(.data$actual_production),
+                   predicted_production = sum(.data$predicted_production)
+                   ) %>%
+               dplyr::mutate(
+                   relative_error = abs(
+                       .data$predicted_production - .data$actual_production
+                       ) / .data$actual_production
+                   );
+            DF.expected <- as.data.frame(DF.expected);
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            test.result <- base::all.equal(DF.computed,DF.expected);
+            logger::log_debug("{this.function.name}(): by.variables = 'ecoregion', all.equal(DF.computed,DF.expected) = {test.result}");
+            testthat::expect_equal( DF.computed, DF.expected );
+            }
+        );
+
+    testthat::test_that(
+        desc = "group.then.add.relative.error(): by.variables = c('ecoregion','crop')",
+        code = {
+            DF.computed <- validation.single.year_group.then.add.relative.error(
+                DF.input     = my.DF.input,
+                by.variables = c("ecoregion","crop")
+                );
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            DF.expected <- my.DF.input %>%
+               dplyr::group_by(
+                   .data[["ecoregion"]],
+                   .data[["crop"]]
+                   ) %>%
+               dplyr::select(
+                   .data[["harvested_area"]],
+                   .data[["actual_production"]],
+                   .data[["predicted_production"]]
+                   ) %>%
+               dplyr::summarize(
+                   harvested_area       = sum(.data$harvested_area),
+                   actual_production    = sum(.data$actual_production),
+                   predicted_production = sum(.data$predicted_production)
+                   ) %>%
+               dplyr::mutate(
+                   relative_error = abs(
+                       .data$predicted_production - .data$actual_production
+                       ) / .data$actual_production
+                   );
+            DF.expected <- as.data.frame(DF.expected);
+            DF.expected <- DF.expected[order(DF.expected[,"crop"],DF.expected[,"ecoregion"]),]
+            rownames(DF.expected) <- NULL;
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            test.result <- base::all.equal(DF.computed,DF.expected);
+            logger::log_debug("{this.function.name}(): by.variables = c('ecoregion','crop'), all.equal(DF.computed,DF.expected) = {test.result}");
             testthat::expect_equal( DF.computed, DF.expected );
             }
         );
