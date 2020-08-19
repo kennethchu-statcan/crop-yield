@@ -21,8 +21,8 @@ test.correctness_group.then.add.relative.error <- function(
         ecoregion            = sample(paste0(   "r0",1:5),size=100,replace=TRUE),
         crop                 = sample(paste0("crop0",1:9),size=100,replace=TRUE),
         harvested_area       = abs(rnorm(100)),
-        predicted_production = abs(rnorm(100)),
-        actual_production    = abs(rnorm(100))
+        actual_production    = abs(rnorm(100)),
+        predicted_production = abs(rnorm(100))
         );
 
     testthat::test_that(
@@ -56,8 +56,8 @@ test.correctness_group.then.add.relative.error <- function(
                dplyr::select(harvested_area,actual_production,predicted_production) %>%
                dplyr::summarize(
                    harvested_area       = sum(harvested_area),
-                   predicted_production = sum(predicted_production),
-                   actual_production    = sum(actual_production)
+                   actual_production    = sum(actual_production),
+                   predicted_production = sum(predicted_production)
                    ) %>%
                dplyr::mutate(
                    relative_error = abs(
