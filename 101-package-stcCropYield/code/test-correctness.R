@@ -32,22 +32,42 @@ test.correctness_group.then.add.relative.error <- function(
                 DF.input     = my.DF.input,
                 by.variables = NULL
                 );
+            cat("\nstr(DF.computed)\n");
+            print( str(DF.computed)   );
+            cat("\nDF.computed\n");
+            print( DF.computed   );
+#            DF.expected <- my.DF.input %>%
+#               dplyr::select(
+#                   rlang::.data$harvested_area,
+#                   rlang::.data$predicted_production,
+#                   rlang::.data$actual_production
+#                   ) %>%
+#               dplyr::summarize(
+#                   harvested_area       = sum(rlang::.data$harvested_area),
+#                   predicted_production = sum(rlang::.data$predicted_production),
+#                   actual_production    = sum(rlang::.data$actual_production)
+#                   ) #%>%
+#               #dplyr::mutate(
+#               #    relative_error = abs(
+#               #        rlang::.data$predicted_production - rlang::.data$actual_production
+#               #        ) / rlang::.data$actual_production
+#               #    );
             DF.expected <- my.DF.input %>%
-               dplyr::select(
-                   rlang::.data$harvested_area,
-                   rlang::.data$predicted_production,
-                   rlang::.data$actual_production
-                   ) %>%
+               dplyr::select(harvested_area,actual_prediction,predicted_production) %>%
                dplyr::summarize(
-                   harvested_area       = sum(rlang::.data$harvested_area),
-                   predicted_production = sum(rlang::.data$predicted_production),
-                   actual_production    = sum(rlang::.data$actual_production)
+                   harvested_area       = sum(harvested_area),
+                   predicted_production = sum(predicted_production),
+                   actual_production    = sum(actual_production)
                    ) %>%
                dplyr::mutate(
                    relative_error = abs(
-                       rlang::.data$predicted_production - rlang::.data$actual_production
-                       ) / rlang::.data$actual_production
+                       predicted_production - actual_production
+                       ) / actual_production
                    );
+            cat("\nstr(DF.expected)\n");
+            print( str(DF.expected)   );
+            cat("\nDF.expected\n");
+            print( DF.expected   );
             testthat::expect_equal( DF.computed, DF.expected );
             }
         );
