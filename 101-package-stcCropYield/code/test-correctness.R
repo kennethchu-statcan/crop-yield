@@ -10,7 +10,7 @@ test.correctness <- function(
     logger::log_threshold(level = log.threshold);
 
     test.correctness_xgboost.multiphase();
-    test.correctness_group.then.add.relative.error();
+    #test.correctness_group.then.add.relative.error();
 
     }
 
@@ -235,13 +235,14 @@ test.correctness_xgboost.multiphase <- function(
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(DF.computed,DF.expected);
             logger::log_debug('{this.function.name}(): all.equal(DF.computed,DF.expected) = {test.result}');
-
+            write.csv(x = DF.expected, file = "DF-expected.csv", row.names = FALSE);
+            write.csv(x = DF.computed, file = "DF-computed.csv", row.names = FALSE);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             testthat::expect_equal( DF.computed, DF.expected );
 
             }
         ); # testthat::test_that()
-    
+
     logger::log_debug('{this.function.name}(): exits');
 
     }
@@ -415,4 +416,3 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
 ###################################################
 test.correctness();
-

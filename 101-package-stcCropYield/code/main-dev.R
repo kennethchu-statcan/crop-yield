@@ -51,6 +51,34 @@ for ( test.file in test.files ) {
     }
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+cat("\n##################################################\n");
+cat("\n##### warnings():\n");
+print(       warnings()    );
+
+cat("\n##### getOption('repos'):\n");
+print(       getOption('repos')    );
+
+cat("\n##### .libPaths():\n");
+print(       .libPaths()    );
+
+cat("\n##### sessionInfo():\n");
+print(       sessionInfo()    );
+
+# print system time to log
+cat("\n##### Sys.time(): ",format(Sys.time(),"%Y-%m-%d %T %Z"),"\n");
+
+# print elapsed time to log
+stop.proc.time <- proc.time();
+cat("\n##### stop.proc.time - start.proc.time:\n");
+print(       stop.proc.time - start.proc.time    );
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+quit(save = "no");
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(7654321);
 
 n.ecoregions <-  7;
@@ -123,4 +151,3 @@ cat("\n##### Sys.time(): ",format(Sys.time(),"%Y-%m-%d %T %Z"),"\n");
 stop.proc.time <- proc.time();
 cat("\n##### stop.proc.time - start.proc.time:\n");
 print(       stop.proc.time - start.proc.time    );
-
