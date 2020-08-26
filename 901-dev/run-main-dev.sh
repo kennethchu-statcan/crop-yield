@@ -2,7 +2,7 @@
 
 currentDIR=`pwd`
    codeDIR=../101-package-stcCropYield/code
- outputDIR=${currentDIR}/output
+ outputDIR=${currentDIR//github/gittmp}/output
 
 parentDIR=`dirname ${currentDIR}`
   dataDIR=${parentDIR}/000-data
