@@ -447,10 +447,5 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     }
 
 ###################################################
-#base::tryCatch(
-#    expr    = devtools::load_all(),
-#    error   = function(e) {},
-#    finally = function(e) {}
-#    );
-
 test.correctness();
+
