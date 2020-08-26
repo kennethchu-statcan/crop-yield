@@ -1,5 +1,5 @@
 
-buildRPackage <- function(
+assemble.package <- function(
     package.name       = NULL,
     copyright.holder   = "Kenneth Chu",
     description.fields = base::list(),
