@@ -6,6 +6,7 @@ learner.abstract <- R6::R6Class(
     public = base::list(
 
         # instantiation parameters
+        global.objects   = NULL,
         learner.metadata = NULL,
         training.data    = NULL,
 
@@ -16,9 +17,11 @@ learner.abstract <- R6::R6Class(
         trained.machine   = NULL,
 
         initialize = function(
+            global.objects   = NULL,
             learner.metadata = NULL,
             training.data    = NULL
             ) {
+            self$global.objects    <- global.objects;
             self$learner.metadata  <- learner.metadata;
             self$response_variable <- self$learner.metadata[["response_variable"]];
             self$training.data     <- training.data[,base::c(self$response_variable,self$learner.metadata[["predictors"]])];
@@ -34,7 +37,10 @@ learner.abstract <- R6::R6Class(
             base::return ( DF.output );
             }
 
-        ) # public = list()
+        ), # public = list()
+
+    private = base::list(
+        ) # private = list()
 
     ) # R6Class()
 

@@ -53,6 +53,9 @@
 #' @param search.grid list defining the search grid.
 #' See Details and Examples below for more details.
 #' 
+#' @param num.cores integer vector of length 1,
+#' indicating the number of cores to be used. Must be positive.
+#' 
 #' @param output.directory character vector of length 1,
 #' indicating file path of the (output) directory to which all results will be written.
 #' 
@@ -62,6 +65,7 @@
 #' @return NULL. This function writes all output to file within the given \code{output.directory}.
 #' 
 #' @examples
+#' \dontrun{
 #' n.ecoregions <- 3;
 #' n.crops      <- 5;
 #' n.predictors <- 7;
@@ -97,7 +101,7 @@
 #'     output.directory = file.path(".","rwFV"),
 #'     log.threshold  = logger::TRACE
 #'     );
-#'
+#' }
 #' @export
 
 rollingWindowForwardValidation <- function(
@@ -115,6 +119,7 @@ rollingWindowForwardValidation <- function(
     by.variables.phase03 = base::c(ecoregion),
     learner              = "xgboost_multiphase",
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
+    num.cores            = base::max(1,parallel::detectCores() - 1),
     output.directory     = ".",
     log.threshold        = logger::INFO
     ) {
@@ -148,8 +153,7 @@ rollingWindowForwardValidation <- function(
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
         learner              = learner,
-        search.grid          = search.grid,
-        output.directory     = output.directory
+        search.grid          = search.grid
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -182,6 +186,7 @@ rollingWindowForwardValidation <- function(
         year             = year,
         training.window  = training.window,
         learner.metadata = learner.metadata,
+        num.cores        = num.cores,
         output.directory = predictions.directory
         );
 
@@ -264,6 +269,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
     year             = NULL,
     training.window  = NULL,
     learner.metadata = NULL,
+    num.cores        = NULL,
     output.directory = NULL
     ) {
 
@@ -271,15 +277,10 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( logger::log_threshold() >= logger::DEBUG ) {
-        num.cores <- 1;
-    } else {
-        num.cores <- base::max(1,parallel::detectCores() - 1);
-        }
-
-    logger::log_info('{this.function.name}(): number of cores to be used in parallel: {num.cores}');
-
+    num.cores <- base::max(num.cores,1);
+    num.cores <- base::min(num.cores,parallel::detectCores());
     doParallel::registerDoParallel(cores = num.cores);
+    logger::log_info('{this.function.name}(): number of cores to be used in parallel: {num.cores}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     min.validation.year <- base::min(DF.input[,year]) + training.window;
@@ -291,10 +292,43 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_info('{this.function.name}(): validation years: c({paste(validation.years,collapse=",")})');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    foreach::foreach ( temp.index = 1:base::length(learner.metadata) ) %dopar% {
+    global.objects   <- NULL;
+    if ( "windows" == base::.Platform[["OS.type"]] ) {
+        if ( !( "stcCropYield" %in% utils::installed.packages()[,1]) ) {
+            global.objects      <- base::list();
+            global.object.names <- base::ls(name = base::.GlobalEnv);
+            for ( temp.object.name in global.object.names ) {
+                temp.object <- base::get(x = temp.object.name, envir = base::.GlobalEnv);
+                if ( base::is.function(temp.object) | ("R6ClassGenerator" == base::class(temp.object)) | (identical(class(temp.object),c("loglevel","integer"))) ) {
+                    logger::log_debug('{this.function.name}(): replicating the following object from Global Environment into current environment: {temp.object.name}');
+                    base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
+                    global.objects[[temp.object.name]] <- temp.object;
+                    }
+                }
+            }
+        }
+    logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
+    logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    foreach::foreach (
+    	temp.index = 1:base::length(learner.metadata),
+    	.export    = base::ls(name = base::environment())
+    	) %dopar% {
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         learner.name <- base::names(learner.metadata)[temp.index];
 
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        log.file <- base::file.path(output.directory,paste0(learner.name,".log"));
+        logger::log_appender(logger::appender_tee(file = log.file));
+        logger::log_info('{this.function.name}(foreach, temp.index = {temp.index}): starts');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_debug('{this.function.name}(foreach, temp.index = {temp.index}): environment(): {capture.output(environment())}');
+        logger::log_debug('{this.function.name}(foreach, temp.index = {temp.index}): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         for (validation.year in validation.years) {
 
             log.prefix <- '{this.function.name}(): ({learner.name},{validation.year})';
@@ -309,17 +343,21 @@ rollingWindowForwardValidation_generate.predictions <- function(
             logger::log_info(base::paste0(log.prefix,', nrow(DF.validation) = {nrow(DF.validation)})'));
 
             validation.single.year(
-                learner.name     = learner.name,
-                validation.year  = validation.year,
-                learner.metadata = learner.metadata[[learner.name]],
-                DF.training      = DF.training,
-                DF.validation    = DF.validation,
-                output.directory = output.directory
+                learner.name       = learner.name,
+                validation.year    = validation.year,
+                learner.metadata   = learner.metadata[[learner.name]],
+                DF.training        = DF.training,
+                DF.validation      = DF.validation,
+                output.directory   = output.directory,
+                global.objects     = global.objects
                 );
 
-            }
+            } # for (validation.year in validation.years)
 
-        }
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_info('{this.function.name}(foreach, temp.index = {temp.index}): quits');
+
+        } # foreach::foreach ( temp.index = ... )
 
     logger::log_info('{this.function.name}(): exits');
     base::return( NULL );

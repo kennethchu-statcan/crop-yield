@@ -9,15 +9,27 @@ test.correctness <- function(
     logger::log_appender(logger::appender_console);
     logger::log_threshold(level = log.threshold);
 
-    test.correctness_xgboost.multiphase();
-    #test.correctness_group.then.add.relative.error();
+    test.correctness_xgboost.multiphase(my.tolerance = 1e-3);
+    test.correctness_group.then.add.relative.error(my.tolerance = 1e-3);
 
     }
 
 #' @importFrom rlang .data
+#' @importFrom magrittr %>%
 test.correctness_group.then.add.relative.error <- function(
+    my.tolerance = 1e-3
     ) {
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( "package:stcCropYield" %in% search() ) {
+        assign(
+            x     = "validation.single.year_group.then.add.relative.error",
+            value = stcCropYield:::validation.single.year_group.then.add.relative.error,
+            envir = base::environment()
+            );
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     this.function.name <- "test.correctness_group.then.add.relative.error";
 
     my.DF.input <- base::data.frame(
@@ -31,7 +43,7 @@ test.correctness_group.then.add.relative.error <- function(
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = NULL",
         code = {
-            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
+            DF.computed <- validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = NULL
                 );
@@ -54,16 +66,20 @@ test.correctness_group.then.add.relative.error <- function(
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            test.result <- base::all.equal(DF.computed,DF.expected);
-            logger::log_debug('{this.function.name}(): by.variables = NULL, all.equal(DF.computed,DF.expected) = {test.result}');
-            testthat::expect_equal( DF.computed, DF.expected );
+            test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
+            logger::log_info('{this.function.name}(): by.variables = NULL, all.equal(DF.computed,DF.expected) = {test.result}');
+            testthat::expect_equal(
+                object    = DF.computed,
+                expected  = DF.expected,
+                tolerance = my.tolerance
+                );
             }
         );
 
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = 'crop'",
         code = {
-            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
+            DF.computed <- validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = "crop"
                 );
@@ -89,16 +105,20 @@ test.correctness_group.then.add.relative.error <- function(
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            test.result <- base::all.equal(DF.computed,DF.expected);
-            logger::log_debug("{this.function.name}(): by.variables = 'crop', all.equal(DF.computed,DF.expected) = {test.result}");
-            testthat::expect_equal( DF.computed, DF.expected );
+            test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
+            logger::log_info("{this.function.name}(): by.variables = 'crop', all.equal(DF.computed,DF.expected) = {test.result}");
+            testthat::expect_equal(
+                object    = DF.computed,
+                expected  = DF.expected,
+                tolerance = my.tolerance
+                );
             }
         );
 
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = 'ecoregion'",
         code = {
-            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
+            DF.computed <- validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = "ecoregion"
                 );
@@ -124,16 +144,20 @@ test.correctness_group.then.add.relative.error <- function(
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            test.result <- base::all.equal(DF.computed,DF.expected);
-            logger::log_debug("{this.function.name}(): by.variables = 'ecoregion', all.equal(DF.computed,DF.expected) = {test.result}");
-            testthat::expect_equal( DF.computed, DF.expected );
+            test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
+            logger::log_info("{this.function.name}(): by.variables = 'ecoregion', all.equal(DF.computed,DF.expected) = {test.result}");
+            testthat::expect_equal(
+                object    = DF.computed,
+                expected  = DF.expected,
+                tolerance = my.tolerance
+                );
             }
         );
 
     testthat::test_that(
         desc = "group.then.add.relative.error(): by.variables = c('ecoregion','crop')",
         code = {
-            DF.computed <- stcCropYield::validation.single.year_group.then.add.relative.error(
+            DF.computed <- validation.single.year_group.then.add.relative.error(
                 DF.input     = my.DF.input,
                 by.variables = c("ecoregion","crop")
                 );
@@ -162,9 +186,13 @@ test.correctness_group.then.add.relative.error <- function(
             DF.expected <- DF.expected[order(DF.expected[,"crop"],DF.expected[,"ecoregion"]),]
             rownames(DF.expected) <- NULL;
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            test.result <- base::all.equal(DF.computed,DF.expected);
-            logger::log_debug("{this.function.name}(): by.variables = c('ecoregion','crop'), all.equal(DF.computed,DF.expected) = {test.result}");
-            testthat::expect_equal( DF.computed, DF.expected );
+            test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
+            logger::log_info("{this.function.name}(): by.variables = c('ecoregion','crop'), all.equal(DF.computed,DF.expected) = {test.result}");
+            testthat::expect_equal(
+                object    = DF.computed,
+                expected  = DF.expected,
+                tolerance = my.tolerance
+                );
             }
         );
 
@@ -173,11 +201,12 @@ test.correctness_group.then.add.relative.error <- function(
 test.correctness_xgboost.multiphase <- function(
     n.ecoregions = 2,
     n.crops      = 3,
-    n.predictors = 7
+    n.predictors = 7,
+    my.tolerance = 1e-3
     ) {
 
     this.function.name <- "test.correctness_xgboost.multiphase";
-    logger::log_debug('{this.function.name}(): starts');
+    logger::log_info('{this.function.name}(): starts');
 
     testthat::test_that(
         desc = "correctness of xgboost.multiphase",
@@ -187,6 +216,7 @@ test.correctness_xgboost.multiphase <- function(
             n.crops      <- n.crops;
             n.predictors <- n.predictors;
 
+            set.seed(7654321);
             DF.synthetic <- getData.synthetic(
                 years        = base::seq(2015,2020),
                 n.ecoregions = n.ecoregions,
@@ -199,6 +229,7 @@ test.correctness_xgboost.multiphase <- function(
             DF.training   <- DF.synthetic[DF.synthetic[,"my_year"] != 2020,];
             DF.validation <- DF.synthetic[DF.synthetic[,"my_year"] == 2020,];
 
+            set.seed(7654321);
             trained.model <- crop.yield.train.model(
                 DF.training          = DF.training,
                 year                 = "my_year",
@@ -216,6 +247,7 @@ test.correctness_xgboost.multiphase <- function(
 
             DF.computed <- trained.model$predict(newdata = DF.validation);
 
+            set.seed(7654321);
             DF.expected <- test.correctness_xgboost.multiphase_get.expected.output(
                 DF.training          = DF.training,
                 DF.validation        = DF.validation,
@@ -233,17 +265,17 @@ test.correctness_xgboost.multiphase <- function(
                 );
 
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            test.result <- base::all.equal(DF.computed,DF.expected);
-            logger::log_debug('{this.function.name}(): all.equal(DF.computed,DF.expected) = {test.result}');
-            write.csv(x = DF.expected, file = "DF-expected.csv", row.names = FALSE);
-            write.csv(x = DF.computed, file = "DF-computed.csv", row.names = FALSE);
+            test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
+            logger::log_info('{this.function.name}(): all.equal(DF.computed,DF.expected) = {test.result}');
+            #write.csv(x = DF.expected, file = "DF-expected.csv", row.names = FALSE);
+            #write.csv(x = DF.computed, file = "DF-computed.csv", row.names = FALSE);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-            testthat::expect_equal( DF.computed, DF.expected );
+            testthat::expect_equal( DF.computed, DF.expected, tolerance = my.tolerance );
 
             }
         ); # testthat::test_that()
-
-    logger::log_debug('{this.function.name}(): exits');
+    
+    logger::log_info('{this.function.name}(): exits');
 
     }
 
@@ -265,10 +297,10 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     ) {
 
     this.function.name <- "test.correctness_xgboost.multiphase_get.expected.output";
-    logger::log_debug('{this.function.name}(): starts');
+    logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_debug('{this.function.name}(): learner metadata starts');
+    logger::log_info('{this.function.name}(): learner metadata starts');
 
     learner.metadata <- get.learner.metadata_private.helper(
         year                 = year,
@@ -286,10 +318,10 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
     learner.metadata <- learner.metadata[[1]];
 
-    logger::log_debug('{this.function.name}(): learner metadata generation complete');
+    logger::log_info('{this.function.name}(): learner metadata generation complete');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_debug('{this.function.name}(): assembling of DF.training and DF.validation starts');
+    logger::log_info('{this.function.name}(): assembling of DF.training and DF.validation starts');
 
     DF.training <- DF.training;
     DF.training[,"ecoregion.crop"] <- base::apply(
@@ -309,7 +341,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         FUN    = function(x) { base::paste(x, collapse = "_") }
         );
 
-    logger::log_debug('{this.function.name}(): assembling of DF.training and DF.validation complete');
+    logger::log_info('{this.function.name}(): assembling of DF.training and DF.validation complete');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     byVars <- base::list(
@@ -327,7 +359,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
         for ( temp.group in temp.groups ) {
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}) starts');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}) starts');
 
             DF.temp.training   <- DF.training[  temp.group == DF.training[,  byVars[[temp.phase]]],];
             DF.temp.validation <- DF.validation[temp.group == DF.validation[,byVars[[temp.phase]]],];
@@ -337,7 +369,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 label = DF.temp.training[,learner.metadata[["response_variable"]]]
                 );
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.training');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.training');
 
             trained.machine <- xgboost::xgb.train(
                 data = DMatrix.training,
@@ -354,28 +386,28 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 save_period   = NULL
                 );
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of trained.machine');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of trained.machine');
 
             DMatrix.validation <- xgboost::xgb.DMatrix(
                 data  = base::as.matrix(DF.temp.validation[,learner.metadata[["predictors"]]]),
                 label = rep(NA,base::nrow(DF.temp.validation))
                 );
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.validation');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.validation');
 
             predicted.response <- stats::predict(
                 object  = trained.machine,
                 newdata = DMatrix.validation
                 );
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of predicted.response');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of predicted.response');
 
             DF.temp.validation[,colname.prediction] <- predicted.response;
             DF.temp.output <- base::rbind(DF.temp.output,DF.temp.validation);
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DF.temp.output');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DF.temp.output');
 
-            logger::log_debug('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}) complete');
+            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}) complete');
 
             }
 
@@ -385,7 +417,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
             by = "syntheticID"
             );
 
-        logger::log_debug('{this.function.name}(): training/prediction for Phase {temp.phase} complete');
+        logger::log_info('{this.function.name}(): training/prediction for Phase {temp.phase} complete');
 
         }
 
@@ -407,12 +439,18 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
 
     DF.output <- DF.output[,setdiff(colnames(DF.output),"syntheticID")];
 
-    logger::log_debug('{this.function.name}(): creation of DF.output complete');
+    logger::log_info('{this.function.name}(): creation of DF.output complete');
 
-    logger::log_debug('{this.function.name}(): exits');
+    logger::log_info('{this.function.name}(): exits');
     base::return( DF.output );
 
     }
 
 ###################################################
+#base::tryCatch(
+#    expr    = devtools::load_all(),
+#    error   = function(e) {},
+#    finally = function(e) {}
+#    );
+
 test.correctness();

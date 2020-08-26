@@ -1,11 +1,12 @@
 
 validation.single.year <- function(
-    learner.name     = NULL,
-    validation.year  = NULL,
-    learner.metadata = NULL,
-    DF.training      = NULL,
-    DF.validation    = NULL,
-    output.directory = NULL
+    learner.name       = NULL,
+    validation.year    = NULL,
+    learner.metadata   = NULL,
+    DF.training        = NULL,
+    DF.validation      = NULL,
+    output.directory   = NULL,
+    global.objects     = NULL
     ) {
 
     this.function.name <- "validation.single.year";
@@ -14,6 +15,25 @@ validation.single.year <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_info('{this.function.name}(): learner.name = {learner.name}, validation.year = {validation.year}');
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( "windows" == base::.Platform[["OS.type"]] ) {
+        if ( !is.null(global.objects) ) {
+            object.names <- base::names(global.objects);
+            for ( temp.object.name in object.names ) {
+                temp.object <- global.objects[[temp.object.name]];
+                if ( base::is.function(temp.object) | ("R6ClassGenerator" == base::class(temp.object)) ) {
+                    #logger::log_debug('{this.function.name}(): replicating the following object from before-forking environment into current environment: {temp.object.name}');
+                    base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
+                } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                    logger::log_threshold(level = temp.object);
+                    }
+                }
+            }
+        }
+    logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
+    logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.sub.directory <- base::file.path(output.directory,learner.name,validation.year);
     if ( !base::dir.exists(output.sub.directory) ) {
         base::dir.create(path = output.sub.directory, recursive = TRUE);
@@ -22,7 +42,8 @@ validation.single.year <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     current.learner <- getLearner(
         learner.metadata = learner.metadata,
-        DF.training      = DF.training
+        DF.training      = DF.training,
+        global.objects   = global.objects
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -67,7 +88,8 @@ validation.single.year <- function(
         DF.input             = DF.predictions.parcel,
         learner.metadata     = learner.metadata,
         output.sub.directory = output.sub.directory,
-        output.filename      = output.filename
+        output.filename      = output.filename,
+        global.objects       = global.objects
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -77,16 +99,37 @@ validation.single.year <- function(
     }
 
 ##################################################
-
-#' @importFrom rlang .data
 validation.single.year_diagnostics <- function(
     DF.input             = NULL,
     learner.metadata     = NULL,
     output.sub.directory = NULL,
-    output.filename      = NULL
+    output.filename      = NULL,
+    global.objects       = NULL
     ) {
 
+    this.function.name <- "validation.single.year_diagnostics";
+    logger::log_info('{this.function.name}(): starts');
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( "windows" == base::.Platform[["OS.type"]] ) {
+        if ( !is.null(global.objects) ) {
+            object.names <- base::names(global.objects);
+            for ( temp.object.name in object.names ) {
+                temp.object <- global.objects[[temp.object.name]];
+                if ( base::is.function(temp.object) | ("R6ClassGenerator" == base::class(temp.object)) ) {
+                    base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
+                } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                    logger::log_threshold(level = temp.object);
+                    }
+                }
+            }
+        }
+    logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
+    logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+ 
     selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
@@ -311,6 +354,7 @@ validation.single.year_diagnostics <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_info('{this.function.name}(): exits');
     base::return( NULL );
 
     }

@@ -13,7 +13,7 @@ base::setwd(output.directory);
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 base::require(R6);
 base::require(logger);
-base::source(base::file.path(code.directory,'buildRPackage.R'));
+base::source(base::file.path(code.directory,'assemble-package.R'));
 
 ###################################################
 ###################################################
@@ -73,7 +73,6 @@ files.R <- base::c(
     "package-init.R",
     "preprocessor.R",
     "rollingWindowForwardValidation.R",
-    "test-correctness.R",
     "validation-single-year.R",
     "weighted-statistics.R"
     );
