@@ -90,7 +90,7 @@ tests.R <- base::file.path( code.directory , tests.R );
 #vignettes.Rmd <- base::c("vignette-title.Rmd", "nppR-package-guide.Rmd");
 #vignettes.Rmd <- base::file.path( code.directory , vignettes.Rmd );
 
-buildRPackage(
+assemble.package(
     package.name       = package.name,
     copyright.holder   = "Kenneth Chu",
     description.fields = description.fields,
