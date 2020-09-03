@@ -46,11 +46,13 @@ learner.multiphase <- R6::R6Class(
                         if ( base::is.function(temp.object) | ("R6ClassGenerator" == base::class(temp.object)) ) {
                             base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                         } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                            base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                             logger::log_threshold(level = temp.object);
                             }
                         }
                     }
                 }
+            logger::log_info( '{this.function.name}(): log.threshold(): {attr(x=logger::log_threshold(),which="level")}');
             logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
             logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

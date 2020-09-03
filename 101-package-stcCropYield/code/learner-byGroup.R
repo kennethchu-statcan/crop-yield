@@ -22,7 +22,31 @@ learner.byGroup <- R6::R6Class(
             learner.metadata     = NULL,
             training.data        = NULL
             ) {
-            self$global.objects       <- global.objects;
+
+            this.function.name <- "learner.byGroup$initialize";
+            logger::log_debug('{this.function.name}(): starts');
+
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            self$global.objects <- global.objects;
+            if ( "windows" == base::.Platform[["OS.type"]] ) {
+                if ( !is.null(self$global.objects) ) {
+                    object.names <- base::names(self$global.objects);
+                    for ( temp.object.name in object.names ) {
+                        temp.object <- self$global.objects[[temp.object.name]];
+                        if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                            base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
+                            logger::log_threshold(level = temp.object);
+                            }
+                        }
+                    }
+                }
+            logger::log_info( '{this.function.name}(): log.threshold(): {attr(x=logger::log_threshold(),which="level")}');
+            logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
+            logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+
             self$learner.single.group <- learner.single.group;
             self$learner.metadata     <- learner.metadata;
             self$by.variables         <- self$learner.metadata[["by_variables"]];
@@ -31,11 +55,17 @@ learner.byGroup <- R6::R6Class(
             colnames.training  <- c(self$response.variable,self$by.variables,self$learner.metadata[["predictors"]]);
             self$training.data <- training.data[,colnames.training];
 
+            logger::log_debug('{this.function.name}(): str(training.data): {paste(capture.output(str(training.data)),collapse="\n")}');
+            logger::log_debug('{this.function.name}(): self$by.variables: {paste(self$by.variables,collapse="\n")}');
+            logger::log_debug('{this.function.name}(): str(self$training.data[,self$by.variables]): {paste(capture.output(str(self$training.data[,self$by.variables])),collapse="\n")}');
+
             self$training.data[,"concatenated_by_variable"] <- private$get_concatenated_by_variable(
                 DF.input = self$training.data[,self$by.variables]
                 );
 
             self$training.data <- self$training.data[,base::setdiff(base::colnames(self$training.data),self$by.variables)];
+
+            logger::log_debug('{this.function.name}(): str(self$training.data): {paste(capture.output(str(self$training.data)),collapse="\n")}');
 
             },
 
@@ -51,11 +81,13 @@ learner.byGroup <- R6::R6Class(
                         if ( base::is.function(temp.object) | ("R6ClassGenerator" == base::class(temp.object)) ) {
                             base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                         } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                            base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                             logger::log_threshold(level = temp.object);
                             }
                         }
                     }
                 }
+            logger::log_info( '{this.function.name}(): log.threshold(): {attr(x=logger::log_threshold(),which="level")}');
             logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
             logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -102,7 +134,9 @@ learner.byGroup <- R6::R6Class(
     private = list(
 
         get_concatenated_by_variable = function(DF.input = NULL) {
-            if ( base::is.character(DF.input) ) {
+            if ( base::is.factor(DF.input) ) {
+                output.factor <- DF.input;
+            } else if ( base::is.character(DF.input) ) {
                 output.factor <- base::factor(base::as.character(DF.input));
             } else {
                 output.factor <- base::factor(
