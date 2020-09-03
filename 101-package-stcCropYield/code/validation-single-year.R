@@ -10,10 +10,7 @@ validation.single.year <- function(
     ) {
 
     this.function.name <- "validation.single.year";
-    logger::log_info('{this.function.name}(): starts');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('{this.function.name}(): learner.name = {learner.name}, validation.year = {validation.year}');
+    logger::log_info('{this.function.name}({learner.name},{validation.year}): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( "windows" == base::.Platform[["OS.type"]] ) {
@@ -25,11 +22,13 @@ validation.single.year <- function(
                     #logger::log_debug('{this.function.name}(): replicating the following object from before-forking environment into current environment: {temp.object.name}');
                     base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                 } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                    base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                     logger::log_threshold(level = temp.object);
                     }
                 }
             }
         }
+    logger::log_info( '{this.function.name}(): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
     logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
     logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
 
@@ -40,52 +39,69 @@ validation.single.year <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    current.learner <- getLearner(
-        learner.metadata = learner.metadata,
-        DF.training      = DF.training,
-        global.objects   = global.objects
-        );
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), fitting begins');
-    current.learner$fit();
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), fitting complete');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.validation) = c({paste0(dim(DF.validation),collapse=",")})');
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), str(DF.validation):\n{paste0(capture.output(str(DF.validation)),collapse="\n")}');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), predicting begins');
-    DF.predictions.parcel <- current.learner$predict(newdata = DF.validation);
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), predicting complete');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
-    DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,"predicted_response"];
-    logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     output.filename <- base::paste0("predictions-",learner.name);
     output.RData    <- base::file.path(output.sub.directory,base::paste0(output.filename,"-parcel.RData"));
-    base::saveRDS( object = DF.predictions.parcel, file = output.RData );
 
-    #output.CSV <- file.path(output.sub.directory,paste0(output.filename,".csv"));
-    # write.csv(
-    #     file      = output.CSV,
-    #     x         = DF.predictions.parcel,
-    #     row.names = FALSE
-    #     );
+    if ( base::file.exists(output.RData) ) {
 
-    #output.feather <- file.path(output.sub.directory,paste0(output.filename,".feather"));
-    # feather::write_feather(
-    #    path = output.feather,
-    #    x    = DF.predictions.parcel
-    #    );
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), loading starts: {output.RData}');
+        DF.predictions.parcel <- base::readRDS( file = output.RData );
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), loading complete: {output.RData}');
+
+    } else {
+
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), calling: getLearner()');
+        current.learner <- getLearner(
+            learner.metadata = learner.metadata,
+            DF.training      = DF.training,
+            global.objects   = global.objects
+            );
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), execution complete: getLearner()');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), fitting begins');
+        current.learner$fit();
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), fitting complete');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.validation) = c({paste0(dim(DF.validation),collapse=",")})');
+        logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), str(DF.validation):\n{paste0(capture.output(str(DF.validation)),collapse="\n")}');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), predicting begins');
+        DF.predictions.parcel <- current.learner$predict(newdata = DF.validation);
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), predicting complete');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
+        DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,"predicted_response"];
+        logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), saving to file begins: {output.RData}');
+        base::saveRDS( object = DF.predictions.parcel, file = output.RData );
+        logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), saving to file complete: {output.RData}');
+
+        #output.CSV <- file.path(output.sub.directory,paste0(output.filename,".csv"));
+        # write.csv(
+        #     file      = output.CSV,
+        #     x         = DF.predictions.parcel,
+        #     row.names = FALSE
+        #     );
+
+        #output.feather <- file.path(output.sub.directory,paste0(output.filename,".feather"));
+        # feather::write_feather(
+        #    path = output.feather,
+        #    x    = DF.predictions.parcel
+        #    );
+
+        } # if ( base::file.exists(output.RData) )
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     validation.single.year_diagnostics(
         DF.input             = DF.predictions.parcel,
+        learner.name         = learner.name,
+        validation.year      = validation.year,
         learner.metadata     = learner.metadata,
         output.sub.directory = output.sub.directory,
         output.filename      = output.filename,
@@ -93,7 +109,7 @@ validation.single.year <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('{this.function.name}(): exits');
+    logger::log_info('{this.function.name}({learner.name},{validation.year}): exits');
     return( NULL );
 
     }
@@ -101,6 +117,8 @@ validation.single.year <- function(
 ##################################################
 validation.single.year_diagnostics <- function(
     DF.input             = NULL,
+    learner.name         = NULL,
+    validation.year      = NULL,
     learner.metadata     = NULL,
     output.sub.directory = NULL,
     output.filename      = NULL,
@@ -108,7 +126,7 @@ validation.single.year_diagnostics <- function(
     ) {
 
     this.function.name <- "validation.single.year_diagnostics";
-    logger::log_info('{this.function.name}(): starts');
+    logger::log_info('{this.function.name}({learner.name},{validation.year}): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -125,11 +143,11 @@ validation.single.year_diagnostics <- function(
                 }
             }
         }
-    logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
-    logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): environment(): {capture.output(environment())}');
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
- 
+
     selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
@@ -149,7 +167,7 @@ validation.single.year_diagnostics <- function(
             replacement = temp.var
             );
         }
- 
+
     DF.region.crop <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.region.crop,
         by.variables = c("ecoregion","crop")
@@ -162,36 +180,13 @@ validation.single.year_diagnostics <- function(
         row.names = FALSE
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- base::file.path(output.sub.directory,base::paste0("plot-predictions-region-crop.png"));
-    my.ggplot <- initializePlot();
-    #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
-
-#    my.ggplot <- my.ggplot + scale_x_continuous(
-#        limits = (1e7) * c(  0,10  ),
-#        breaks = (1e7) * seq(0,10,2)
-#        );
-
-#    my.ggplot <- my.ggplot + scale_y_continuous(
-#        limits = (1e7) * c(  0,10  ),
-#        breaks = (1e7) * seq(0,10,2)
-#        );
-
-    my.ggplot <- my.ggplot + ggplot2::geom_point(
-        data    = DF.region.crop,
-        mapping = ggplot2::aes(
-            x = .data$actual_production,
-            y = .data$predicted_production
-            ),
-        alpha = 0.9
+    validation.single.year_scatterplot(
+        FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-region-crop.png")),
+        DF.input        = DF.region.crop,
+        learner.name    = learner.name,
+        validation.year = validation.year,
+        global.objects  = global.objects
         );
-
-    my.ggplot <- my.ggplot + ggplot2::geom_abline(
-        slope     = 1,
-        intercept = 0
-        );
-
-    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -213,7 +208,7 @@ validation.single.year_diagnostics <- function(
             replacement = temp.var
             );
         }
-    
+
     DF.region <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.region,
         by.variables = c("ecoregion")
@@ -226,36 +221,13 @@ validation.single.year_diagnostics <- function(
         row.names = FALSE
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- base::file.path(output.sub.directory,base::paste0("plot-predictions-region.png"));
-    my.ggplot <- initializePlot();
-    #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
-
-#    my.ggplot <- my.ggplot + scale_x_continuous(
-#        limits = (1e7) * c(  0,10  ),
-#        breaks = (1e7) * seq(0,10,2)
-#        );
-
-#    my.ggplot <- my.ggplot + scale_y_continuous(
-#        limits = (1e7) * c(  0,10  ),
-#        breaks = (1e7) * seq(0,10,2)
-#        );
-
-    my.ggplot <- my.ggplot + ggplot2::geom_point(
-        data    = DF.region,
-        mapping = ggplot2::aes(
-            x = .data$actual_production,
-            y = .data$predicted_production
-            ),
-        alpha = 0.9
+    validation.single.year_scatterplot(
+        FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-region.png")),
+        DF.input        = DF.region,
+        learner.name    = learner.name,
+        validation.year = validation.year,
+        global.objects  = global.objects
         );
-
-    my.ggplot <- my.ggplot + ggplot2::geom_abline(
-        slope     = 1,
-        intercept = 0
-        );
-
-    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -290,36 +262,13 @@ validation.single.year_diagnostics <- function(
         row.names = FALSE
         );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    FILE.png  <- base::file.path(output.sub.directory,base::paste0("plot-predictions-crop.png"));
-    my.ggplot <- initializePlot();
-    #my.ggplot <- my.ggplot + ggtitle(paste0( temp.crop, ", ", temp.year ));
-
-#    my.ggplot <- my.ggplot + scale_x_continuous(
-#        limits = (1e7) * c(  0,10  ),
-#        breaks = (1e7) * seq(0,10,2)
-#        );
-
-#    my.ggplot <- my.ggplot + scale_y_continuous(
-#        limits = (1e7) * c(  0,10  ),
-#        breaks = (1e7) * seq(0,10,2)
-#        );
-
-    my.ggplot <- my.ggplot + ggplot2::geom_point(
-        data    = DF.crop,
-        mapping = ggplot2::aes(
-            x = .data$actual_production,
-            y = .data$predicted_production
-            ),
-        alpha = 0.9
+    validation.single.year_scatterplot(
+        FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-crop.png")),
+        DF.input        = DF.crop,
+        learner.name    = learner.name,
+        validation.year = validation.year,
+        global.objects  = global.objects
         );
-
-    my.ggplot <- my.ggplot + ggplot2::geom_abline(
-        slope     = 1,
-        intercept = 0
-        );
-
-    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -354,8 +303,85 @@ validation.single.year_diagnostics <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('{this.function.name}(): exits');
+    logger::log_info('{this.function.name}({learner.name},{validation.year}): exits');
     base::return( NULL );
+
+    }
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+#' @importFrom rlang .data
+validation.single.year_scatterplot <- function(
+    FILE.png        = NULL,
+    DF.input        = NULL,
+    learner.name    = NULL,
+    validation.year = NULL,
+    global.objects  = NULL
+    ) {
+
+    this.function.name <- "validation.single.year_scatterplot";
+    logger::log_info('{this.function.name}({learner.name},{validation.year}): starts');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( "windows" == base::.Platform[["OS.type"]] ) {
+        if ( !is.null(global.objects) ) {
+            object.names <- base::names(global.objects);
+            for ( temp.object.name in object.names ) {
+                temp.object <- global.objects[[temp.object.name]];
+                if ( base::is.function(temp.object) | ("R6ClassGenerator" == base::class(temp.object)) ) {
+                    base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
+                } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                    logger::log_threshold(level = temp.object);
+                    }
+                }
+            }
+        }
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): environment(): {capture.output(environment())}');
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+
+    my.ggplot <- initializePlot();
+    my.ggplot <- my.ggplot + ggplot2::ggtitle(
+        label    = NULL,
+        subtitle = paste0( learner.name, ", ", validation.year )
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::geom_point(
+        data    = DF.input,
+        mapping = ggplot2::aes(
+            x = .data$actual_production,
+            y = .data$predicted_production
+            ),
+        alpha = 0.9
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::geom_abline(
+        slope     = 1,
+        intercept = 0
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::xlab(label =    "actual production");
+    my.ggplot <- my.ggplot + ggplot2::ylab(label = "predicted production");
+
+    temp.axis.max <- max(
+        max(DF.input[,   "actual_production"]),
+        max(DF.input[,"predicted_production"])
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::scale_x_continuous(
+        limits = 1.1 * c(0,temp.axis.max)
+        #,breaks = (1e7) * seq(0,10,2)
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(
+        limits = 1.1 * c(0,temp.axis.max)
+        #,breaks = (1e7) * seq(0,10,2)
+        );
+
+    ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
+
+    logger::log_info('{this.function.name}({learner.name},{validation.year}): exits');
 
     }
 

@@ -18,11 +18,13 @@ getLearner <- function(
                     #logger::log_debug('{this.function.name}(): replicating the following object from before-forking environment into current environment: {temp.object.name}');
                     base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                 } else if ( identical(class(temp.object),c("loglevel","integer")) ) {
+                    base::assign(x = temp.object.name, value = temp.object, envir = base::environment());
                     logger::log_threshold(level = temp.object);
                     }
                 }
             }
         }
+    logger::log_info( '{this.function.name}(): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
     logger::log_debug('{this.function.name}(): environment(): {capture.output(environment())}');
     logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
 

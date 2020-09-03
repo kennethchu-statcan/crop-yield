@@ -137,6 +137,7 @@ rollingWindowForwardValidation <- function(
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('{this.function.name}(): starts');
+    logger::log_info('{this.function.name}(): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     rollingWindowForwardValidation_input.validity.checks(
@@ -187,7 +188,8 @@ rollingWindowForwardValidation <- function(
         training.window  = training.window,
         learner.metadata = learner.metadata,
         num.cores        = num.cores,
-        output.directory = predictions.directory
+        output.directory = predictions.directory,
+        log.threshold    = log.threshold
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -203,6 +205,13 @@ rollingWindowForwardValidation <- function(
         validation.window        = validation.window,
         list.performance.metrics = list.performance.metrics,
         output.sub.directory     = mock.productions.directory
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    rollingWindowForwardValidation_visualize.results(
+        list.performance.metrics    = list.performance.metrics,
+        list.mock.production.errors = list.mock.production.errors,
+        output.sub.directory        = mock.productions.directory
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -228,6 +237,81 @@ rollingWindowForwardValidation <- function(
     }
 
 ##################################################
+#' @importFrom rlang .data
+rollingWindowForwardValidation_visualize.results <- function(
+    list.performance.metrics    = NULL,
+    list.mock.production.errors = NULL,
+    plot.limits.y               = c(  0.0,0.5),
+    plot.breaks.y               = seq(0.0,0.5,0.1),
+    output.sub.directory        = NULL
+    ) {
+
+    for ( temp.model in names(list.mock.production.errors) ) {
+
+        DF.performance.metrics <- list.performance.metrics[[temp.model]];
+        colnames(DF.performance.metrics) <- gsub(
+            x           = colnames(DF.performance.metrics),
+            pattern     = "year",
+            replacement = "production_year"
+            );
+        DF.performance.metrics[,"production_year"] <- as.numeric(as.character(DF.performance.metrics[,"production_year"]));
+
+        DF.mock.production.errors <- list.mock.production.errors[[temp.model]][["mock_production_errors"]];
+        DF.mock.production.errors[,"production_year"] <- as.numeric(as.character(DF.mock.production.errors[,"production_year"]));
+
+        my.ggplot <- initializePlot();
+        my.ggplot <- my.ggplot + ggplot2::ggtitle(label = NULL, subtitle = temp.model);
+	    my.ggplot <- my.ggplot + ggplot2::geom_line(
+	        data      = DF.performance.metrics,
+	        mapping   = ggplot2::aes(x = .data$production_year, y = .data$weighted_error, group = .data$model),
+	        colour    = "black",
+	        line_type = 2,
+	        alpha     = 0.05
+	        );
+        my.ggplot <- my.ggplot + ggplot2::geom_point(
+            data      = DF.mock.production.errors,
+            mapping   = ggplot2::aes(x = .data$production_year, y = .data$mock_production_error),
+            colour    = "orange",
+            size      = 5,
+            alpha     = 0.75
+            );
+        my.ggplot <- my.ggplot + ggplot2::geom_line(
+            data      = DF.mock.production.errors,
+            mapping   = ggplot2::aes(x = .data$production_year, y = .data$mock_production_error),
+            colour    = "orange",
+            size      = 1,
+            alpha     = 0.90
+            );
+        x.min <- min(
+            min(DF.performance.metrics[,   "production_year"]),
+            min(DF.mock.production.errors[,"production_year"])
+            );
+        x.max <- max(
+            max(DF.performance.metrics[,   "production_year"]),
+            max(DF.mock.production.errors[,"production_year"])
+            );
+        x.min <- ifelse(0 == (x.min %% 2),x.min,x.min-1);
+        x.max <- ifelse(0 == (x.max %% 2),x.max,x.max+1);
+        plot.limits.x <- c(  x.min,x.max);
+        plot.breaks.x <- seq(x.min,x.max,2);
+        my.ggplot <- my.ggplot + ggplot2::scale_x_continuous(limits = plot.limits.x, breaks = plot.breaks.x);
+        my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(limits = plot.limits.y, breaks = plot.breaks.y);
+        my.ggplot <- my.ggplot + ggplot2::xlab("production year");
+        my.ggplot <- my.ggplot + ggplot2::ylab("mock production error");
+        temp.file <- base::file.path(output.sub.directory,base::paste0("plot-",temp.model,"-mockProdErr-vs-year.png"));
+        ggplot2::ggsave(
+            plot   = my.ggplot,
+            file   = temp.file,
+            dpi    = 300,
+            height =   8,
+            width  =  16,
+            units  = 'in'
+            );
+
+        }
+
+    }
+
 rollingWindowForwardValidation_save.optimal.final.models <- function(
     DF.input                    = NULL,
     year                        = NULL,
@@ -270,11 +354,17 @@ rollingWindowForwardValidation_generate.predictions <- function(
     training.window  = NULL,
     learner.metadata = NULL,
     num.cores        = NULL,
-    output.directory = NULL
+    output.directory = NULL,
+    log.threshold    = NULL
     ) {
 
     this.function.name <- "rollingWindowForwardValidation_generate.predictions";
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_threshold(level = log.threshold);
     logger::log_info('{this.function.name}(): starts');
+    logger::log_info('{this.function.name}(): log.threshold: {attr(x = log.threshold, which = "level")}');
+    logger::log_info('{this.function.name}(): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     num.cores <- base::max(num.cores,1);
@@ -292,7 +382,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_info('{this.function.name}(): validation years: c({paste(validation.years,collapse=",")})');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    global.objects   <- NULL;
+    global.objects <- NULL;
     if ( "windows" == base::.Platform[["OS.type"]] ) {
         if ( !( "stcCropYield" %in% utils::installed.packages()[,1]) ) {
             global.objects      <- base::list();
@@ -317,14 +407,20 @@ rollingWindowForwardValidation_generate.predictions <- function(
     	) %dopar% {
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        if ( "windows" == base::.Platform[["OS.type"]] ) {
+            logger::log_threshold(level = log.threshold);
+            }
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         learner.name <- base::names(learner.metadata)[temp.index];
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         log.file <- base::file.path(output.directory,paste0(learner.name,".log"));
         logger::log_appender(logger::appender_tee(file = log.file));
-        logger::log_info('{this.function.name}(foreach, temp.index = {temp.index}): starts');
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_info( '{this.function.name}(foreach, temp.index = {temp.index}): starts');
+        logger::log_info( '{this.function.name}(foreach, temp.index = {temp.index}): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
         logger::log_debug('{this.function.name}(foreach, temp.index = {temp.index}): environment(): {capture.output(environment())}');
         logger::log_debug('{this.function.name}(foreach, temp.index = {temp.index}): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
 
