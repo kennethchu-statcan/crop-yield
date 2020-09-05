@@ -100,13 +100,13 @@ validation.single.year <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     validation.single.year_diagnostics(
-        DF.input                        = DF.predictions.parcel,
-        learner.name                    = learner.name,
-        validation.year                 = validation.year,
-        learner.metadata                = learner.metadata,
-        output.sub.directory            = output.sub.directory,
-        output.filename                 = output.filename,
-        global.objects                  = global.objects,
+        DF.input             = DF.predictions.parcel,
+        learner.name         = learner.name,
+        validation.year      = validation.year,
+        learner.metadata     = learner.metadata,
+        output.sub.directory = output.sub.directory,
+        output.filename      = output.filename,
+        global.objects       = global.objects,
         suppress.child.process.graphics = suppress.child.process.graphics
         );
 
@@ -118,13 +118,13 @@ validation.single.year <- function(
 
 ##################################################
 validation.single.year_diagnostics <- function(
-    DF.input                        = NULL,
-    learner.name                    = NULL,
-    validation.year                 = NULL,
-    learner.metadata                = NULL,
-    output.sub.directory            = NULL,
-    output.filename                 = NULL,
-    global.objects                  = NULL,
+    DF.input             = NULL,
+    learner.name         = NULL,
+    validation.year      = NULL,
+    learner.metadata     = NULL,
+    output.sub.directory = NULL,
+    output.filename      = NULL,
+    global.objects       = NULL,
     suppress.child.process.graphics = NULL
     ) {
 
