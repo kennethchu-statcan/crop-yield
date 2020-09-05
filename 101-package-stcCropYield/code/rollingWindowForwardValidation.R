@@ -6,64 +6,68 @@
 #' to execute a grid search in order to determine the optimal hyperparameter
 #' configuration within the given hyperparameter grid for the chosen prediction
 #' technique.
-#' 
+#'
 #' @param training.window integer vector of length 1.
 #' The number of years to use for each round of training. See Details below.
 #'
 #' @param validation.window integer vector of length 1.
 #' The number of (validation) years to use for hyperparameter tuning for each
 #' mock production. See Details below.
-#' 
+#'
 #' @param DF.input data frame containing crop yield data. See Details below for more information.
-#' 
+#'
 #' @param year character vector of length 1,
 #' indicating the column name in \code{DF.input} for the calendar year variable.
-#' 
+#'
 #' @param ecoregion character vector of length 1,
 #' indicating column name in \code{DF.input} for the ecoregion variable.
-#' 
+#'
 #' @param crop character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop type variable.
-#' 
+#'
 #' @param response.variable character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop yield variable.
-#' 
+#'
 #' @param harvested.area character vector of length 1,
 #' indicating column name in \code{DF.input} for the harvested area variable.
-#' 
+#'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
 #' (such as NVDI measurements, weather measurements, etc.)
-#' 
+#'
 #' @param by.variables.phase01 character vector indicating the by-variables to use for Phase 1 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion,crop).
-#' 
+#'
 #' @param by.variables.phase02 character vector indicating the by-variables to use for Phase 2 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(crop)
-#' 
+#'
 #' @param by.variables.phase03 character vector indicating the by-variables to use for Phase 3 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion)
-#' 
+#'
 #' @param learner character vector of length 1,
 #' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
-#' 
+#'
 #' @param search.grid list defining the search grid.
 #' See Details and Examples below for more details.
-#' 
+#'
 #' @param num.cores integer vector of length 1,
 #' indicating the number of cores to be used. Must be positive.
-#' 
+#'
 #' @param output.directory character vector of length 1,
 #' indicating file path of the (output) directory to which all results will be written.
-#' 
+#'
 #' @param log.threshold log threshold.
 #' Must be one of the log levels supported by the \code{looger} package. Default: logger::INFO
 #'
+#' @param suppress.child.process.graphics logical.
+#' If TRUE, generation of diagnostics graphics during child processes will be suppressed.
+#' If FALSE, that will be enabled. Default is FALSE.
+#'
 #' @return NULL. This function writes all output to file within the given \code{output.directory}.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' n.ecoregions <- 3;
@@ -121,7 +125,8 @@ rollingWindowForwardValidation <- function(
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
     num.cores            = base::max(1,parallel::detectCores() - 1),
     output.directory     = ".",
-    log.threshold        = logger::INFO
+    log.threshold        = logger::INFO,
+    suppress.child.process.graphics = FALSE
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -189,7 +194,8 @@ rollingWindowForwardValidation <- function(
         learner.metadata = learner.metadata,
         num.cores        = num.cores,
         output.directory = predictions.directory,
-        log.threshold    = log.threshold
+        log.threshold    = log.threshold,
+        suppress.child.process.graphics = suppress.child.process.graphics
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -320,7 +326,7 @@ rollingWindowForwardValidation_save.optimal.final.models <- function(
     list.mock.production.errors = NULL,
     output.sub.directory        = NULL
     ) {
-    
+
     max.year       <- base::max(DF.input[,year]);
     training.years <- base::seq(max.year - training.window + 1, max.year);
     DF.training    <- DF.input[DF.input[,year] %in%   training.years,];
@@ -355,7 +361,8 @@ rollingWindowForwardValidation_generate.predictions <- function(
     learner.metadata = NULL,
     num.cores        = NULL,
     output.directory = NULL,
-    log.threshold    = NULL
+    log.threshold    = NULL,
+    suppress.child.process.graphics = NULL
     ) {
 
     this.function.name <- "rollingWindowForwardValidation_generate.predictions";
@@ -445,7 +452,8 @@ rollingWindowForwardValidation_generate.predictions <- function(
                 DF.training        = DF.training,
                 DF.validation      = DF.validation,
                 output.directory   = output.directory,
-                global.objects     = global.objects
+                global.objects     = global.objects,
+                suppress.child.process.graphics = suppress.child.process.graphics
                 );
 
             } # for (validation.year in validation.years)
@@ -465,7 +473,7 @@ rollingWindowForwardValidation_generate.mock.production.errors <- function(
     list.performance.metrics = NULL,
     output.sub.directory     = NULL
     ) {
-    
+
     if ( !base::dir.exists(output.sub.directory) ) {
         base::dir.create(path = output.sub.directory, recursive = TRUE);
         }
@@ -486,7 +494,7 @@ rollingWindowForwardValidation_generate.performance.metrics <- function(
     predictions.directory = NULL,
     output.sub.directory  = NULL
     ) {
-    
+
     if ( !base::dir.exists(output.sub.directory) ) {
         base::dir.create(path = output.sub.directory, recursive = TRUE);
         }
@@ -523,6 +531,5 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     search.grid          = NULL,
     output.directory     = NULL
     ) {
- 
-    }
 
+    }

@@ -6,7 +6,8 @@ validation.single.year <- function(
     DF.training        = NULL,
     DF.validation      = NULL,
     output.directory   = NULL,
-    global.objects     = NULL
+    global.objects     = NULL,
+    suppress.child.process.graphics = FALSE
     ) {
 
     this.function.name <- "validation.single.year";
@@ -99,13 +100,14 @@ validation.single.year <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     validation.single.year_diagnostics(
-        DF.input             = DF.predictions.parcel,
-        learner.name         = learner.name,
-        validation.year      = validation.year,
-        learner.metadata     = learner.metadata,
-        output.sub.directory = output.sub.directory,
-        output.filename      = output.filename,
-        global.objects       = global.objects
+        DF.input                        = DF.predictions.parcel,
+        learner.name                    = learner.name,
+        validation.year                 = validation.year,
+        learner.metadata                = learner.metadata,
+        output.sub.directory            = output.sub.directory,
+        output.filename                 = output.filename,
+        global.objects                  = global.objects,
+        suppress.child.process.graphics = suppress.child.process.graphics
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -116,13 +118,14 @@ validation.single.year <- function(
 
 ##################################################
 validation.single.year_diagnostics <- function(
-    DF.input             = NULL,
-    learner.name         = NULL,
-    validation.year      = NULL,
-    learner.metadata     = NULL,
-    output.sub.directory = NULL,
-    output.filename      = NULL,
-    global.objects       = NULL
+    DF.input                        = NULL,
+    learner.name                    = NULL,
+    validation.year                 = NULL,
+    learner.metadata                = NULL,
+    output.sub.directory            = NULL,
+    output.filename                 = NULL,
+    global.objects                  = NULL,
+    suppress.child.process.graphics = NULL
     ) {
 
     this.function.name <- "validation.single.year_diagnostics";
@@ -180,13 +183,21 @@ validation.single.year_diagnostics <- function(
         row.names = FALSE
         );
 
-    validation.single.year_scatterplot(
-        FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-region-crop.png")),
-        DF.input        = DF.region.crop,
-        learner.name    = learner.name,
-        validation.year = validation.year,
-        global.objects  = global.objects
-        );
+    if (  suppress.child.process.graphics  ) {
+
+        logger::log_debug('{this.function.name}({learner.name},{validation.year}): suppressed generation of: plot-predictions-region-crop.png');
+
+    } else {
+
+        validation.single.year_scatterplot(
+            FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-region-crop.png")),
+            DF.input        = DF.region.crop,
+            learner.name    = learner.name,
+            validation.year = validation.year,
+            global.objects  = global.objects
+            );
+
+        }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -221,13 +232,21 @@ validation.single.year_diagnostics <- function(
         row.names = FALSE
         );
 
-    validation.single.year_scatterplot(
-        FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-region.png")),
-        DF.input        = DF.region,
-        learner.name    = learner.name,
-        validation.year = validation.year,
-        global.objects  = global.objects
-        );
+    if (  suppress.child.process.graphics  ) {
+
+        logger::log_debug('{this.function.name}({learner.name},{validation.year}): suppressed generation of: plot-predictions-region.png');
+
+    } else {
+
+        validation.single.year_scatterplot(
+            FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-region.png")),
+            DF.input        = DF.region,
+            learner.name    = learner.name,
+            validation.year = validation.year,
+            global.objects  = global.objects
+            );
+
+        }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -249,7 +268,7 @@ validation.single.year_diagnostics <- function(
             replacement = temp.var
             );
         }
-    
+
     DF.crop <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.crop,
         by.variables = c("crop")
@@ -262,13 +281,21 @@ validation.single.year_diagnostics <- function(
         row.names = FALSE
         );
 
-    validation.single.year_scatterplot(
-        FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-crop.png")),
-        DF.input        = DF.crop,
-        learner.name    = learner.name,
-        validation.year = validation.year,
-        global.objects  = global.objects
-        );
+    if (  suppress.child.process.graphics  ) {
+
+        logger::log_debug('{this.function.name}({learner.name},{validation.year}): suppressed generation of: plot-predictions-crop.png');
+
+    } else {
+
+        validation.single.year_scatterplot(
+            FILE.png        = base::file.path(output.sub.directory,base::paste0("plot-predictions-crop.png")),
+            DF.input        = DF.crop,
+            learner.name    = learner.name,
+            validation.year = validation.year,
+            global.objects  = global.objects
+            );
+
+        }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -289,7 +316,7 @@ validation.single.year_diagnostics <- function(
             replacement = temp.var
             );
         }
-    
+
     DF.province <- validation.single.year_group.then.add.relative.error(
         DF.input     = DF.province,
         by.variables = NULL
@@ -342,10 +369,15 @@ validation.single.year_scatterplot <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
     my.ggplot <- initializePlot();
+
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to initializePlot() complete');
+
     my.ggplot <- my.ggplot + ggplot2::ggtitle(
         label    = NULL,
         subtitle = paste0( learner.name, ", ", validation.year )
         );
+
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to ggtitle() complete');
 
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.input,
@@ -356,30 +388,49 @@ validation.single.year_scatterplot <- function(
         alpha = 0.9
         );
 
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to geom_point() complete');
+
     my.ggplot <- my.ggplot + ggplot2::geom_abline(
         slope     = 1,
         intercept = 0
         );
 
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to geom_abline() complete');
+
     my.ggplot <- my.ggplot + ggplot2::xlab(label =    "actual production");
+
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to xlab() complete');
+
     my.ggplot <- my.ggplot + ggplot2::ylab(label = "predicted production");
 
-    temp.axis.max <- max(
-        max(DF.input[,   "actual_production"]),
-        max(DF.input[,"predicted_production"])
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to ylab() complete');
+
+    temp.axis.max <- base::max(
+        base::max(DF.input[,   "actual_production"]),
+        base::max(DF.input[,"predicted_production"])
         );
+
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): value assignment of temp.axis.max complete');
 
     my.ggplot <- my.ggplot + ggplot2::scale_x_continuous(
         limits = 1.1 * c(0,temp.axis.max)
         #,breaks = (1e7) * seq(0,10,2)
         );
 
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to scale_x_continuous() complete');
+
     my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(
         limits = 1.1 * c(0,temp.axis.max)
         #,breaks = (1e7) * seq(0,10,2)
         );
 
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to scale_y_continuous() complete');
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): FILE.png = {FILE.png}');
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): class(my.ggplot) = {class(my.ggplot)}');
+
     ggplot2::ggsave(file = FILE.png, plot = my.ggplot, dpi = 300, height = 8, width = 8, units = 'in');
+
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): call to ggsave() complete');
 
     logger::log_info('{this.function.name}({learner.name},{validation.year}): exits');
 
@@ -394,7 +445,7 @@ validation.single.year_group.then.add.relative.error <- function(
     DF.output <- DF.input;
 
     if ( is.null(by.variables) ) {
-    
+
         DF.output <- base::apply(
             X      = DF.output[,base::c("harvested_area","actual_production","predicted_production")],
             MARGIN = 2,
@@ -405,7 +456,7 @@ validation.single.year_group.then.add.relative.error <- function(
         rownames(DF.output) <- NULL;
 
     } else {
-    
+
         selected.colnames <- base::c(by.variables,"harvested_area","actual_production","predicted_production");
         DF.output <- DF.output[,selected.colnames];
 
@@ -437,4 +488,3 @@ validation.single.year_group.then.add.relative.error <- function(
     return( DF.output );
 
     }
-
