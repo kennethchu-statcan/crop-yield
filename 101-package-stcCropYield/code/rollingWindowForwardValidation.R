@@ -136,7 +136,7 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     this.function.name <- "rollingWindowForwardValidation";
-    log.file <- base::file.path(output.directory,paste0(this.function.name,".log"));
+    log.file <- base::file.path(base::normalizePath(output.directory),paste0(this.function.name,".log"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_threshold(level = log.threshold);
