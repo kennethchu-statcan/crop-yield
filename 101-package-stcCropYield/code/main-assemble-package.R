@@ -86,8 +86,16 @@ tests.R <- base::file.path( code.directory , tests.R );
 #images.png <- base::c("np-propensity-scatter-01.png", "np-propensity-scatter-03.png");
 #images.png <- base::file.path( code.directory , images.png );
 
-#vignettes.Rmd <- base::c("vignette-title.Rmd", "nppR-package-guide.Rmd");
-#vignettes.Rmd <- base::file.path( code.directory , vignettes.Rmd );
+vignettes.Rmd <- base::c("rwFV-xgboost.Rmd");
+vignettes.Rmd <- base::file.path( code.directory , vignettes.Rmd );
+
+list.vignettes <- list(
+    'rwFV-xgboost' = list(
+        Rmd   = base::file.path( code.directory , 'rwFV-xgboost.Rmd' ),
+        html  = base::file.path( code.directory , 'rwFV-xgboost.html' ),
+        title = "Early-Season Crop Yield Prediction via XGBoost and Rolling Window Forward Validation"
+        )
+    );
 
 assemble.package(
     package.name       = package.name,
@@ -96,8 +104,8 @@ assemble.package(
     packages.import    = packages.import,
     packages.suggest   = packages.suggest,
     files.R            = files.R,
-    tests.R            = tests.R
-#   ,vignettes.Rmd     = vignettes.Rmd,
+    tests.R            = tests.R,
+    list.vignettes     = list.vignettes,
 #   images.png         = images.png
     );
 
@@ -120,4 +128,3 @@ base::cat("\n##### start.proc.time() - stop.proc.time()\n");
 base::print( stop.proc.time - start.proc.time );
 
 base::quit(save="no");
-

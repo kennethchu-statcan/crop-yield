@@ -9,15 +9,18 @@ assemble.package <- function(
     packages.enhance   = base::c(),
     files.R            = base::c(),
     tests.R            = base::c(),
-    vignettes.Rmd      = base::c(),
+    list.vignettes.Rmd = base::list(),
     images.png         = base::c(),
     log.threshold      = logger::DEBUG
     ) {
 
-    this.function.name <- "buildRPackage";
+    this.function.name <- "assemble.package";
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    log.file <- base::file.path(paste0(this.function.name,".log"));
+    initial.wd <- base::normalizePath(base::getwd());
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    log.file <- file.path(initial.wd,paste0(this.function.name,".log"));
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('{this.function.name}(): starts');
@@ -35,10 +38,8 @@ assemble.package <- function(
     base::require(stats);
 
     # ~~~~~~~~~~ #
-    initial.wd   <- base::normalizePath(base::getwd());
     path.package <- base::file.path(initial.wd,package.name);
 
-    # ~~~~~~~~~~ #
     testthat::with_mock(
         usethis::create_package(
             path    = path.package,
@@ -55,7 +56,6 @@ assemble.package <- function(
     # ~~~~~~~~~~ #
     usethis::use_mit_license(name = copyright.holder);
     usethis::use_testthat();
-    usethis::use_vignette("name-of-vignette");
 
     # ~~~~~~~~~~ #
     for ( temp.package in packages.import ) {
@@ -91,13 +91,45 @@ assemble.package <- function(
         }
 
     # ~~~~~~~~~~ #
-#    base::unlink(base::file.path(".","vignettes","name-of-vignette.rmd"));
-#    for ( temp.vignette.Rmd in vignettes.Rmd ) {
-#        base::file.copy(
-#            from = temp.vignette.Rmd,
-#            to   = base::file.path(".","vignettes")
-#           );
-#        }
+    #usethis::use_vignette("template-vignette");
+    #usethis::use_vignette("name-of-vignette");
+    #base::unlink(base::file.path(".","vignettes","name-of-vignette.Rmd"));
+    #usethis::use_vignette("rwFV-xgboost");
+
+    vignettes.directory <- base::file.path(".","vignettes");
+    if ( !dir.exists(vignettes.directory) ) {
+        dir.create(
+            path      = vignettes.directory,
+            recursive = TRUE
+            );
+        }
+
+    doc.directory <- base::file.path(".","inst","doc");
+    if ( !dir.exists(doc.directory) ) {
+        dir.create(
+            path      = doc.directory,
+            recursive = TRUE
+            );
+        }
+
+    for ( temp.vignette in list.vignettes ) {
+        logger::log_info('{this.function.name}(): processing vignette: title = {temp.vignette[["title"]]}, file = {temp.vignette[["file"]]}');
+        usethis::use_vignette(
+            name  = tools::file_path_sans_ext(base::basename(temp.vignette[['Rmd']])),
+            title = temp.vignette[['title']]
+            );
+        base::file.copy(
+            from      = temp.vignette[['Rmd']],
+            to        = vignettes.directory,
+            overwrite = TRUE
+            );
+        base::file.copy(
+            from      = temp.vignette[['html']],
+            to        = doc.directory,
+            overwrite = TRUE
+            );
+        }
+
 #    for ( temp.image.png in images.png ) {
 #        base::file.copy(
 #            from = temp.image.png,
@@ -106,14 +138,23 @@ assemble.package <- function(
 #        }
 
     # ~~~~~~~~~~ #
-    devtools::document();
-#    devtools::build_vignettes();
+    # building vignette outside of, and prior to, R package build process,
+    # since vignette building during package build doesn't seem to like
+    # multicore workflows.
+    # need to source the stcCropYield here since the package hasn't been
+    # built yet.
+    #for ( temp.file.R in setdiff(files.R,"package-init.R") ) {
+    #    base::source(temp.file.R);
+    #    }
+
+    #devtools::build_vignettes(quiet = FALSE);
 
     # ~~~~~~~~~~ #
-    base::dir.create(base::file.path(".","inst"));
-    base::dir.create(base::file.path(".","inst","doc"));
-   
-    doc.files <- list.files(path = base::file.path(".","doc"), all.files = TRUE)
+    devtools::document();
+    #devtools::build_vignettes();
+
+    # ~~~~~~~~~~ #
+    doc.files <- list.files(path = base::file.path(".","doc"), all.files = TRUE);
     doc.files <- base::file.path(".","doc",doc.files)
 
     for ( temp.doc.file in doc.files ) {
@@ -123,7 +164,7 @@ assemble.package <- function(
            );
         }
 
-    base::unlink(x = base::file.path(".","doc"), recursive = TRUE);
+    # base::unlink(x = base::file.path(".","doc"), recursive = TRUE);
 
     # ~~~~~~~~~~ #
     base::setwd(initial.wd);
@@ -133,4 +174,3 @@ assemble.package <- function(
     return( NULL );
 
     }
-
