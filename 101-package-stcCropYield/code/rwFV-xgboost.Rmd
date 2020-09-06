@@ -1,0 +1,79 @@
+---
+title: "rwFV-xgboost"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rwFV-xgboost}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(stcCropYield)
+```
+Next, we generate a synthetic data set in the form of a single data frame
+that has the structure expected by
+**stcCropYield::rollingWindowForwardValidation(...)**:
+```{r synthetic}
+n.ecoregions <- 3;
+n.crops      <- 5;
+n.predictors <- 7;
+
+# DF.synthetic <- data.frame(x = rnorm(19), y = rnorm(19), z = rnorm(19));
+
+DF.synthetic <- getData.synthetic(
+    #years        = seq(2015,2020),
+    years       = seq(2011,2020),
+    #years       = seq(2000,2020),
+    n.ecoregions = n.ecoregions,
+    n.crops      = n.crops,
+    n.predictors = n.predictors
+    )
+```
+We examine the structure of the data frame DF.synthetic
+```{r syntheticStructure}
+str(DF.synthetic)
+```
+The data frame DF.synthetic has `r nrow(DF.synthetic)` rows and
+`r ncol(DF.synthetic)` columns.
+
+Each row corresponds to a (reference year, parcel).
+
+As the input data frame to the function
+**stcCropYield::rollingWindowForwardValidation**
+it must contain the following mandatory columns with the expected data types
+(while column names and ordering do NOT matter):
+
+* a numeric column with non-negative integers indicating the reference year
+  (in case of DF.synthetic, **my_year**)
+
+* a character column indicating the ecoregion (**my_ecoregion**)
+
+* a character column indicating the crop type (**my_crop**)
+
+* numeric column with non-negative values indicating the harvested area
+  (**my_harvested_area**).
+  The usual physical unit for harvested area is *acre*.
+
+* numeric column with non-negative values indicating crop yield (**my_yield**).
+  The usual physical unit for crop yield is *number of bushels per acre*.
+
+* a collection of numeric columns of predictor variables
+  (in case of DF.synthetic, **x1**, **x2**, ... , **x7**).
+  In practice, these could include (but are not limited to)
+  the weekly NDVI measurements,
+  the weekly (or monthly) weather measurements, and
+  their derived variables (e.g. rolling averages, maxima, emerging week, etc).
+  There is no limit of the number of predictor variables
+  (apart from computer memory).
+
+Here are the first few rows of DF.synthetic:
+```{r syntheticHead}
+head(DF.synthetic)
+```
