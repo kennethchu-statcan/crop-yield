@@ -2,7 +2,7 @@
 title: "Early-Season Crop Yield Prediction via XGBoost and Rolling Window Forward Validation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{name-of-vignette}
+  %\VignetteIndexEntry{rwFV-xgboost}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
