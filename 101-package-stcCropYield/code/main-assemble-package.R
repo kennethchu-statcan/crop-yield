@@ -14,6 +14,7 @@ base::setwd(output.directory);
 base::require(R6);
 base::require(logger);
 base::source(base::file.path(code.directory,'assemble-package.R'));
+base::source(base::file.path(code.directory,'build-package.R'));
 
 ###################################################
 ###################################################
@@ -28,12 +29,15 @@ string.authors <- "base::c(
         comment = c(ORCID = 'https://orcid.org/0000-0002-0270-4752')
         )
     )";
-Encoding(string.authors) <- "UTF-8";
+base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
-    Version     = "0.0.1.0001",
-    `Authors@R` = string.authors,
-    Language    = "fr"
+    Title           = "Early-season Crop Yield Prediction",
+    Version         = "0.0.1.0001",
+    `Authors@R`     = string.authors,
+    Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
+    Language        = "fr",
+    VignetteBuilder = "R.rsp"
     );
 
 packages.import <- base::c(
@@ -55,7 +59,10 @@ packages.import <- base::c(
     );
 
 packages.suggest <- base::c(
-    "testthat"
+    "testthat",
+    "R.rsp",
+    "knitr",
+    "rmarkdown"
     );
 
 files.R <- base::c(
@@ -86,28 +93,35 @@ tests.R <- base::file.path( code.directory , tests.R );
 #images.png <- base::c("np-propensity-scatter-01.png", "np-propensity-scatter-03.png");
 #images.png <- base::file.path( code.directory , images.png );
 
-vignettes.Rmd <- base::c("rwFV-xgboost.Rmd");
-vignettes.Rmd <- base::file.path( code.directory , vignettes.Rmd );
+# list.vignettes <- list(
+#     'rwFV-xgboost' = list(
+#         Rmd   = base::file.path( code.directory , 'rwFV-xgboost.Rmd' ),
+#         html  = base::file.path( code.directory , 'rwFV-xgboost.html' ),
+#         title = "Early-Season Crop Yield Prediction via XGBoost and Rolling Window Forward Validation"
+#         )
+#     );
 
-list.vignettes <- list(
+list.vignettes.asis <- list(
     'rwFV-xgboost' = list(
-        Rmd   = base::file.path( code.directory , 'rwFV-xgboost.Rmd' ),
-        html  = base::file.path( code.directory , 'rwFV-xgboost.html' ),
-        title = "Early-Season Crop Yield Prediction via XGBoost and Rolling Window Forward Validation"
+        html  = base::file.path( code.directory , 'rwFV-xgboost.html'      ),
+        asis  = base::file.path( code.directory , 'rwFV-xgboost.html.asis' )
         )
     );
 
-assemble.package(
-    package.name       = package.name,
-    copyright.holder   = "Kenneth Chu",
-    description.fields = description.fields,
-    packages.import    = packages.import,
-    packages.suggest   = packages.suggest,
-    files.R            = files.R,
-    tests.R            = tests.R,
-    list.vignettes     = list.vignettes,
-#   images.png         = images.png
+package.path <- assemble.package(
+    package.name        = package.name,
+    copyright.holder    = "Kenneth Chu",
+    description.fields  = description.fields,
+    packages.import     = packages.import,
+    packages.suggest    = packages.suggest,
+    files.R             = files.R,
+    tests.R             = tests.R,
+    list.vignettes.asis = list.vignettes.asis
+    # ,list.vignettes   = list.vignettes
+    # ,images.png       = images.png
     );
+
+build.package(package.path = package.path);
 
 ###################################################
 ###################################################

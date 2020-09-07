@@ -1,17 +1,18 @@
 
 assemble.package <- function(
-    package.name       = NULL,
-    copyright.holder   = "Kenneth Chu",
-    description.fields = base::list(),
-    packages.import    = base::c(),
-    packages.depend    = base::c(),
-    packages.suggest   = base::c(),
-    packages.enhance   = base::c(),
-    files.R            = base::c(),
-    tests.R            = base::c(),
-    list.vignettes.Rmd = base::list(),
-    images.png         = base::c(),
-    log.threshold      = logger::DEBUG
+    package.name        = NULL,
+    copyright.holder    = "Kenneth Chu",
+    description.fields  = base::list(),
+    packages.import     = base::c(),
+    packages.depend     = base::c(),
+    packages.suggest    = base::c(),
+    packages.enhance    = base::c(),
+    files.R             = base::c(),
+    tests.R             = base::c(),
+    list.vignettes.asis = base::list(),
+    list.vignettes      = base::list(),
+    images.png          = base::c(),
+    log.threshold       = logger::DEBUG
     ) {
 
     this.function.name <- "assemble.package";
@@ -51,7 +52,8 @@ assemble.package <- function(
         .env = "usethis"
         );
 
-    base::setwd( base::normalizePath(path.package) );
+    path.package <- base::normalizePath(path.package);
+    base::setwd( path.package );
 
     # ~~~~~~~~~~ #
     usethis::use_mit_license(name = copyright.holder);
@@ -91,11 +93,6 @@ assemble.package <- function(
         }
 
     # ~~~~~~~~~~ #
-    #usethis::use_vignette("template-vignette");
-    #usethis::use_vignette("name-of-vignette");
-    #base::unlink(base::file.path(".","vignettes","name-of-vignette.Rmd"));
-    #usethis::use_vignette("rwFV-xgboost");
-
     vignettes.directory <- base::file.path(".","vignettes");
     if ( !dir.exists(vignettes.directory) ) {
         dir.create(
@@ -104,7 +101,7 @@ assemble.package <- function(
             );
         }
 
-    doc.directory <- base::file.path(".","inst","doc");
+    doc.directory <- base::file.path(".","doc");
     if ( !dir.exists(doc.directory) ) {
         dir.create(
             path      = doc.directory,
@@ -112,8 +109,31 @@ assemble.package <- function(
             );
         }
 
+    inst.doc.directory <- base::file.path(".","inst","doc");
+    if ( !dir.exists(doc.directory) ) {
+        dir.create(
+            path      = doc.directory,
+            recursive = TRUE
+            );
+        }
+
+    # usethis::use_vignette("rwFV-xgboost");
+    for ( temp.vignette in list.vignettes.asis ) {
+        logger::log_info('{this.function.name}(): processing as-is vignette: html = {temp.vignette[["html"]]}, asis = {temp.vignette[["asis"]]}');
+        base::file.copy(
+            from      = temp.vignette[['html']],
+            to        = vignettes.directory,
+            overwrite = TRUE
+            );
+        base::file.copy(
+            from      = temp.vignette[['asis']],
+            to        = vignettes.directory,
+            overwrite = TRUE
+            );
+        }
+
     for ( temp.vignette in list.vignettes ) {
-        logger::log_info('{this.function.name}(): processing vignette: title = {temp.vignette[["title"]]}, file = {temp.vignette[["file"]]}');
+        logger::log_info('{this.function.name}(): processing vignette: title = {temp.vignette[["title"]]}, file = {temp.vignette[["Rmd"]]}');
         usethis::use_vignette(
             name  = tools::file_path_sans_ext(base::basename(temp.vignette[['Rmd']])),
             title = temp.vignette[['title']]
@@ -128,49 +148,44 @@ assemble.package <- function(
             to        = doc.directory,
             overwrite = TRUE
             );
+        # base::file.copy(
+        #     from      = temp.vignette[['html']],
+        #     to        = inst.doc.directory,
+        #     overwrite = TRUE
+        #     );
         }
 
-#    for ( temp.image.png in images.png ) {
-#        base::file.copy(
-#            from = temp.image.png,
-#            to   = base::file.path(".","vignettes")
-#            );
-#        }
-
-    # ~~~~~~~~~~ #
-    # building vignette outside of, and prior to, R package build process,
-    # since vignette building during package build doesn't seem to like
-    # multicore workflows.
-    # need to source the stcCropYield here since the package hasn't been
-    # built yet.
-    #for ( temp.file.R in setdiff(files.R,"package-init.R") ) {
-    #    base::source(temp.file.R);
-    #    }
-
-    #devtools::build_vignettes(quiet = FALSE);
+    # for ( temp.image.png in images.png ) {
+    #     base::file.copy(
+    #         from = temp.image.png,
+    #         to   = base::file.path(".","vignettes")
+    #         );
+    #     }
 
     # ~~~~~~~~~~ #
     devtools::document();
-    #devtools::build_vignettes();
 
     # ~~~~~~~~~~ #
-    doc.files <- list.files(path = base::file.path(".","doc"), all.files = TRUE);
-    doc.files <- base::file.path(".","doc",doc.files)
-
-    for ( temp.doc.file in doc.files ) {
-        base::file.copy(
-            from = temp.doc.file,
-            to   = base::file.path(".","inst","doc")
-           );
-        }
+    # doc.files <- list.files(path = base::file.path(".","doc"), all.files = TRUE);
+    # doc.files <- list.files(path = doc.directory, all.files = TRUE);
+    # doc.files <- base::file.path(doc.directory,doc.files)
+    # for ( temp.doc.file in doc.files ) {
+    #     logger::log_info('{this.function.name}(): copying from {doc.directory} to {inst.doc.directory}: {temp.doc.file}');
+    #     base::file.copy(
+    #         from      = temp.doc.file,
+    #         to        = inst.doc.directory,
+    #         overwrite = TRUE
+    #         );
+    #     }
 
     # base::unlink(x = base::file.path(".","doc"), recursive = TRUE);
 
     # ~~~~~~~~~~ #
-    base::setwd(initial.wd);
+    # devtools::build_vignettes(quiet = FALSE);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    base::setwd(initial.wd);
     logger::log_info('{this.function.name}(): exits');
-    return( NULL );
+    return( path.package );
 
     }
