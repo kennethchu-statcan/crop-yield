@@ -117,7 +117,7 @@ assemble.package <- function(
             );
         }
 
-    # usethis::use_vignette("rwFV-xgboost");
+    # ~~~~~~~~~~ #
     for ( temp.vignette in list.vignettes.asis ) {
         logger::log_info('{this.function.name}(): processing as-is vignette: html = {temp.vignette[["html"]]}, asis = {temp.vignette[["asis"]]}');
         base::file.copy(
@@ -158,30 +158,12 @@ assemble.package <- function(
     # for ( temp.image.png in images.png ) {
     #     base::file.copy(
     #         from = temp.image.png,
-    #         to   = base::file.path(".","vignettes")
+    #         to   = vignettes.directory
     #         );
     #     }
 
     # ~~~~~~~~~~ #
     devtools::document();
-
-    # ~~~~~~~~~~ #
-    # doc.files <- list.files(path = base::file.path(".","doc"), all.files = TRUE);
-    # doc.files <- list.files(path = doc.directory, all.files = TRUE);
-    # doc.files <- base::file.path(doc.directory,doc.files)
-    # for ( temp.doc.file in doc.files ) {
-    #     logger::log_info('{this.function.name}(): copying from {doc.directory} to {inst.doc.directory}: {temp.doc.file}');
-    #     base::file.copy(
-    #         from      = temp.doc.file,
-    #         to        = inst.doc.directory,
-    #         overwrite = TRUE
-    #         );
-    #     }
-
-    # base::unlink(x = base::file.path(".","doc"), recursive = TRUE);
-
-    # ~~~~~~~~~~ #
-    # devtools::build_vignettes(quiet = FALSE);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     base::setwd(initial.wd);
