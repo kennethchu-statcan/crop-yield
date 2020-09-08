@@ -32,6 +32,8 @@ Next, we generate a synthetic data set in the form of a single data frame
 that has the structure expected by
 **stcCropYield::rollingWindowForwardValidation(...)**:
 ```{r synthetic}
+set.seed(13);
+
 n.ecoregions <- 3;
 n.crops      <- 5;
 n.predictors <- 7;
@@ -87,20 +89,21 @@ Here are the first few rows of DF.synthetic:
 head(DF.synthetic)
 ```
 
+``` {r}
+(predictor.colnames <- grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE))
+```
 
 ```{r rwFV}
 stcCropYield::rollingWindowForwardValidation(
     training.window      = 2,
     validation.window    = 3,
-    #training.window     =  5,
-    #validation.window   = 10,
     DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
-    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    predictors           = predictor.colnames,
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
     by.variables.phase03 = c("my_ecoregion"),
@@ -108,20 +111,90 @@ stcCropYield::rollingWindowForwardValidation(
     search.grid = list(
         alpha       = c(1,12,23),
         lambda      = c(1,12,23),
-        lambda_bias = c(23) #seq(23,11,-8)
+        lambda_bias = c(23)
         ),
     output.directory = "rwFV",
-    log.threshold    = logger::ERROR, # logger::DEBUG
-    suppress.child.process.graphics = TRUE
+    log.threshold    = logger::ERROR
     )
 ```
 We examine the contents in the output direcotry *rwFV*
 ```{r outputDIR}
 list.files("rwFV")
 ```
+The output directory *rwFV* contains:
 
+* three sub-directories:
+  * 010-predictions
+  * 020-performance-metrics
+  * 030-mock-productions
+
+* one RData file: **production-model-RY2021-xgboost_multiphase_9.RData**
+
+* one log file: **rollingWindowForwardValidation.log**
+
+The sub-directory **rwFV/010-predictions** contains the
+(hyperparameter,year)-specific parcel-level predictions
+as well as rolled up values to the levels of (ecoregion,crop), crop and
+ecoregion.
+
+The sub-directory **rwFV/020-performance-metrics** contains the computed performance
+metrics according to the aforementioned predictions.
+
+The sub-directory **rwFV/030-productions** contains the prediction error series
+in mock production.
+
+The RData file **production-model-RY2021-xgboost_multiphase_9.RData** contains
+the final trained model that can be deployed in the next production cycle.
+
+## Contents of **rwFV/010-predictions**
 ```{r predictions}
 list.files(file.path("rwFV","010-predictions"))
+```
+* **learner-metadata.json**  
+  JSON file contains metadata about the 9 hyperparameter configurations
+  being evaluated
+  
+* **xgboost_multiphase_1**, ... , **xgboost_multiphase_9**  
+  Sub-folders each containing parcel-level prediction results corresponding
+  to one of hyperparameter configurations being evaluated
+
+* **xgboost_multiphase_1.log**, ... , **xgboost_multiphase_9.log**  
+  log files during the fitting/predicting process
+  for the hyperparameter configurations being evaluated
+
+Directory structure of **rwFV/010-predictions/xgboost_multiphase_1**
+```{r}
+fs::dir_tree( path = file.path("rwFV","010-predictions","xgboost_multiphase_1") )
+```
+
+```{r plotPred2013, out.width="685px"}
+knitr::include_graphics(
+    path = file.path(
+        "rwFV",
+        "010-predictions",
+        "xgboost_multiphase_1",
+        "2013",
+        "plot-predictions-region-crop.png"
+        )
+    )
+knitr::include_graphics(
+    path = file.path(
+        "rwFV",
+        "010-predictions",
+        "xgboost_multiphase_1",
+        "2013",
+        "plot-predictions-region.png"
+        )
+    )
+knitr::include_graphics(
+    path = file.path(
+        "rwFV",
+        "010-predictions",
+        "xgboost_multiphase_1",
+        "2013",
+        "plot-predictions-crop.png"
+        )
+    )
 ```
 
 ```{r metrics}
@@ -129,5 +202,11 @@ list.files(file.path("rwFV","020-performance-metrics"))
 ```
 
 ```{r plotMock, out.width="685px"}
-knitr::include_graphics(path = file.path("rwFV","030-mock-productions","plot-xgboost_multiphase-mockProdErr-vs-year.png"))
+knitr::include_graphics(
+    path = file.path(
+        "rwFV",
+        "030-mock-productions",
+        "plot-xgboost_multiphase-mockProdErr-vs-year.png"
+        )
+    )
 ```
