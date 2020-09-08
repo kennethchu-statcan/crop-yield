@@ -40,7 +40,7 @@ Rscript %codeDIR%\main-assemble-package.R %codeDIR% %outROOT% %packageName% 1> %
 :: Build the R package (create *.tar.gz file)
 Z:
 cd %outROOT%
-R CMD build --md5 --no-build-vignettes %outROOT%\%packageName% 1> %outROOT%\stdout.R.build 2> %outROOT%\stderr.R.build
+::R CMD build --md5 --no-build-vignettes %outROOT%\%packageName% 1> %outROOT%\stdout.R.build 2> %outROOT%\stderr.R.build
 
 :: Check the newly built R package
 ::set R_LIBS_USER=%R_LIBS_USER%;\\fld6filer\meth\DataSciWrkGrp\software\R\library\3.5.3\library
