@@ -124,23 +124,28 @@ rollingWindowForwardValidation <- function(
     learner              = "xgboost_multiphase",
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
     num.cores            = base::max(1,parallel::detectCores() - 1),
-    output.directory     = ".",
+    output.directory     = base::paste0("rwFV.",base::gsub(x=base::Sys.time(),pattern="( |:)",replacement="-")),
     log.threshold        = logger::INFO,
     suppress.child.process.graphics = FALSE
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( !base::dir.exists(output.directory) ) {
-        base::dir.create(path = output.directory, recursive = TRUE);
-        }
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    this.function.name <- "rollingWindowForwardValidation";
+    this.function.name     <- "rollingWindowForwardValidation";
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     log.threshold.original <- logger::log_threshold();
     logger::log_threshold(level = logger::INFO);
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    output.directory <- base::normalizePath(output.directory);
+    if ( !base::dir.exists(output.directory) ) {
+        base::dir.create(path = output.directory, recursive = TRUE);
+        }
+
+    logger::log_appender(logger::appender_console);
+    logger::log_info('{this.function.name}(): All output and log files are written to: {output.directory}');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     log.file <- base::file.path(base::normalizePath(output.directory),paste0(this.function.name,".log"));
     logger::log_appender(logger::appender_file(file = log.file));
     logger::log_info('{this.function.name}(): starts');
