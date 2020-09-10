@@ -32,19 +32,19 @@ Next, we generate a synthetic data set in the form of a single data frame
 that has the structure expected by
 **stcCropYield::rollingWindowForwardValidation(...)**:
 ```{r synthetic}
-set.seed(13);
+set.seed(17);
 
-n.ecoregions <- 3;
-n.crops      <- 5;
-n.predictors <- 7;
+n.ecoregions  <-    3;
+n.crops       <-    5;
+n.predictors  <-    7;
+avg.n.parcels <- 1000;
 
 DF.synthetic <- stcCropYield::getData.synthetic(
-    #years        = seq(2015,2020),
-    years       = seq(2011,2020),
-    #years       = seq(2000,2020),
-    n.ecoregions = n.ecoregions,
-    n.crops      = n.crops,
-    n.predictors = n.predictors
+    years         = seq(2011,2020),
+    n.ecoregions  = n.ecoregions,
+    n.crops       = n.crops,
+    n.predictors  = n.predictors,
+    avg.n.parcels = avg.n.parcels
     )
 ```
 We examine the structure of the data frame DF.synthetic
