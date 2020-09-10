@@ -121,7 +121,7 @@ assemble.package <- function(
     for ( temp.vignette in list.vignettes.asis ) {
         logger::log_info('{this.function.name}(): processing as-is vignette: html = {temp.vignette[["html"]]}, asis = {temp.vignette[["asis"]]}');
         base::file.copy(
-            from      = temp.vignette[['html']],
+            from      = temp.vignette[['file']],
             to        = vignettes.directory,
             overwrite = TRUE
             );

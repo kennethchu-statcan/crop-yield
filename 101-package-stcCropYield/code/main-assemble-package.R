@@ -33,7 +33,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.0004",
+    Version         = "0.0.1.0005",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -103,8 +103,12 @@ tests.R <- base::file.path( code.directory , tests.R );
 
 list.vignettes.asis <- list(
     'rwFV-xgboost' = list(
-        html  = base::file.path( code.directory , 'rwFV-xgboost.html'      ),
+        file  = base::file.path( code.directory , 'rwFV-xgboost.html'      ),
         asis  = base::file.path( code.directory , 'rwFV-xgboost.html.asis' )
+        ),
+    'Schnaubelt2019' = list(
+        file  = base::file.path( code.directory , 'Schnaubelt_FAU-2019_ML-validation-schemes-TS-data.pdf'      ),
+        asis  = base::file.path( code.directory , 'Schnaubelt_FAU-2019_ML-validation-schemes-TS-data.pdf.asis' )
         )
     );
 
