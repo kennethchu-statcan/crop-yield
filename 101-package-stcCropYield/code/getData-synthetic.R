@@ -15,6 +15,9 @@
 #' @param n.predictors a positive integer, indicating the number of predictor
 #' variables to simulate.
 #'
+#' @param avg.n.parcels a positive integer, indicating the average number of
+#' parcels for each given (ecoregion,crop).
+#'
 #' @param output.RData character vector of length 1,
 #' indicating file path to store in RData format the generated synthetic data.
 #' If NULL, generated data will not be persisted in RData format.
@@ -197,31 +200,14 @@ getData.synthetic_year.ecoregion <- function(
         DF.temp     <- DF.output[is.selected,colnames(temp.X)];
         DF.temp     <- base::as.matrix(base::cbind(x0 = base::rep(x=1,times=base::nrow(DF.temp)),DF.temp));
 
-        # temp.mean <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
-        # temp.sd1  <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
-        # temp.sd2  <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
-        #
-        # temp.beta  <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
-        # temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd2);
-        #
-        # DF.output[is.selected,"my_yield"] <- DF.temp %*% temp.beta + temp.noise;
+        temp.mean <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
+        temp.sd1  <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
+        temp.sd2  <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
 
-        temp.sd0   <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
-        temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd0);
+        temp.beta  <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
+        temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd2);
 
-        temp.mu.1 <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
-        temp.sd.1 <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
-        temp.beta <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mu.1, sd = temp.sd.1));
-
-        DF.temp.0 <- base::apply( X = DF.temp, MARGIN = 2, FUN = function(x) {return(x-base::mean(x))} );
-        DF.temp.0 <- base::abs(DF.temp.0);
-        temp.cov  <- (1e-2) * base::matrix( stats::rnorm(ncol(DF.temp.0)^2), ncol = base::ncol(DF.temp.0) );
-        temp.Q    <- DF.temp.0 %*% temp.cov %*% base::t(DF.temp.0);
-        temp.q    <- base::apply(X = temp.Q, MARGIN = 1, FUN = function(x) {return(base::sum(x))} );
-
-        temp.yield <- DF.temp %*% temp.beta + temp.q + temp.noise;
-        temp.yield <- base::sapply(X = temp.yield, FUN = function(x) {base::max(0,x)} );
-        DF.output[is.selected,"my_yield"] <- temp.yield;
+        DF.output[is.selected,"my_yield"] <- DF.temp %*% temp.beta + temp.noise;
 
         }
     base::return( DF.output );
