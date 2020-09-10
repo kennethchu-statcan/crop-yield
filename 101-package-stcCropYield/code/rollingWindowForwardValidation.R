@@ -282,11 +282,11 @@ rollingWindowForwardValidation_visualize.results <- function(
         my.ggplot <- initializePlot();
         my.ggplot <- my.ggplot + ggplot2::ggtitle(label = NULL, subtitle = temp.model);
 	    my.ggplot <- my.ggplot + ggplot2::geom_line(
-	        data      = DF.performance.metrics,
-	        mapping   = ggplot2::aes(x = .data$production_year, y = .data$weighted_error, group = .data$model),
-	        colour    = "black",
-	        line_type = 2,
-	        alpha     = 0.05
+	        data     = DF.performance.metrics,
+	        mapping  = ggplot2::aes(x = .data$production_year, y = .data$weighted_error, group = .data$model),
+	        colour   = "black",
+	        linetype = 2,
+	        alpha    = 0.05
 	        );
         my.ggplot <- my.ggplot + ggplot2::geom_point(
             data      = DF.mock.production.errors,
