@@ -98,7 +98,7 @@ rollingWindowForwardValidation(
         lambda_bias = c(23) #seq(23,11,-8)
         ),
     output.directory = file.path(dir.out,"rwFV"),
-    log.threshold    = logger::TRACE # logger::DEBUG 
+    log.threshold    = logger::ERROR # logger::TRACE
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -123,4 +123,3 @@ cat("\n##### Sys.time(): ",format(Sys.time(),"%Y-%m-%d %T %Z"),"\n");
 stop.proc.time <- proc.time();
 cat("\n##### stop.proc.time - start.proc.time:\n");
 print(       stop.proc.time - start.proc.time    );
-

@@ -136,12 +136,16 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     this.function.name <- "rollingWindowForwardValidation";
-    log.file <- base::file.path(base::normalizePath(output.directory),paste0(this.function.name,".log"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_threshold(level = log.threshold);
-    logger::log_appender(logger::appender_tee(file = log.file));
+    log.threshold.original <- logger::log_threshold();
+    logger::log_threshold(level = logger::INFO);
+
+    log.file <- base::file.path(base::normalizePath(output.directory),paste0(this.function.name,".log"));
+    logger::log_appender(logger::appender_file(file = log.file));
     logger::log_info('{this.function.name}(): starts');
+
+    logger::log_threshold(level = log.threshold);
     logger::log_info('{this.function.name}(): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -231,13 +235,15 @@ rollingWindowForwardValidation <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_threshold(level = logger::INFO);
     logger::log_info("{this.function.name}(): getOption('repos'):\n{getOption('repos')}");
     logger::log_info("{this.function.name}(): .libPaths():\n{base::paste(.libPaths(),collapse='\n')}");
     logger::log_info("{this.function.name}(): warnings():\n{base::paste(utils::capture.output(base::warnings()),collapse='\n')}");
     logger::log_info("{this.function.name}(): sessionInfo():\n{base::paste(utils::capture.output(utils::sessionInfo()),collapse='\n')}");
+    logger::log_info('{this.function.name}(): exits');
+    logger::log_threshold(level = log.threshold.original);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    logger::log_info('{this.function.name}(): exits');
     base::return( NULL );
 
     }
@@ -409,25 +415,22 @@ rollingWindowForwardValidation_generate.predictions <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     foreach::foreach (
-    	temp.index = 1:base::length(learner.metadata),
-    	.export    = base::ls(name = base::environment())
-    	) %dopar% {
+        temp.index = 1:base::length(learner.metadata),
+        .export    = base::ls(name = base::environment())
+        ) %dopar% {
 
-        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        if ( "windows" == base::.Platform[["OS.type"]] ) {
-            logger::log_threshold(level = log.threshold);
-            }
-
-        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         learner.name <- base::names(learner.metadata)[temp.index];
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        original.log.threshold <- logger::log_threshold();
         log.file <- base::file.path(output.directory,paste0(learner.name,".log"));
-        logger::log_appender(logger::appender_tee(file = log.file));
+        logger::log_appender(logger::appender_file(file = log.file));
+        logger::log_threshold(level = logger::INFO);
+        logger::log_info('{this.function.name}(foreach, temp.index = {temp.index}): starts');
+        logger::log_threshold(level = log.threshold);
+        logger::log_info( '{this.function.name}(foreach, temp.index = {temp.index}): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        logger::log_info( '{this.function.name}(foreach, temp.index = {temp.index}): starts');
-        logger::log_info( '{this.function.name}(foreach, temp.index = {temp.index}): logger::log_threshold(): {attr(x = logger::log_threshold(), which = "level")}');
         logger::log_debug('{this.function.name}(foreach, temp.index = {temp.index}): environment(): {capture.output(environment())}');
         logger::log_debug('{this.function.name}(foreach, temp.index = {temp.index}): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
 
@@ -459,7 +462,9 @@ rollingWindowForwardValidation_generate.predictions <- function(
             } # for (validation.year in validation.years)
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        logger::log_threshold(level = logger::INFO);
         logger::log_info('{this.function.name}(foreach, temp.index = {temp.index}): quits');
+        logger::log_threshold(level = original.log.threshold);
 
         } # foreach::foreach ( temp.index = ... )
 
