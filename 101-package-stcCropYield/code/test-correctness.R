@@ -9,8 +9,10 @@ test.correctness <- function(
     logger::log_appender(logger::appender_console);
     logger::log_threshold(level = log.threshold);
 
-    test.correctness_xgboost.multiphase(my.tolerance = 1e-3);
-    test.correctness_group.then.add.relative.error(my.tolerance = 1e-3);
+    my.tolerance <- ifelse("windows" == base::.Platform[["OS.type"]],1e-3,1e-6);
+
+    test.correctness_xgboost.multiphase(my.tolerance = my.tolerance);
+    test.correctness_group.then.add.relative.error(my.tolerance = my.tolerance);
 
     }
 
@@ -67,7 +69,7 @@ test.correctness_group.then.add.relative.error <- function(
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
-            logger::log_info('{this.function.name}(): by.variables = NULL, all.equal(DF.computed,DF.expected) = {test.result}');
+            logger::log_info('{this.function.name}(tolerance = {my.tolerance}): by.variables = NULL, all.equal(DF.computed,DF.expected) = {test.result}');
             testthat::expect_equal(
                 object    = DF.computed,
                 expected  = DF.expected,
@@ -106,7 +108,7 @@ test.correctness_group.then.add.relative.error <- function(
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
-            logger::log_info("{this.function.name}(): by.variables = 'crop', all.equal(DF.computed,DF.expected) = {test.result}");
+            logger::log_info("{this.function.name}(tolerance = {my.tolerance}): by.variables = 'crop', all.equal(DF.computed,DF.expected) = {test.result}");
             testthat::expect_equal(
                 object    = DF.computed,
                 expected  = DF.expected,
@@ -145,7 +147,7 @@ test.correctness_group.then.add.relative.error <- function(
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
-            logger::log_info("{this.function.name}(): by.variables = 'ecoregion', all.equal(DF.computed,DF.expected) = {test.result}");
+            logger::log_info("{this.function.name}(tolerance = {my.tolerance}): by.variables = 'ecoregion', all.equal(DF.computed,DF.expected) = {test.result}");
             testthat::expect_equal(
                 object    = DF.computed,
                 expected  = DF.expected,
@@ -187,7 +189,7 @@ test.correctness_group.then.add.relative.error <- function(
             rownames(DF.expected) <- NULL;
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
-            logger::log_info("{this.function.name}(): by.variables = c('ecoregion','crop'), all.equal(DF.computed,DF.expected) = {test.result}");
+            logger::log_info("{this.function.name}(tolerance = {my.tolerance}): by.variables = c('ecoregion','crop'), all.equal(DF.computed,DF.expected) = {test.result}");
             testthat::expect_equal(
                 object    = DF.computed,
                 expected  = DF.expected,
@@ -212,9 +214,10 @@ test.correctness_xgboost.multiphase <- function(
         desc = "correctness of xgboost.multiphase",
         code = {
 
-            n.ecoregions <- n.ecoregions;
-            n.crops      <- n.crops;
-            n.predictors <- n.predictors;
+            n.ecoregions    <- n.ecoregions;
+            n.crops         <- n.crops;
+            n.predictors    <- n.predictors;
+            min.num.parcels <- 50;
 
             set.seed(7654321);
             DF.synthetic <- getData.synthetic(
@@ -238,6 +241,7 @@ test.correctness_xgboost.multiphase <- function(
                 response.variable    = "my_yield",
                 harvested.area       = "my_harvested_area",
                 predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+                min.num.parcels      = min.num.parcels,
                 learner              = "xgboost_multiphase",
                 by.variables.phase01 = base::c("my_ecoregion","my_crop"),
                 by.variables.phase02 = base::c("my_crop"),
@@ -257,6 +261,7 @@ test.correctness_xgboost.multiphase <- function(
                 response.variable    = "my_yield",
                 harvested.area       = "my_harvested_area",
                 predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+                min.num.parcels      = min.num.parcels,
                 learner              = "xgboost_multiphase",
                 by.variables.phase01 = base::c("my_ecoregion","my_crop"),
                 by.variables.phase02 = base::c("my_crop"),
@@ -266,15 +271,13 @@ test.correctness_xgboost.multiphase <- function(
 
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
-            logger::log_info('{this.function.name}(): all.equal(DF.computed,DF.expected) = {test.result}');
-            #write.csv(x = DF.expected, file = "DF-expected.csv", row.names = FALSE);
-            #write.csv(x = DF.computed, file = "DF-computed.csv", row.names = FALSE);
+            logger::log_info('{this.function.name}(tolerance = {my.tolerance}): all.equal(DF.computed,DF.expected) = {test.result}');
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             testthat::expect_equal( DF.computed, DF.expected, tolerance = my.tolerance );
 
             }
         ); # testthat::test_that()
-    
+
     logger::log_info('{this.function.name}(): exits');
 
     }
@@ -289,6 +292,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     response.variable    = NULL,
     harvested.area       = NULL,
     predictors           = NULL,
+    min.num.parcels      = NULL,
     learner              = NULL,
     by.variables.phase01 = NULL,
     by.variables.phase02 = NULL,
@@ -309,10 +313,11 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         response.variable    = response.variable,
         harvested.area       = harvested.area,
         predictors           = predictors,
+        min.num.parcels      = min.num.parcels,
+        learner              = learner,
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
-        learner              = learner,
         search.grid          = hyperparameters
         );
 
@@ -364,41 +369,50 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
             DF.temp.training   <- DF.training[  temp.group == DF.training[,  byVars[[temp.phase]]],];
             DF.temp.validation <- DF.validation[temp.group == DF.validation[,byVars[[temp.phase]]],];
 
-            DMatrix.training <- xgboost::xgb.DMatrix(
-                data  = base::as.matrix(DF.temp.training[,learner.metadata[["predictors"]]]),
-                label = DF.temp.training[,learner.metadata[["response_variable"]]]
-                );
+            if ( nrow(DF.temp.training) < min.num.parcels ) {
 
-            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.training');
+                predicted.response <- base::rep(x = NA, times = nrow(DF.temp.validation));
 
-            trained.machine <- xgboost::xgb.train(
-                data = DMatrix.training,
-                params = base::list(
-                    booster     = 'gblinear',
-                    objective   = 'reg:squarederror', # deprecated: 'reg:linear',
-                    alpha       = learner.metadata[["hyperparameters"]][["alpha"]],
-                    lambda      = learner.metadata[["hyperparameters"]][["lambda"]]
-                    #,lambda_bias = learner.metadata[["hyperparameters"]][["lambda_bias"]]
-                    ),
-                verbose       = learner.metadata[["hyperparameters"]][["verbose"]],
-                print_every_n = learner.metadata[["hyperparameters"]][["print_every_n"]],
-                nrounds       = learner.metadata[["hyperparameters"]][["nrounds"]],
-                save_period   = NULL
-                );
+            } else {
 
-            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of trained.machine');
+                DMatrix.training <- xgboost::xgb.DMatrix(
+                    data  = base::as.matrix(DF.temp.training[,learner.metadata[["predictors"]]]),
+                    label = DF.temp.training[,learner.metadata[["response_variable"]]]
+                    );
 
-            DMatrix.validation <- xgboost::xgb.DMatrix(
-                data  = base::as.matrix(DF.temp.validation[,learner.metadata[["predictors"]]]),
-                label = rep(NA,base::nrow(DF.temp.validation))
-                );
+                logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.training');
 
-            logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.validation');
+                trained.machine <- xgboost::xgb.train(
+                    data = DMatrix.training,
+                    params = base::list(
+                        booster     = 'gblinear',
+                        objective   = 'reg:squarederror', # deprecated: 'reg:linear',
+                        alpha       = learner.metadata[["hyperparameters"]][["alpha"]],
+                        lambda      = learner.metadata[["hyperparameters"]][["lambda"]]
+                        #,lambda_bias = learner.metadata[["hyperparameters"]][["lambda_bias"]]
+                        ),
+                    verbose       = learner.metadata[["hyperparameters"]][["verbose"]],
+                    print_every_n = learner.metadata[["hyperparameters"]][["print_every_n"]],
+                    nrounds       = learner.metadata[["hyperparameters"]][["nrounds"]],
+                    save_period   = NULL
+                    );
 
-            predicted.response <- stats::predict(
-                object  = trained.machine,
-                newdata = DMatrix.validation
-                );
+                logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of trained.machine');
+
+                DMatrix.validation <- xgboost::xgb.DMatrix(
+                    data  = base::as.matrix(DF.temp.validation[,learner.metadata[["predictors"]]]),
+                    label = rep(NA,base::nrow(DF.temp.validation))
+                    );
+
+                logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of DMatrix.validation');
+
+                predicted.response <- stats::predict(
+                    object  = trained.machine,
+                    newdata = DMatrix.validation
+                    );
+
+                } # if ( nrow(DF.temp.training) < min.num.parcels )
+
 
             logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of predicted.response');
 

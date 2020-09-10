@@ -35,6 +35,15 @@
 #' indicating the column names in \code{DF.input} for the predictor variables
 #' (such as NVDI measurements, weather measurements, etc.)
 #'
+#' @param min.num.parcels integer vector of length 1,
+#' Must be positive.
+#' During each round of training, if a subgroup of units
+#' defined by the by-variable(s) has size strictly less than min.num.parcels,
+#' then fitting is suppressed for that group of units.
+#'
+#' @param learner character vector of length 1,
+#' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
+#'
 #' @param by.variables.phase01 character vector indicating the by-variables to use for Phase 1 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion,crop).
@@ -46,9 +55,6 @@
 #' @param by.variables.phase03 character vector indicating the by-variables to use for Phase 3 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion)
-#'
-#' @param learner character vector of length 1,
-#' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
 #'
 #' @param search.grid list defining the search grid.
 #' See Details and Examples below for more details.
@@ -118,10 +124,11 @@ rollingWindowForwardValidation <- function(
     response.variable    = "yield",
     harvested.area       = "harvested_area",
     predictors           = NULL,
+    min.num.parcels      = 50,
+    learner              = "xgboost_multiphase",
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    learner              = "xgboost_multiphase",
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
     num.cores            = base::max(1,parallel::detectCores() - 1),
     output.directory     = base::paste0("rwFV.",base::gsub(x=base::Sys.time(),pattern="( |:)",replacement="-")),
@@ -130,17 +137,17 @@ rollingWindowForwardValidation <- function(
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    this.function.name     <- "rollingWindowForwardValidation";
+    this.function.name <- "rollingWindowForwardValidation";
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     log.threshold.original <- logger::log_threshold();
     logger::log_threshold(level = logger::INFO);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    output.directory <- base::normalizePath(output.directory);
     if ( !base::dir.exists(output.directory) ) {
         base::dir.create(path = output.directory, recursive = TRUE);
         }
+    output.directory <- base::normalizePath(output.directory);
 
     logger::log_appender(logger::appender_console);
     logger::log_info('{this.function.name}(): All output and log files are written to: {output.directory}');
@@ -164,10 +171,11 @@ rollingWindowForwardValidation <- function(
         response.variable    = response.variable,
         harvested.area       = harvested.area,
         predictors           = predictors,
+        min.num.parcels      = min.num.parcels,
+        learner              = learner,
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
-        learner              = learner,
         search.grid          = search.grid
         );
 
@@ -189,6 +197,7 @@ rollingWindowForwardValidation <- function(
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
+        min.num.parcels      = min.num.parcels,
         learner              = learner,
         search.grid          = search.grid,
         output.directory     = predictions.directory,
@@ -282,15 +291,24 @@ rollingWindowForwardValidation_visualize.results <- function(
 	        data      = DF.performance.metrics,
 	        mapping   = ggplot2::aes(x = .data$production_year, y = .data$weighted_error, group = .data$model),
 	        colour    = "black",
-	        line_type = 2,
+	        #linetype = 2,
 	        alpha     = 0.05
 	        );
         my.ggplot <- my.ggplot + ggplot2::geom_point(
             data      = DF.mock.production.errors,
             mapping   = ggplot2::aes(x = .data$production_year, y = .data$mock_production_error),
-            colour    = "orange",
+            shape     = 21,            # plot character that allows customizable border
+            fill      = 'orange',      # fill colour
+            colour    = 'transparent', # no border
             size      = 5,
-            alpha     = 0.75
+            alpha     = 0.60
+            );
+        my.ggplot <- my.ggplot + ggplot2::geom_point(
+            data      = DF.mock.production.errors,
+            mapping   = ggplot2::aes(x = .data$production_year, y = .data$mock_production_error),
+            colour    = "orange",
+            size      = 1,
+            alpha     = 0.99
             );
         my.ggplot <- my.ggplot + ggplot2::geom_line(
             data      = DF.mock.production.errors,
@@ -534,10 +552,11 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     response.variable    = NULL,
     harvested.area       = NULL,
     predictors           = NULL,
+    min.num.parcels      = NULL,
+    learner              = NULL,
     by.variables.phase01 = NULL,
     by.variables.phase02 = NULL,
     by.variables.phase03 = NULL,
-    learner              = NULL,
     search.grid          = NULL,
     output.directory     = NULL
     ) {

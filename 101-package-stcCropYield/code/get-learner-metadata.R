@@ -6,10 +6,11 @@ get.learner.metadata <- function(
     response.variable    = "yield",
     harvested.area       = "harvested_area",
     predictors           = NULL,
+    min.num.parcels      = 50,
+    learner              = "xgboost_multiphase",
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    learner              = "xgboost_multiphase",
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
     output.directory     = "predictions",
     metadata.json        = base::file.path(output.directory,"learner-metadata.json")
@@ -26,10 +27,11 @@ get.learner.metadata <- function(
         response.variable    = response.variable,
         harvested.area       = harvested.area,
         predictors           = predictors,
+        min.num.parcels      = min.num.parcels,
+        learner              = learner,
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
-        learner              = learner,
         search.grid          = search.grid
         );
 
@@ -61,10 +63,11 @@ get.learner.metadata_private.helper <- function(
     response.variable    = NULL,
     harvested.area       = NULL,
     predictors           = base::c(),
+    min.num.parcels      = 50,
+    learner              = "xgboost_multiphase",
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    learner              = "xgboost_multiphase",
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4))
     ) {
 
@@ -107,6 +110,7 @@ get.learner.metadata_private.helper <- function(
                     response_variable    = response.variable,
                     harvested_area       = harvested.area,
                     predictors           = base::setdiff(predictors,base::c(response.variable,harvested.area)),
+                    min_num_parcels      = min.num.parcels,
                     by_variables_phase01 = by.variables.phase01,
                     by_variables_phase02 = by.variables.phase02,
                     by_variables_phase03 = by.variables.phase03,
@@ -119,4 +123,3 @@ get.learner.metadata_private.helper <- function(
     base::return( output.learner.metadata );
 
     }
-
