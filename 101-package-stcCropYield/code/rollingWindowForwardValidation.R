@@ -118,10 +118,11 @@ rollingWindowForwardValidation <- function(
     response.variable    = "yield",
     harvested.area       = "harvested_area",
     predictors           = NULL,
+    min.num.parcels      = 50,
+    learner              = "xgboost_multiphase",
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    learner              = "xgboost_multiphase",
     search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
     num.cores            = base::max(1,parallel::detectCores() - 1),
     output.directory     = base::paste0("rwFV.",base::gsub(x=base::Sys.time(),pattern="( |:)",replacement="-")),
@@ -164,10 +165,11 @@ rollingWindowForwardValidation <- function(
         response.variable    = response.variable,
         harvested.area       = harvested.area,
         predictors           = predictors,
+        min.num.parcels      = min.num.parcels,
+        learner              = learner,
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
-        learner              = learner,
         search.grid          = search.grid
         );
 
@@ -189,6 +191,7 @@ rollingWindowForwardValidation <- function(
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
+        min.num.parcels      = min.num.parcels,
         learner              = learner,
         search.grid          = search.grid,
         output.directory     = predictions.directory,
@@ -534,10 +537,11 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     response.variable    = NULL,
     harvested.area       = NULL,
     predictors           = NULL,
+    min.num.parcels      = NULL,
+    learner              = NULL,
     by.variables.phase01 = NULL,
     by.variables.phase02 = NULL,
     by.variables.phase03 = NULL,
-    learner              = NULL,
     search.grid          = NULL,
     output.directory     = NULL
     ) {
