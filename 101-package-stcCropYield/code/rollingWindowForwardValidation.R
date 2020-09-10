@@ -281,19 +281,21 @@ rollingWindowForwardValidation_visualize.results <- function(
             replacement = "production_year"
             );
         DF.performance.metrics[,"production_year"] <- as.numeric(as.character(DF.performance.metrics[,"production_year"]));
+        DF.performance.metrics <- DF.performance.metrics[!is.na(DF.performance.metrics[,"mock_production_error"]),];
 
         DF.mock.production.errors <- list.mock.production.errors[[temp.model]][["mock_production_errors"]];
         DF.mock.production.errors[,"production_year"] <- as.numeric(as.character(DF.mock.production.errors[,"production_year"]));
+        DF.mock.production.errors <- DF.mock.production.errors[!is.na(DF.mock.production.errors[,"mock_production_error"]),];
 
         my.ggplot <- initializePlot();
         my.ggplot <- my.ggplot + ggplot2::ggtitle(label = NULL, subtitle = temp.model);
-	    my.ggplot <- my.ggplot + ggplot2::geom_line(
-	        data      = DF.performance.metrics,
-	        mapping   = ggplot2::aes(x = .data$production_year, y = .data$weighted_error, group = .data$model),
-	        colour    = "black",
-	        #linetype = 2,
-	        alpha     = 0.05
-	        );
+        my.ggplot <- my.ggplot + ggplot2::geom_line(
+            data      = DF.performance.metrics,
+            mapping   = ggplot2::aes(x = .data$production_year, y = .data$weighted_error, group = .data$model),
+            colour    = "black",
+            #linetype = 2,
+            alpha     = 0.05
+            );
         my.ggplot <- my.ggplot + ggplot2::geom_point(
             data      = DF.mock.production.errors,
             mapping   = ggplot2::aes(x = .data$production_year, y = .data$mock_production_error),
