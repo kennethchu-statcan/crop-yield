@@ -51,21 +51,21 @@ for ( test.file in test.files ) {
     }
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-set.seed(13);
+set.seed(17);
 
-n.ecoregions <- 3;
-n.crops      <- 5;
-n.predictors <- 7;
+n.ecoregions  <-    3;
+n.crops       <-    5;
+n.predictors  <-    7;
+avg.n.parcels <- 1000;
 
 DF.synthetic <- getData.synthetic(
-    # years      = seq(2015,2020),
-    years        = seq(2011,2020),
-    # years      = seq(2000,2020),
-    n.ecoregions = n.ecoregions,
-    n.crops      = n.crops,
-    n.predictors = n.predictors,
-    output.RData = "raw-synthetic.RData",
-    output.csv   = "raw-synthetic.csv"
+    years         = seq(2011,2020),
+    n.ecoregions  = n.ecoregions,
+    n.crops       = n.crops,
+    n.predictors  = n.predictors,
+    avg.n.parcels = avg.n.parcels,
+    output.RData  = "raw-synthetic.RData",
+    output.csv    = "raw-synthetic.csv"
     );
 
 cat("\nstr(DF.synthetic)\n");
@@ -85,10 +85,11 @@ stcCropYield::rollingWindowForwardValidation(
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    min.num.parcels      = 50,
+    learner              = "xgboost_multiphase",
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
     by.variables.phase03 = c("my_ecoregion"),
-    learner     = "xgboost_multiphase",
     search.grid = list(
         alpha       = c(1,12,23),
         lambda      = c(1,12,23),

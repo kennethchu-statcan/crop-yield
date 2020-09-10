@@ -7,10 +7,10 @@
 #' data are to be synthesized.
 #'
 #' @param n.ecoregions a positive integer, indicating the number of ecoregions
-#' to simulate. 
-#' 
+#' to simulate.
+#'
 #' @param n.crops a positive integer, indicating the number of crop types
-#' to simulate. 
+#' to simulate.
 #'
 #' @param n.predictors a positive integer, indicating the number of predictor
 #' variables to simulate.
@@ -40,12 +40,13 @@
 #' @export
 
 getData.synthetic <- function(
-    years        = base::seq(2000,2018),
-    n.ecoregions =  5,
-    n.crops      = 10,
-    n.predictors =  7,
-    output.RData = NULL, # "raw-synthetic.RData",
-    output.csv   = NULL  # "raw-synthetic.csv"
+    years         = base::seq(2000,2018),
+    n.ecoregions  =    5,
+    n.crops       =   10,
+    n.predictors  =    7,
+    avg.n.parcels = 1000,
+    output.RData  = NULL, # "raw-synthetic.RData",
+    output.csv    = NULL  # "raw-synthetic.csv"
     ) {
 
     this.function.name <- "getData.synthetic";
@@ -68,7 +69,7 @@ getData.synthetic <- function(
         ecoregions   <- base::paste0("er0",base::seq(1,n.ecoregions));
         list.parcels <- getData.synthetic_parcels.by.ecoregion(
             ecoregions    = ecoregions,
-            avg.n.parcels = 1000
+            avg.n.parcels = avg.n.parcels
             );
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -100,7 +101,7 @@ getData.synthetic <- function(
                 n.predictors = n.predictors
                 );
             DF.output <- base::rbind(DF.output,DF.temp);
-        
+
             }}
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -185,25 +186,43 @@ getData.synthetic_year.ecoregion <- function(
         stringsAsFactors  = FALSE
         );
     temp.X <- base::matrix(
-        data = stats::rnorm(n = base::nrow(DF.output) * n.predictors, mean = 100, sd = 20),
+        data = 50 + stats::rlnorm(n = base::nrow(DF.output) * n.predictors, mean = 0, sd = 1),
         nrow = base::nrow(DF.output)
         );
     base::colnames(temp.X) <- getData.synthetic_predictors(n.predictors = n.predictors);
     DF.output <- base::cbind(DF.output,temp.X);
     for ( temp.crop in crops ) {
+
         is.selected <- (DF.output[,"my_crop"] == temp.crop);
         DF.temp     <- DF.output[is.selected,colnames(temp.X)];
         DF.temp     <- base::as.matrix(base::cbind(x0 = base::rep(x=1,times=base::nrow(DF.temp)),DF.temp));
 
-        temp.mean <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
-        temp.sd1  <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
-        temp.sd2  <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
+        # temp.mean <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
+        # temp.sd1  <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
+        # temp.sd2  <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
+        #
+        # temp.beta  <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
+        # temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd2);
+        #
+        # DF.output[is.selected,"my_yield"] <- DF.temp %*% temp.beta + temp.noise;
 
-        temp.beta  <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
-        temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd2);
+        temp.sd0   <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
+        temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd0);
 
-        DF.output[is.selected,"my_yield"] <- DF.temp %*% temp.beta + temp.noise;
+        temp.mu.1 <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
+        temp.sd.1 <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
+        temp.beta <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mu.1, sd = temp.sd.1));
+
+        DF.temp.0 <- base::apply( X = DF.temp, MARGIN = 2, FUN = function(x) {return(x-base::mean(x))} );
+        DF.temp.0 <- base::abs(DF.temp.0);
+        temp.cov  <- (1e-2) * base::matrix( stats::rnorm(ncol(DF.temp.0)^2), ncol = base::ncol(DF.temp.0) );
+        temp.Q    <- DF.temp.0 %*% temp.cov %*% base::t(DF.temp.0);
+        temp.q    <- base::apply(X = temp.Q, MARGIN = 1, FUN = function(x) {return(base::sum(x))} );
+
+        temp.yield <- DF.temp %*% temp.beta + temp.q + temp.noise;
+        temp.yield <- base::sapply(X = temp.yield, FUN = function(x) {base::max(0,x)} );
+        DF.output[is.selected,"my_yield"] <- temp.yield;
+
         }
     base::return( DF.output );
     }
-

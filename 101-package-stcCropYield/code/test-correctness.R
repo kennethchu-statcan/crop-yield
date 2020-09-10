@@ -64,7 +64,7 @@ test.correctness_group.then.add.relative.error <- function(
                dplyr::mutate(
                    relative_error = abs(
                        .data$predicted_production - .data$actual_production
-                       ) / .data$actual_production
+                       ) / abs( .data$actual_production )
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -103,7 +103,7 @@ test.correctness_group.then.add.relative.error <- function(
                dplyr::mutate(
                    relative_error = abs(
                        .data$predicted_production - .data$actual_production
-                       ) / .data$actual_production
+                       ) / abs( .data$actual_production )
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -142,7 +142,7 @@ test.correctness_group.then.add.relative.error <- function(
                dplyr::mutate(
                    relative_error = abs(
                        .data$predicted_production - .data$actual_production
-                       ) / .data$actual_production
+                       ) / abs( .data$actual_production )
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -182,7 +182,7 @@ test.correctness_group.then.add.relative.error <- function(
                dplyr::mutate(
                    relative_error = abs(
                        .data$predicted_production - .data$actual_production
-                       ) / .data$actual_production
+                       ) / abs( .data$actual_production )
                    );
             DF.expected <- as.data.frame(DF.expected);
             DF.expected <- DF.expected[order(DF.expected[,"crop"],DF.expected[,"ecoregion"]),]

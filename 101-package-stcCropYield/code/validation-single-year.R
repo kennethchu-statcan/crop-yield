@@ -483,7 +483,7 @@ validation.single.year_group.then.add.relative.error <- function(
 
     DF.output[,"relative_error"] <- base::abs(
         DF.output[,"predicted_production"] - DF.output[,"actual_production"]
-        ) / DF.output[,"actual_production"];
+        ) / abs( DF.output[,"actual_production"] );
 
     return( DF.output );
 
