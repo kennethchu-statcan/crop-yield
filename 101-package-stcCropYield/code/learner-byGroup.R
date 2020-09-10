@@ -94,15 +94,18 @@ learner.byGroup <- R6::R6Class(
             my.levels <- base::unique(base::as.character(self$training.data[,"concatenated_by_variable"]));
             self$trained.machines <- base::list();
             for ( my.level in my.levels ) {
-                temp.learner.metadata              <- self$learner.metadata;
-                temp.learner.metadata[["learner"]] <- self$learner.single.group;
-                temp.learner <- getLearner(
-                    learner.metadata = temp.learner.metadata,
-                    DF.training      = self$training.data[self$training.data[,"concatenated_by_variable"] == my.level,c(self$response.variable,self$learner.metadata[["predictors"]])],
-                    global.objects   = self$global.objects
-                    );
-                temp.learner$fit();
-                self$trained.machines[[my.level]] <- temp.learner;
+                is.my.level <- (self$training.data[,"concatenated_by_variable"] == my.level);
+                if ( sum(is.my.level) >= self$learner.metadata[['min_num_parcels']] ) {
+                    temp.learner.metadata              <- self$learner.metadata;
+                    temp.learner.metadata[["learner"]] <- self$learner.single.group;
+                    temp.learner <- getLearner(
+                        learner.metadata = temp.learner.metadata,
+                        DF.training      = self$training.data[is.my.level,c(self$response.variable,self$learner.metadata[["predictors"]])],
+                        global.objects   = self$global.objects
+                        );
+                    temp.learner$fit();
+                    self$trained.machines[[my.level]] <- temp.learner;
+                    }
                 }
             logger::log_debug('{this.function.name}(): exits');
             },
@@ -153,4 +156,3 @@ learner.byGroup <- R6::R6Class(
         )
 
     ) # R6Class()
-

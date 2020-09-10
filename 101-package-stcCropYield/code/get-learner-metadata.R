@@ -110,7 +110,7 @@ get.learner.metadata_private.helper <- function(
                     response_variable    = response.variable,
                     harvested_area       = harvested.area,
                     predictors           = base::setdiff(predictors,base::c(response.variable,harvested.area)),
-                    min.num.parcels      = min.num.parcels,
+                    min_num_parcels      = min.num.parcels,
                     by_variables_phase01 = by.variables.phase01,
                     by_variables_phase02 = by.variables.phase02,
                     by_variables_phase03 = by.variables.phase03,
