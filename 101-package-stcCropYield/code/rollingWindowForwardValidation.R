@@ -131,17 +131,17 @@ rollingWindowForwardValidation <- function(
     ) {
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    this.function.name     <- "rollingWindowForwardValidation";
+    this.function.name <- "rollingWindowForwardValidation";
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     log.threshold.original <- logger::log_threshold();
     logger::log_threshold(level = logger::INFO);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    output.directory <- base::normalizePath(output.directory);
     if ( !base::dir.exists(output.directory) ) {
         base::dir.create(path = output.directory, recursive = TRUE);
         }
+    output.directory <- base::normalizePath(output.directory);
 
     logger::log_appender(logger::appender_console);
     logger::log_info('{this.function.name}(): All output and log files are written to: {output.directory}');
