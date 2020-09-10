@@ -46,9 +46,9 @@ test.files <- c(
     "test-correctness.R"
     );
 
-#for ( test.file in test.files ) {
-#    source(file.path(dir.code,test.file));
-#    }
+for ( test.file in test.files ) {
+    source(file.path(dir.code,test.file));
+    }
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(7654321);

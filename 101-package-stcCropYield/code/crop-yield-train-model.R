@@ -5,12 +5,12 @@
 #' years. No hyperparameter tuning is done. Instead it is assumed that the
 #' user has already chosen a particular hyperparameter configuration.
 #' This function trains the model subject to this chosen hyperparameter
-#' configuration. 
-#' 
+#' configuration.
+#'
 #' @param FILE.trained.model data frame containing crop yield data. See Details below for more information.
 #'
 #' @param DF.training data frame containing crop yield data. See Details below for more information.
-#' 
+#'
 #' @param learner.metadata list of key-value pairs, specifying learner metadata. See Details below.
 #'
 #' @param training.window integer vector of length 1.
@@ -18,43 +18,49 @@
 #'
 #' @param year character vector of length 1,
 #' indicating the column name in \code{DF.input} for the calendar year variable.
-#' 
+#'
 #' @param ecoregion character vector of length 1,
 #' indicating column name in \code{DF.input} for the ecoregion variable.
-#' 
+#'
 #' @param crop character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop type variable.
-#' 
+#'
 #' @param response.variable character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop yield variable.
-#' 
+#'
 #' @param harvested.area character vector of length 1,
 #' indicating column name in \code{DF.input} for the harvested area variable.
-#' 
+#'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
 #' (such as NVDI measurements, weather measurements, etc.)
-#' 
+#'
+#' @param min.num.parcels integer vector of length 1,
+#' Must be positive.
+#' During each round of training, if a subgroup of units
+#' defined by the by-variable(s) has size strictly less than min.num.parcels,
+#' then fitting is suppressed for that group of units.
+#'
 #' @param learner character vector of length 1,
 #' must be one of c("xgboost_multiphase"), c("rlm_multiphase"), c("lm_multiphase")
 #'
 #' @param by.variables.phase01 character vector indicating the by-variables to use for Phase 1 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion,crop).
-#' 
+#'
 #' @param by.variables.phase02 character vector indicating the by-variables to use for Phase 2 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(crop)
-#' 
+#'
 #' @param by.variables.phase03 character vector indicating the by-variables to use for Phase 3 prediction.
 #' These must be column names in \code{DF.input} for categorical variables (character columns).
 #' Default = c(ecoregion)
-# 
+#
 #' @param hyperparameters list of numeric vectors each of length 1,
 #' indicating the single hyperparameter configuration to be used for training.
-#' 
+#'
 #' @return an instance of class \code{learner}, e.g. "xgboost_multiphase".
-#' 
+#'
 #' @examples
 #'
 #' @export
@@ -70,6 +76,7 @@ crop.yield.train.model <- function(
     response.variable    = "yield",
     harvested.area       = "harvested_area",
     predictors           = NULL,
+    min.num.parcels      = 50,
     learner              = "xgboost_multiphase",
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
@@ -85,6 +92,7 @@ crop.yield.train.model <- function(
             response.variable    = response.variable,
             harvested.area       = harvested.area,
             predictors           = predictors,
+            min.num.parcels = min.num.parcels,
             learner              = learner,
             by.variables.phase01 = by.variables.phase01,
             by.variables.phase02 = by.variables.phase02,
