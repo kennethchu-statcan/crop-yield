@@ -281,7 +281,7 @@ rollingWindowForwardValidation_visualize.results <- function(
             replacement = "production_year"
             );
         DF.performance.metrics[,"production_year"] <- as.numeric(as.character(DF.performance.metrics[,"production_year"]));
-        DF.performance.metrics <- DF.performance.metrics[!is.na(DF.performance.metrics[,"mock_production_error"]),];
+        DF.performance.metrics <- DF.performance.metrics[!is.na(DF.performance.metrics[,"weighted_error"]),];
 
         DF.mock.production.errors <- list.mock.production.errors[[temp.model]][["mock_production_errors"]];
         DF.mock.production.errors[,"production_year"] <- as.numeric(as.character(DF.mock.production.errors[,"production_year"]));
