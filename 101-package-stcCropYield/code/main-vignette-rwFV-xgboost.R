@@ -51,7 +51,7 @@ for ( test.file in test.files ) {
     }
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-set.seed(17);
+set.seed(13);
 
 n.ecoregions  <-    3;
 n.crops       <-    5;
