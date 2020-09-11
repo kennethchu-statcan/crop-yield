@@ -96,7 +96,7 @@ stcCropYield::rollingWindowForwardValidation(
         lambda_bias = c(23) #seq(23,11,-8)
         ),
     output.directory = "rwFV",
-    log.threshold    = logger::ERROR
+    log.threshold    = logger::TRACE
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
