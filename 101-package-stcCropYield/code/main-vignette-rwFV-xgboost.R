@@ -53,11 +53,13 @@ for ( test.file in test.files ) {
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(13);
 
-n.ecoregions  <-    3;
-n.crops       <-    5;
-n.predictors  <-    7;
-avg.n.parcels <- 1000;
+n.ecoregions    <-   3;
+n.crops         <-   5;
+n.predictors    <-   7;
+avg.n.parcels   <- 100;
+min.num.parcels <-  50;
 
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.synthetic <- getData.synthetic(
     years         = seq(2011,2020),
     n.ecoregions  = n.ecoregions,
@@ -85,7 +87,7 @@ stcCropYield::rollingWindowForwardValidation(
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-    min.num.parcels      = 50,
+    min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
