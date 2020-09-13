@@ -33,7 +33,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.0008",
+    Version         = "0.0.1.0009",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -90,22 +90,18 @@ tests.R <- base::c(
     );
 tests.R <- base::file.path( code.directory , tests.R );
 
-#images.png <- base::c("np-propensity-scatter-01.png", "np-propensity-scatter-03.png");
-#images.png <- base::file.path( code.directory , images.png );
-
-# list.vignettes <- list(
-#     'rwFV-xgboost' = list(
-#         Rmd   = base::file.path( code.directory , 'rwFV-xgboost.Rmd' ),
-#         html  = base::file.path( code.directory , 'rwFV-xgboost.html' ),
-#         title = "Early-Season Crop Yield Prediction via XGBoost and Rolling Window Forward Validation"
-#         )
-#     );
-
-list.vignettes.asis <- list(
-    'rwFV-xgboost' = list(
-        file  = base::file.path( code.directory , 'rwFV-xgboost.html'      ),
-        asis  = base::file.path( code.directory , 'rwFV-xgboost.html.asis' )
+list.vignettes.Rmd <- list(
+    'rwFV' = list(
+        file  = base::file.path( code.directory , 'vignette-rwFV.Rmd'       ),
+        asis  = base::file.path( code.directory , 'vignette-rwFV.html.asis' )
         ),
+    'rwFV-xgboost' = list(
+        file  = base::file.path( code.directory , 'vignette-rwFV-xgboost.Rmd'      ),
+        asis  = base::file.path( code.directory , 'vignette-rwFV-xgboost.html.asis' )
+        )
+    );
+
+list.vignettes.pdf <- list(
     'Schnaubelt2019' = list(
         file  = base::file.path( code.directory , 'Schnaubelt_FAU-2019_ML-validation-schemes-TS-data.pdf'      ),
         asis  = base::file.path( code.directory , 'Schnaubelt_FAU-2019_ML-validation-schemes-TS-data.pdf.asis' )
@@ -120,7 +116,8 @@ package.path <- assemble.package(
     packages.suggest    = packages.suggest,
     files.R             = files.R,
     tests.R             = tests.R,
-    list.vignettes.asis = list.vignettes.asis
+    list.vignettes.Rmd  = list.vignettes.Rmd,
+    list.vignettes.pdf  = list.vignettes.pdf
     # ,list.vignettes   = list.vignettes
     # ,images.png       = images.png
     );

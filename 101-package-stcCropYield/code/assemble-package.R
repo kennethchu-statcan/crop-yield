@@ -1,18 +1,18 @@
 
 assemble.package <- function(
-    package.name        = NULL,
-    copyright.holder    = "Kenneth Chu",
-    description.fields  = base::list(),
-    packages.import     = base::c(),
-    packages.depend     = base::c(),
-    packages.suggest    = base::c(),
-    packages.enhance    = base::c(),
-    files.R             = base::c(),
-    tests.R             = base::c(),
-    list.vignettes.asis = base::list(),
-    list.vignettes      = base::list(),
-    images.png          = base::c(),
-    log.threshold       = logger::DEBUG
+    package.name       = NULL,
+    copyright.holder   = "Kenneth Chu",
+    description.fields = base::list(),
+    packages.import    = base::c(),
+    packages.depend    = base::c(),
+    packages.suggest   = base::c(),
+    packages.enhance   = base::c(),
+    files.R            = base::c(),
+    tests.R            = base::c(),
+    list.vignettes.Rmd = base::list(),
+    list.vignettes.pdf = base::list(),
+    images.png         = base::c(),
+    log.threshold      = logger::DEBUG
     ) {
 
     this.function.name <- "assemble.package";
@@ -118,8 +118,8 @@ assemble.package <- function(
         }
 
     # ~~~~~~~~~~ #
-    for ( temp.vignette in list.vignettes.asis ) {
-        logger::log_info('{this.function.name}(): processing as-is vignette: html = {temp.vignette[["html"]]}, asis = {temp.vignette[["asis"]]}');
+    for ( temp.vignette in list.vignettes.pdf ) {
+        logger::log_info('{this.function.name}(): processing PDF vignette: file = {temp.vignette[["file"]]}, asis = {temp.vignette[["asis"]]}');
         base::file.copy(
             from      = temp.vignette[['file']],
             to        = vignettes.directory,
@@ -132,27 +132,19 @@ assemble.package <- function(
             );
         }
 
-    for ( temp.vignette in list.vignettes ) {
-        logger::log_info('{this.function.name}(): processing vignette: title = {temp.vignette[["title"]]}, file = {temp.vignette[["Rmd"]]}');
-        usethis::use_vignette(
-            name  = tools::file_path_sans_ext(base::basename(temp.vignette[['Rmd']])),
-            title = temp.vignette[['title']]
+    for ( temp.vignette in list.vignettes.Rmd ) {
+        logger::log_info('{this.function.name}(): processing HTML vignette: file = {temp.vignette[["file"]]}, asis = {temp.vignette[["asis"]]}');
+        rmarkdown::render(
+            input         = temp.vignette[['file']],
+            output_format = "html_document",
+            output_dir    = vignettes.directory,
+            output_file   = base::gsub(x = temp.vignette[['file']],pattern="\\.Rmd$",replacement=".html")
             );
         base::file.copy(
-            from      = temp.vignette[['Rmd']],
+            from      = temp.vignette[['asis']],
             to        = vignettes.directory,
             overwrite = TRUE
             );
-        base::file.copy(
-            from      = temp.vignette[['html']],
-            to        = doc.directory,
-            overwrite = TRUE
-            );
-        # base::file.copy(
-        #     from      = temp.vignette[['html']],
-        #     to        = inst.doc.directory,
-        #     overwrite = TRUE
-        #     );
         }
 
     # for ( temp.image.png in images.png ) {
