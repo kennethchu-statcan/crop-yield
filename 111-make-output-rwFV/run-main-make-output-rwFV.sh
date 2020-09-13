@@ -15,7 +15,7 @@ cp -r ${codeDIR} ${outputDIR}
 cp    $0         ${outputDIR}/code
 
 ##################################################
-myRscript=${codeDIR}/main-vignette-rwFV-xgboost.R
+myRscript=${codeDIR}/main-make-output-rwFV.R
 stdoutFile=${outputDIR}/stdout.R.`basename ${myRscript} .R`
 stderrFile=${outputDIR}/stderr.R.`basename ${myRscript} .R`
 R --no-save --args ${dataDIR} ${codeDIR} ${outputDIR} < ${myRscript} > ${stdoutFile} 2> ${stderrFile}

@@ -31,7 +31,7 @@ xcopy /E /I /Y %codeDIR% %outROOT%\code
 :: ########################################################
 :: R command
 set PATH=F:\work\software\R\instances\R-3.6.2\bin;C:\Program Files\Anaconda;%PATH%
-Rscript %codeDIR%\main-vignette-rwFV-xgboost.R %dataDIR% %codeDIR% %outROOT% 1> %outROOT%\stdout.R.main-dev 2> %outROOT%\stderr.R.main-dev
+Rscript %codeDIR%\main-make-output-rwFV.R %dataDIR% %codeDIR% %outROOT% 1> %outROOT%\stdout.R.main-make-output-rwFV 2> %outROOT%\stderr.R.main-make-output-rwFV
 
 :: unmap network drives
 net use Z: /delete /yes
