@@ -101,8 +101,13 @@ learner.xgboost <- R6::R6Class(
 
         predict = function(newdata = NULL) {
 
+            included.colnames <- self$learner.metadata[["predictors"]];
+            if ( self$response_variable %in% colnames(newdata) ) {
+                included.colnames <- base::c(self$response_variable,included.colnames);
+                }
+
             preprocessed.newdata <- self$preprocessor$transform(
-                newdata = newdata[,base::c(self$response_variable,self$learner.metadata[["predictors"]])]
+                newdata = newdata[,included.colnames]
                 );
 
             DMatrix.preprocessed.newdata <- xgboost::xgb.DMatrix(
@@ -124,4 +129,3 @@ learner.xgboost <- R6::R6Class(
         ) # public = list()
 
     ) # R6Class()
-
