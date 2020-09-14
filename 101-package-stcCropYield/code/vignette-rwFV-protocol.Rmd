@@ -2,7 +2,7 @@
 title: "Rolling Window Forward Validation for Crop Yield Prediction"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rwFV}
+  %\VignetteIndexEntry{rwFV-protocol}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
