@@ -33,7 +33,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.0009",
+    Version         = "0.0.1.0011",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -59,13 +59,15 @@ packages.import <- base::c(
     );
 
 packages.suggest <- base::c(
-    "testthat",
-    "R.rsp",
+    "fs",
     "knitr",
-    "rmarkdown"
+    "R.rsp",
+    "rmarkdown",
+    "testthat"
     );
 
 files.R <- base::c(
+    "crop-yield-predict.R",
     "crop-yield-train-model.R",
     "get-learner-metadata.R",
     "get-mock-production-errors.R",
@@ -91,9 +93,13 @@ tests.R <- base::c(
 tests.R <- base::file.path( code.directory , tests.R );
 
 list.vignettes.Rmd <- list(
-    'rwFV' = list(
-        file  = base::file.path( code.directory , 'vignette-rwFV.Rmd'       ),
-        asis  = base::file.path( code.directory , 'vignette-rwFV.html.asis' )
+    'rwFV-protocol' = list(
+        file  = base::file.path( code.directory , 'vignette-rwFV-protocol.Rmd'       ),
+        asis  = base::file.path( code.directory , 'vignette-rwFV-protocol.html.asis' )
+        ),
+    'rwFV-demo-production' = list(
+        file  = base::file.path( code.directory , 'vignette-rwFV-demo-production.Rmd'       ),
+        asis  = base::file.path( code.directory , 'vignette-rwFV-demo-production.html.asis' )
         ),
     'rwFV-xgboost' = list(
         file  = base::file.path( code.directory , 'vignette-rwFV-xgboost.Rmd'      ),
@@ -109,17 +115,15 @@ list.vignettes.pdf <- list(
     );
 
 package.path <- assemble.package(
-    package.name        = package.name,
-    copyright.holder    = "Kenneth Chu",
-    description.fields  = description.fields,
-    packages.import     = packages.import,
-    packages.suggest    = packages.suggest,
-    files.R             = files.R,
-    tests.R             = tests.R,
-    list.vignettes.Rmd  = list.vignettes.Rmd,
-    list.vignettes.pdf  = list.vignettes.pdf
-    # ,list.vignettes   = list.vignettes
-    # ,images.png       = images.png
+    package.name       = package.name,
+    copyright.holder   = "Kenneth Chu",
+    description.fields = description.fields,
+    packages.import    = packages.import,
+    packages.suggest   = packages.suggest,
+    files.R            = files.R,
+    tests.R            = tests.R,
+    list.vignettes.Rmd = list.vignettes.Rmd,
+    list.vignettes.pdf = list.vignettes.pdf
     );
 
 build.package(package.path = package.path);

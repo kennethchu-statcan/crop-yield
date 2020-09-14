@@ -19,6 +19,7 @@ require(magrittr);
 require(rlang);
 
 code.files <- c(
+    "crop-yield-predict.R",
     "crop-yield-train-model.R",
     "getData-synthetic.R",
     "getLearner.R",
@@ -57,22 +58,39 @@ n.ecoregions <-  7;
 n.crops      <- 15;
 n.predictors <-  7;
 
-DF.synthetic <- getData.synthetic(
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+DF.training <- getData.synthetic(
     years        = seq(2015,2020),
     #years       = seq(2011,2020),
     #years       = seq(2000,2020),
     n.ecoregions = n.ecoregions,
     n.crops      = n.crops,
     n.predictors = n.predictors,
-    output.RData = "raw-synthetic.RData",
-    output.csv   = "raw-synthetic.csv"
+    output.RData = "raw-training.RData",
+    output.csv   = "raw-training.csv"
     );
 
-cat("\nstr(DF.synthetic)\n");
-print( str(DF.synthetic)   );
+DF.production <- getData.synthetic(
+    years        = c(2021),
+    n.ecoregions = n.ecoregions,
+    n.crops      = n.crops,
+    n.predictors = n.predictors,
+    output.RData = "raw-production.RData",
+    output.csv   = "raw-production.csv"
+    );
+DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_harvested_area"))];
 
-cat("\nsummary(DF.synthetic)\n");
-print( summary(DF.synthetic)   );
+cat("\nstr(DF.training)\n");
+print( str(DF.training)   );
+
+cat("\nsummary(DF.training)\n");
+print( summary(DF.training)   );
+
+cat("\nstr(DF.production)\n");
+print( str(DF.production)   );
+
+cat("\nsummary(DF.production)\n");
+print( summary(DF.production)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 rollingWindowForwardValidation(
@@ -80,14 +98,13 @@ rollingWindowForwardValidation(
     validation.window    = 3,
     #training.window     =  5,
     #validation.window   = 10,
-    DF.input             = DF.synthetic,
+    DF.input             = DF.training,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
-    #predictors          = c("my_year",grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE)),
-    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    predictors           = grep(x = colnames(DF.training), pattern = "x[0-9]*", value = TRUE),
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
     by.variables.phase03 = c("my_ecoregion"),
@@ -99,6 +116,32 @@ rollingWindowForwardValidation(
         ),
     output.directory = file.path(dir.out,"rwFV"),
     log.threshold    = logger::TRACE # logger::ERROR
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+RData.trained.model <- list.files( path = file.path(dir.out,"rwFV"), pattern = "\\.RData$" );
+RData.trained.model <- file.path(dir.out,"rwFV",RData.trained.model);
+cat("\nRData.trained.model\n");
+print( RData.trained.model   );
+
+cat('\nfile.exists(RData.trained.model)\n');
+print( file.exists(RData.trained.model)   );
+
+DF.predictions <- crop.yield.predict(
+   FILE.trained.model = RData.trained.model,
+   DF.predictors      = DF.production
+   );
+
+cat('\nstr(DF.predictions)\n');
+print( str(DF.predictions)   );
+
+cat('\nsummary(DF.predictions)\n');
+print( summary(DF.predictions)   );
+
+write.csv(
+    x         = DF.predictions,
+    file      = "predictions.csv",
+    row.names = FALSE
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

@@ -18,7 +18,8 @@ require(rmarkdown);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 vignette.files <- c(
-    "vignette-rwFV",
+    "vignette-rwFV-protocol",
+    "vignette-rwFV-demo-production",
     "vignette-rwFV-xgboost"
     );
 
@@ -26,7 +27,7 @@ for ( vignette.file in vignette.files ) {
     rmarkdown::render(
         input         = file.path(dir.code,paste0(vignette.file,".Rmd")),
         output_format = "html_document",
-        output_file   = file.path(dir.out,paste0(vignette.file,"html"))
+        output_file   = file.path(dir.out,paste0(vignette.file,".html"))
         );
     }
 
