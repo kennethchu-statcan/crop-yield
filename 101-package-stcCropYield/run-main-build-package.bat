@@ -47,7 +47,7 @@ cd %outROOT%
 ::R CMD check --library=%MethRLIB% %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
 ::R CMD check --as-cran %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
 set R_LIBS_USER=\\fld6filer\meth\DataSciWrkGrp\software\R\library\3.6.2\library;%R_LIBS_USER%
-R CMD check --no-build-vignettes %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
+R CMD check --no-vignettes --no-build-vignettes --ignore-vignettes %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
 
 :: ########################################################
 :: unmap network drives
