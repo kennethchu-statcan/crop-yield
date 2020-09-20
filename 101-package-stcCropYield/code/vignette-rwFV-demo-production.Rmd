@@ -48,7 +48,7 @@ DF.training <- stcCropYield::getData.synthetic(
     avg.n.parcels = avg.n.parcels
     )
 
-DF.production <- getData.synthetic(
+DF.production <- stcCropYield::getData.synthetic(
     years        = c(2021),
     n.ecoregions = n.ecoregions,
     n.crops      = n.crops,
