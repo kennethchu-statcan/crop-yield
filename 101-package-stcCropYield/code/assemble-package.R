@@ -1,5 +1,6 @@
 
 assemble.package <- function(
+    write.to.directory = NULL,
     package.name       = NULL,
     copyright.holder   = "Kenneth Chu",
     description.fields = base::list(),
@@ -21,13 +22,22 @@ assemble.package <- function(
     initial.wd <- base::normalizePath(base::getwd());
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    log.file <- file.path(initial.wd,paste0(this.function.name,".log"));
+    if ( !base::dir.exists(write.to.directory) ) {
+        base::dir.create(path = write.to.directory, recursive = TRUE);
+        }
+    write.to.directory <- base::normalizePath(write.to.directory);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    log.file <- base::file.path(write.to.directory,base::paste0(this.function.name,".log"));
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('{this.function.name}(): starts');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    base::require(usethis);
+    logger::log_info('{this.function.name}(): .libPaths:\n{paste0(.libPaths(),collapse="\n")}');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    devtools::reload(pkgload::inst("usethis"));
     base::require(devtools);
     base::require(roxygen2);
     base::require(rmarkdown);
@@ -39,7 +49,7 @@ assemble.package <- function(
     base::require(stats);
 
     # ~~~~~~~~~~ #
-    path.package <- base::file.path(initial.wd,package.name);
+    path.package <- base::file.path(write.to.directory,package.name);
 
     testthat::with_mock(
         usethis::create_package(
@@ -60,18 +70,22 @@ assemble.package <- function(
     usethis::use_testthat();
 
     # ~~~~~~~~~~ #
+    logger::log_info('{this.function.name}(): packages.import:\n{ paste0(packages.import, collapse="\n")}');
     for ( temp.package in packages.import ) {
         usethis::use_package(package = temp.package, type = "Imports");
         }
 
+    logger::log_info('{this.function.name}(): packages.depend:\n{ paste0(packages.depend, collapse="\n")}');
     for ( temp.package in packages.depend ) {
         usethis::use_package(package = temp.package, type = "Depends");
         }
 
+    logger::log_info('{this.function.name}(): packages.suggest:\n{paste0(packages.suggest,collapse="\n")}');
     for ( temp.package in packages.suggest ) {
         usethis::use_package(package = temp.package, type = "Suggests");
         }
 
+    logger::log_info('{this.function.name}(): packages.enhance:\n{paste0(packages.enhance,collapse="\n")}');
     for ( temp.package in packages.enhance ) {
         usethis::use_package(package = temp.package, type = "Enhances");
         }
@@ -132,6 +146,7 @@ assemble.package <- function(
             );
         }
 
+    # ~~~~~~~~~~ #
     for ( temp.vignette in list.vignettes.Rmd ) {
         logger::log_info('{this.function.name}(): processing HTML vignette: file = {temp.vignette[["file"]]}, asis = {temp.vignette[["asis"]]}');
         rmarkdown::render(

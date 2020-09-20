@@ -1,15 +1,23 @@
 
 build.package <- function(
-    package.path  = NULL,
-    log.threshold = logger::DEBUG
+    write.to.directory = NULL,
+    package.path       = NULL,
+    log.threshold      = logger::DEBUG
     ) {
 
     this.function.name <- "build.package";
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     initial.wd <- base::normalizePath(base::getwd());
-    log.file   <- file.path(initial.wd,paste0(this.function.name,".log"));
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( !base::dir.exists(write.to.directory) ) {
+        base::dir.create(path = write.to.directory, recursive = TRUE);
+        }
+    write.to.directory <- base::normalizePath(write.to.directory);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    log.file <- base::file.path(write.to.directory,base::paste0(this.function.name,".log"));
     logger::log_threshold(level = log.threshold);
     logger::log_appender(logger::appender_tee(file = log.file));
     logger::log_info('{this.function.name}(): starts');

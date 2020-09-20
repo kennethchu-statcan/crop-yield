@@ -11,8 +11,9 @@ start.proc.time <- base::proc.time();
 base::setwd(output.directory);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-base::require(R6);
+base::require(foreach);
 base::require(logger);
+base::require(R6);
 base::source(base::file.path(code.directory,'assemble-package.R'));
 base::source(base::file.path(code.directory,'build-package.R'));
 
@@ -33,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.0011",
+    Version         = "0.0.1.9011",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -114,7 +115,102 @@ list.vignettes.pdf <- list(
         )
     );
 
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+# We will build the package twice.
+# The package is built without vignettes the first time.
+# The package is then temporarily installed using the resulting
+# without-vignettes package tarball to a temporary R library.
+# The package is then built a second time, this time with vignette construction.
+#
+# This is because we are using pre-built (more precisely, 'asis') vignettes,
+# whose construction requires that the package have been installed.
+# Hence, whenever the package is not installed, a package build attempt
+# will fail at the vignette construction.
+# We overcome this problem by building the package twice, first without
+# vignettes, followed by a second time with vignettes.
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+write.to.directory <- "build-no-vignettes";
+
 package.path <- assemble.package(
+    write.to.directory = write.to.directory,
+    package.name       = package.name,
+    copyright.holder   = "Kenneth Chu",
+    description.fields = description.fields,
+    packages.import    = packages.import,
+    packages.suggest   = packages.suggest,
+    files.R            = files.R,
+    tests.R            = tests.R
+    );
+
+build.package(
+    write.to.directory = write.to.directory,
+    package.path       = package.path
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+temp.RLib <- "temp-RLib";
+
+if ( !dir.exists(temp.RLib) ) {
+    dir.create(path = temp.RLib, recursive = TRUE);
+    }
+
+.libPaths(unique(c(temp.RLib,.libPaths())));
+
+package.directory <- base::dirname(package.path);
+package.file      <- base::list.files(path = package.directory, pattern = "\\.tar\\.gz")[1];
+package.file      <- file.path(package.directory,package.file);
+
+install.packages(
+    pkgs  = package.file,
+    lib   = temp.RLib,
+    repos = NULL
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+set.seed(13);
+
+n.ecoregions    <-   3;
+n.crops         <-   5;
+n.predictors    <-   7;
+avg.n.parcels   <- 100;
+min.num.parcels <-  50;
+
+DF.synthetic <- stcCropYield::getData.synthetic(
+    years         = seq(2011,2020),
+    n.ecoregions  = n.ecoregions,
+    n.crops       = n.crops,
+    n.predictors  = n.predictors,
+    avg.n.parcels = avg.n.parcels
+    );
+
+stcCropYield::rollingWindowForwardValidation(
+    training.window      = 2,
+    validation.window    = 3,
+    DF.input             = DF.synthetic,
+    year                 = "my_year",
+    ecoregion            = "my_ecoregion",
+    crop                 = "my_crop",
+    response.variable    = "my_yield",
+    harvested.area       = "my_harvested_area",
+    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    min.num.parcels      = min.num.parcels,
+    learner              = "xgboost_multiphase",
+    by.variables.phase01 = c("my_ecoregion","my_crop"),
+    by.variables.phase02 = c("my_crop"),
+    by.variables.phase03 = c("my_ecoregion"),
+    search.grid = list(
+        alpha  = c(1,12,23),
+        lambda = c(1,12,23)
+        ),
+    output.directory = file.path(code.directory,"rwFV"),
+    log.threshold    = logger::TRACE
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+write.to.directory <- "build-vignettes";
+
+package.path <- assemble.package(
+    write.to.directory = write.to.directory,
     package.name       = package.name,
     copyright.holder   = "Kenneth Chu",
     description.fields = description.fields,
@@ -126,7 +222,10 @@ package.path <- assemble.package(
     list.vignettes.pdf = list.vignettes.pdf
     );
 
-build.package(package.path = package.path);
+build.package(
+    write.to.directory = write.to.directory,
+    package.path       = package.path
+    );
 
 ###################################################
 ###################################################
