@@ -69,9 +69,9 @@ it must contain the following mandatory columns with the expected data types
 
 * a character column indicating the crop type (**my_crop**)
 
-* numeric column with non-negative values indicating the harvested area
-  (**my_harvested_area**).
-  The usual physical unit for harvested area is *acre*.
+* numeric column with non-negative values indicating the evaluation weight
+  (**my_evaluation_weight**).
+  The usual evaluation weight variable is *seeded area* expressed in *acres*.
 
 * numeric column with non-negative values indicating crop yield (**my_yield**).
   The usual physical unit for crop yield is *number of bushels per acre*.
@@ -103,7 +103,7 @@ stcCropYield::rollingWindowForwardValidation(
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
+    evaluation.weight    = "my_evaluation_weight",
     predictors           = predictor.colnames,
     min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",

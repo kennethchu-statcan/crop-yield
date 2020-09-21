@@ -28,8 +28,9 @@
 #' @param response.variable character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop yield variable.
 #'
-#' @param harvested.area character vector of length 1,
-#' indicating column name in \code{DF.input} for the harvested area variable.
+#' @param evaluation.weight character vector of length 1,
+#' indicating column name in \code{DF.input} for the variable to be used as
+#' evaluation weight. Must be non-negative.
 #'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
@@ -74,7 +75,7 @@ crop.yield.train.model <- function(
     ecoregion            = "ecoregion",
     crop                 = "crop",
     response.variable    = "yield",
-    harvested.area       = "harvested_area",
+    evaluation.weight    = "evaluation_weight",
     predictors           = NULL,
     min.num.parcels      = 50,
     learner              = "xgboost_multiphase",
@@ -90,9 +91,9 @@ crop.yield.train.model <- function(
             ecoregion            = ecoregion,
             crop                 = crop,
             response.variable    = response.variable,
-            harvested.area       = harvested.area,
+            evaluation.weight    = evaluation.weight,
             predictors           = predictors,
-            min.num.parcels = min.num.parcels,
+            min.num.parcels      = min.num.parcels,
             learner              = learner,
             by.variables.phase01 = by.variables.phase01,
             by.variables.phase02 = by.variables.phase02,

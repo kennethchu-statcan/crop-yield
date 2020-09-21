@@ -180,13 +180,13 @@ getData.synthetic_year.ecoregion <- function(
     ) {
     n.parcels <- base::length(parcels);
     DF.output <- base::data.frame(
-        my_year           = base::rep(x = year,      n = n.parcels),
-        my_ecoregion      = base::rep(x = ecoregion, n = n.parcels),
-        my_parcelID       = parcels,
-        my_crop           = base::sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
-        my_harvested_area = stats::runif(n = n.parcels, min = 0.8, max = 1),
-        my_yield          = base::rep(x = -9999, n = n.parcels),
-        stringsAsFactors  = FALSE
+        my_year              = base::rep(x = year,      n = n.parcels),
+        my_ecoregion         = base::rep(x = ecoregion, n = n.parcels),
+        my_parcelID          = parcels,
+        my_crop              = base::sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
+        my_evaluation_weight = stats::runif(n = n.parcels, min = 0.8, max = 1),
+        my_yield             = base::rep(x = -9999, n = n.parcels),
+        stringsAsFactors     = FALSE
         );
     temp.X <- base::matrix(
         data = 50 + stats::rlnorm(n = base::nrow(DF.output) * n.predictors, mean = 0, sd = 1),

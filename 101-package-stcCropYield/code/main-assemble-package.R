@@ -34,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9013",
+    Version         = "0.0.1.9014",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -191,7 +191,7 @@ stcCropYield::rollingWindowForwardValidation(
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
+    evaluation.weight    = "my_evaluation_weight",
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
     min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",

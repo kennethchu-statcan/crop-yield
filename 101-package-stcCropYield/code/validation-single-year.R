@@ -74,8 +74,8 @@ validation.single.year <- function(
         logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), predicting complete');
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
-        DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,"predicted_response"];
+        DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["evaluation_weight"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
+        DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["evaluation_weight"]]] * DF.predictions.parcel[,"predicted_response"];
         logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -155,14 +155,14 @@ validation.single.year_diagnostics <- function(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
         learner.metadata[["crop"]],
-        learner.metadata[["harvested_area"]],
+        learner.metadata[["evaluation_weight"]],
         "actual_production",
         "predicted_production"
         );
 
     DF.region.crop <- DF.input[,selected.colnames];
 
-    temp.vars <- base::c("year","ecoregion","crop","harvested_area");
+    temp.vars <- base::c("year","ecoregion","crop","evaluation_weight");
     for ( temp.var in temp.vars ) {
         base::colnames(DF.region.crop) <- base::gsub(
             x           = base::colnames(DF.region.crop),
@@ -204,14 +204,14 @@ validation.single.year_diagnostics <- function(
     selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
-        learner.metadata[["harvested_area"]],
+        learner.metadata[["evaluation_weight"]],
         "actual_production",
         "predicted_production"
         );
 
     DF.region <- DF.input[,selected.colnames];
 
-    temp.vars <- base::c("year","ecoregion","harvested_area");
+    temp.vars <- base::c("year","ecoregion","evaluation_weight");
     for ( temp.var in temp.vars ) {
         base::colnames(DF.region) <- base::gsub(
             x           = base::colnames(DF.region),
@@ -253,14 +253,14 @@ validation.single.year_diagnostics <- function(
     selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["crop"]],
-        learner.metadata[["harvested_area"]],
+        learner.metadata[["evaluation_weight"]],
         "actual_production",
         "predicted_production"
         );
 
     DF.crop <- DF.input[,selected.colnames];
 
-    temp.vars <- base::c("year","crop","harvested_area");
+    temp.vars <- base::c("year","crop","evaluation_weight");
     for ( temp.var in temp.vars ) {
         base::colnames(DF.crop) <- base::gsub(
             x           = base::colnames(DF.crop),
@@ -301,14 +301,14 @@ validation.single.year_diagnostics <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     selected.colnames <- base::c(
         learner.metadata[["year"]],
-        learner.metadata[["harvested_area"]],
+        learner.metadata[["evaluation_weight"]],
         "actual_production",
         "predicted_production"
         );
 
     DF.province <- DF.input[,selected.colnames];
 
-    temp.vars <- base::c("year","harvested_area");
+    temp.vars <- base::c("year","evaluation_weight");
     for ( temp.var in temp.vars ) {
         base::colnames(DF.province) <- base::gsub(
             x           = base::colnames(DF.province),
@@ -447,7 +447,7 @@ validation.single.year_group.then.add.relative.error <- function(
     if ( is.null(by.variables) ) {
 
         DF.output <- base::apply(
-            X      = DF.output[,base::c("harvested_area","actual_production","predicted_production")],
+            X      = DF.output[,base::c("evaluation_weight","actual_production","predicted_production")],
             MARGIN = 2,
             FUN    = base::sum
             );
@@ -457,7 +457,7 @@ validation.single.year_group.then.add.relative.error <- function(
 
     } else {
 
-        selected.colnames <- base::c(by.variables,"harvested_area","actual_production","predicted_production");
+        selected.colnames <- base::c(by.variables,"evaluation_weight","actual_production","predicted_production");
         DF.output <- DF.output[,selected.colnames];
 
         by.list <- list();

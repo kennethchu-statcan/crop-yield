@@ -78,7 +78,7 @@ DF.production <- getData.synthetic(
     output.RData = "raw-production.RData",
     output.csv   = "raw-production.csv"
     );
-DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_harvested_area"))];
+DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_evaluation_weight"))];
 
 cat("\nstr(DF.training)\n");
 print( str(DF.training)   );
@@ -103,7 +103,7 @@ rollingWindowForwardValidation(
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
+    evaluation.weight    = "my_evaluation_weight",
     predictors           = grep(x = colnames(DF.training), pattern = "x[0-9]*", value = TRUE),
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
