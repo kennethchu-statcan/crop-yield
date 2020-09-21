@@ -34,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9011",
+    Version         = "0.0.1.9012",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -167,65 +167,69 @@ install.packages(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-set.seed(13);
+if ( "windows" != base::.Platform[["OS.type"]] ) {
 
-n.ecoregions    <-   3;
-n.crops         <-   5;
-n.predictors    <-   7;
-avg.n.parcels   <- 100;
-min.num.parcels <-  50;
+    set.seed(13);
 
-DF.synthetic <- stcCropYield::getData.synthetic(
-    years         = seq(2011,2020),
-    n.ecoregions  = n.ecoregions,
-    n.crops       = n.crops,
-    n.predictors  = n.predictors,
-    avg.n.parcels = avg.n.parcels
-    );
+    n.ecoregions    <-   3;
+    n.crops         <-   5;
+    n.predictors    <-   7;
+    avg.n.parcels   <- 100;
+    min.num.parcels <-  50;
 
-stcCropYield::rollingWindowForwardValidation(
-    training.window      = 2,
-    validation.window    = 3,
-    DF.input             = DF.synthetic,
-    year                 = "my_year",
-    ecoregion            = "my_ecoregion",
-    crop                 = "my_crop",
-    response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
-    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-    min.num.parcels      = min.num.parcels,
-    learner              = "xgboost_multiphase",
-    by.variables.phase01 = c("my_ecoregion","my_crop"),
-    by.variables.phase02 = c("my_crop"),
-    by.variables.phase03 = c("my_ecoregion"),
-    search.grid = list(
-        alpha  = c(1,12,23),
-        lambda = c(1,12,23)
-        ),
-    output.directory = file.path(code.directory,"rwFV"),
-    log.threshold    = logger::TRACE
-    );
+    DF.synthetic <- stcCropYield::getData.synthetic(
+        years         = seq(2011,2020),
+        n.ecoregions  = n.ecoregions,
+        n.crops       = n.crops,
+        n.predictors  = n.predictors,
+        avg.n.parcels = avg.n.parcels
+        );
 
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-write.to.directory <- "build-vignettes";
+    stcCropYield::rollingWindowForwardValidation(
+        training.window      = 2,
+        validation.window    = 3,
+        DF.input             = DF.synthetic,
+        year                 = "my_year",
+        ecoregion            = "my_ecoregion",
+        crop                 = "my_crop",
+        response.variable    = "my_yield",
+        harvested.area       = "my_harvested_area",
+        predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+        min.num.parcels      = min.num.parcels,
+        learner              = "xgboost_multiphase",
+        by.variables.phase01 = c("my_ecoregion","my_crop"),
+        by.variables.phase02 = c("my_crop"),
+        by.variables.phase03 = c("my_ecoregion"),
+        search.grid = list(
+            alpha  = c(1,12,23),
+            lambda = c(1,12,23)
+            ),
+        output.directory = file.path(code.directory,"rwFV"),
+        log.threshold    = logger::TRACE
+        );
 
-package.path <- assemble.package(
-    write.to.directory = write.to.directory,
-    package.name       = package.name,
-    copyright.holder   = "Kenneth Chu",
-    description.fields = description.fields,
-    packages.import    = packages.import,
-    packages.suggest   = packages.suggest,
-    files.R            = files.R,
-    tests.R            = tests.R,
-    list.vignettes.Rmd = list.vignettes.Rmd,
-    list.vignettes.pdf = list.vignettes.pdf
-    );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    write.to.directory <- "build-vignettes";
 
-build.package(
-    write.to.directory = write.to.directory,
-    package.path       = package.path
-    );
+    package.path <- assemble.package(
+        write.to.directory = write.to.directory,
+        package.name       = package.name,
+        copyright.holder   = "Kenneth Chu",
+        description.fields = description.fields,
+        packages.import    = packages.import,
+        packages.suggest   = packages.suggest,
+        files.R            = files.R,
+        tests.R            = tests.R,
+        list.vignettes.Rmd = list.vignettes.Rmd,
+        list.vignettes.pdf = list.vignettes.pdf
+        );
+
+    build.package(
+        write.to.directory = write.to.directory,
+        package.path       = package.path
+        );
+
+    }
 
 ###################################################
 ###################################################
