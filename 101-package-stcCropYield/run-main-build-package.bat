@@ -40,7 +40,7 @@ Rscript %codeDIR%\main-assemble-package.R %codeDIR% %outROOT% %packageName% 1> %
 
 :: Build the R package (create *.tar.gz file)
 Z:
-cd %outROOT%\build-no-vignetttes
+cd %outROOT%\build-no-vignettes
 ::R CMD build --md5 --no-build-vignettes %outROOT%\%packageName% 1> %outROOT%\stdout.R.build 2> %outROOT%\stderr.R.build
 
 :: Check the newly built R package
