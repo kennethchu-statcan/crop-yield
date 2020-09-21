@@ -34,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9011",
+    Version         = "0.0.1.9013",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -207,25 +207,29 @@ stcCropYield::rollingWindowForwardValidation(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-write.to.directory <- "build-vignettes";
+if ( "windows" != base::.Platform[["OS.type"]] ) {
 
-package.path <- assemble.package(
-    write.to.directory = write.to.directory,
-    package.name       = package.name,
-    copyright.holder   = "Kenneth Chu",
-    description.fields = description.fields,
-    packages.import    = packages.import,
-    packages.suggest   = packages.suggest,
-    files.R            = files.R,
-    tests.R            = tests.R,
-    list.vignettes.Rmd = list.vignettes.Rmd,
-    list.vignettes.pdf = list.vignettes.pdf
-    );
+    write.to.directory <- "build-vignettes";
 
-build.package(
-    write.to.directory = write.to.directory,
-    package.path       = package.path
-    );
+    package.path <- assemble.package(
+        write.to.directory = write.to.directory,
+        package.name       = package.name,
+        copyright.holder   = "Kenneth Chu",
+        description.fields = description.fields,
+        packages.import    = packages.import,
+        packages.suggest   = packages.suggest,
+        files.R            = files.R,
+        tests.R            = tests.R,
+        list.vignettes.Rmd = list.vignettes.Rmd,
+        list.vignettes.pdf = list.vignettes.pdf
+        );
+
+    build.package(
+        write.to.directory = write.to.directory,
+        package.path       = package.path
+        );
+
+    }
 
 ###################################################
 ###################################################

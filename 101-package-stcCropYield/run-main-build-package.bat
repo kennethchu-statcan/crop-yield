@@ -31,7 +31,8 @@ xcopy /E /I /Y %codeDIR% %outROOT%\code
 :: ########################################################
 :: add R bin directory to PATH
 ::set PATH=F:\work\software\R\instances\R-3.5.3\bin;%PATH%
-set PATH=F:\work\software\R\instances\R-3.6.2\bin;%PATH%
+::set PATH=F:\work\software\R\instances\R-3.6.2\bin;%PATH%
+set PATH=F:\work\software\R\instances\R-3.6.3\bin;%PATH%
 
 :: Assemble contents of R package
 set packageName=stcCropYield
@@ -39,7 +40,7 @@ Rscript %codeDIR%\main-assemble-package.R %codeDIR% %outROOT% %packageName% 1> %
 
 :: Build the R package (create *.tar.gz file)
 Z:
-cd %outROOT%
+cd %outROOT%\build-no-vignettes
 ::R CMD build --md5 --no-build-vignettes %outROOT%\%packageName% 1> %outROOT%\stdout.R.build 2> %outROOT%\stderr.R.build
 
 :: Check the newly built R package
