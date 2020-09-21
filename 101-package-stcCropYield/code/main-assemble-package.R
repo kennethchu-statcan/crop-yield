@@ -34,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9012",
+    Version         = "0.0.1.9013",
     `Authors@R`     = string.authors,
     Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
     Language        = "fr",
@@ -167,48 +167,48 @@ install.packages(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+set.seed(13);
+
+n.ecoregions    <-   3;
+n.crops         <-   5;
+n.predictors    <-   7;
+avg.n.parcels   <- 100;
+min.num.parcels <-  50;
+
+DF.synthetic <- stcCropYield::getData.synthetic(
+    years         = seq(2011,2020),
+    n.ecoregions  = n.ecoregions,
+    n.crops       = n.crops,
+    n.predictors  = n.predictors,
+    avg.n.parcels = avg.n.parcels
+    );
+
+stcCropYield::rollingWindowForwardValidation(
+    training.window      = 2,
+    validation.window    = 3,
+    DF.input             = DF.synthetic,
+    year                 = "my_year",
+    ecoregion            = "my_ecoregion",
+    crop                 = "my_crop",
+    response.variable    = "my_yield",
+    harvested.area       = "my_harvested_area",
+    predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+    min.num.parcels      = min.num.parcels,
+    learner              = "xgboost_multiphase",
+    by.variables.phase01 = c("my_ecoregion","my_crop"),
+    by.variables.phase02 = c("my_crop"),
+    by.variables.phase03 = c("my_ecoregion"),
+    search.grid = list(
+        alpha  = c(1,12,23),
+        lambda = c(1,12,23)
+        ),
+    output.directory = file.path(code.directory,"rwFV"),
+    log.threshold    = logger::TRACE
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 if ( "windows" != base::.Platform[["OS.type"]] ) {
 
-    set.seed(13);
-
-    n.ecoregions    <-   3;
-    n.crops         <-   5;
-    n.predictors    <-   7;
-    avg.n.parcels   <- 100;
-    min.num.parcels <-  50;
-
-    DF.synthetic <- stcCropYield::getData.synthetic(
-        years         = seq(2011,2020),
-        n.ecoregions  = n.ecoregions,
-        n.crops       = n.crops,
-        n.predictors  = n.predictors,
-        avg.n.parcels = avg.n.parcels
-        );
-
-    stcCropYield::rollingWindowForwardValidation(
-        training.window      = 2,
-        validation.window    = 3,
-        DF.input             = DF.synthetic,
-        year                 = "my_year",
-        ecoregion            = "my_ecoregion",
-        crop                 = "my_crop",
-        response.variable    = "my_yield",
-        harvested.area       = "my_harvested_area",
-        predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
-        min.num.parcels      = min.num.parcels,
-        learner              = "xgboost_multiphase",
-        by.variables.phase01 = c("my_ecoregion","my_crop"),
-        by.variables.phase02 = c("my_crop"),
-        by.variables.phase03 = c("my_ecoregion"),
-        search.grid = list(
-            alpha  = c(1,12,23),
-            lambda = c(1,12,23)
-            ),
-        output.directory = file.path(code.directory,"rwFV"),
-        log.threshold    = logger::TRACE
-        );
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     write.to.directory <- "build-vignettes";
 
     package.path <- assemble.package(
