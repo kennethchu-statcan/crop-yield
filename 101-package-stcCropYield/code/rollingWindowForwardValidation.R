@@ -594,13 +594,13 @@ rollingWindowForwardValidation_input.validity.checks <- function(
         predictors = predictors
         );
 
-    # input.validity.checks_window.compatibility(
-    #     training.window   = NULL,
-    #     validation.window = NULL,
-    #     DF.input          = NULL,
-    #     year              = NULL
-    #     );
-    #
+    input.validity.checks_window.compatibility(
+        training.window   = NULL,
+        validation.window = NULL,
+        DF.input          = NULL,
+        year              = NULL
+        );
+
     # input.validity.checks_learner.metadata(
     #     learner              = NULL,
     #     DF.input             = NULL,

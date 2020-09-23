@@ -78,7 +78,7 @@ files.R <- base::c(
     "initializePlot.R",
     "input-validity-checks-parameters.R",
     "input-validity-checks-variables.R",
-#   "input-validity-checks-window-compatibility.R",
+    "input-validity-checks-window-compatibility.R",
     "learner-abstract.R",
     "learner-byGroup.R",
     "learner-multiphase.R",
