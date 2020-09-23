@@ -55,7 +55,7 @@ DF.production <- stcCropYield::getData.synthetic(
     n.predictors = n.predictors,
     avg.n.parcels = avg.n.parcels
     );
-DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_evaluation_weight"))]
+DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_harvested_area","my_evaluation_weight"))]
 ```
 We examine the structure of the data frame DF.training
 ```{r trainingStructure}
@@ -118,6 +118,7 @@ stcCropYield::rollingWindowForwardValidation(
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
+    harvested.area       = "my_harvested_area",
     evaluation.weight    = "my_evaluation_weight",
     predictors           = predictor.colnames,
     min.num.parcels      = min.num.parcels,

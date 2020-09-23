@@ -75,11 +75,11 @@ get.performance.metrics_single.model <- function(
             weighted_std    <- weighted.sd(  x = csvdata$relative_error, weights = csvdata$weights);
 
             newdata <- base::data.frame(
-            	model          = modelID,
-            	year           = base::as.numeric(validation.year),
-            	weighted_error = weighted_error,
-            	weighted_std   = weighted_std
-            	);
+                model          = modelID,
+                year           = base::as.numeric(validation.year),
+                weighted_error = weighted_error,
+                weighted_std   = weighted_std
+                );
 
             DF.errors.model.year <- base::rbind(DF.errors.model.year,newdata);
 

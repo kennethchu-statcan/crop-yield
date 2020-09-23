@@ -184,6 +184,7 @@ getData.synthetic_year.ecoregion <- function(
         my_ecoregion         = base::rep(x = ecoregion, n = n.parcels),
         my_parcelID          = parcels,
         my_crop              = base::sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
+        my_harvested_area    = stats::runif(n = n.parcels, min = 0.8, max = 1),
         my_evaluation_weight = stats::runif(n = n.parcels, min = 0.8, max = 1),
         my_yield             = base::rep(x = -9999, n = n.parcels),
         stringsAsFactors     = FALSE

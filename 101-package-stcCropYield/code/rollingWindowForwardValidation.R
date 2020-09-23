@@ -28,9 +28,12 @@
 #' @param response.variable character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop yield variable.
 #'
+#' @param harvested.area character vector of length 1,
+#' indicating column name in \code{DF.input} for the harvested area variable.
+#'
 #' @param evaluation.weight character vector of length 1,
-#' indicating column name in \code{DF.input} for the variable to be used as
-#' evaluation weight. Must be non-negative.
+#' indicating column name in \code{DF.input} for the variable to be used
+#' as evaluation weight.
 #'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
@@ -98,6 +101,7 @@
 #'     ecoregion            = "my_ecoregion",
 #'     crop                 = "my_crop",
 #'     response.variable    = "my_yield",
+#'     harvested.area       = "my_harvested_area",
 #'     evaluation.weight    = "my_evaluation_weight",
 #'     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
 #'     by.variables.phase01 = c("my_ecoregion","my_crop"),
@@ -123,6 +127,7 @@ rollingWindowForwardValidation <- function(
     ecoregion            = "ecoregion",
     crop                 = "crop",
     response.variable    = "yield",
+    harvested.area       = "harvested_area",
     evaluation.weight    = "evaluation_weight",
     predictors           = NULL,
     min.num.parcels      = 50,
@@ -170,6 +175,7 @@ rollingWindowForwardValidation <- function(
         ecoregion            = ecoregion,
         crop                 = crop,
         response.variable    = response.variable,
+        harvested.area       = harvested.area,
         evaluation.weight    = evaluation.weight,
         predictors           = predictors,
         min.num.parcels      = min.num.parcels,
@@ -193,6 +199,7 @@ rollingWindowForwardValidation <- function(
         ecoregion            = ecoregion,
         crop                 = crop,
         response.variable    = response.variable,
+        harvested.area       = harvested.area,
         evaluation.weight    = evaluation.weight,
         predictors           = predictors,
         by.variables.phase01 = by.variables.phase01,
@@ -553,6 +560,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     ecoregion            = NULL,
     crop                 = NULL,
     response.variable    = NULL,
+    harvested.area       = NULL,
     evaluation.weight    = NULL,
     predictors           = NULL,
     min.num.parcels      = NULL,
@@ -570,6 +578,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     #     ecoregion         = NULL,
     #     crop              = NULL,
     #     response.variable = NULL,
+    #     harvested.area    = NULL,
     #     evaluation.weight = NULL,
     #     predictors        = NULL
     #     );

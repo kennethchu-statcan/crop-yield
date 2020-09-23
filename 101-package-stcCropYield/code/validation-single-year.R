@@ -74,8 +74,8 @@ validation.single.year <- function(
         logger::log_info('{this.function.name}(): ({learner.name},{validation.year}), predicting complete');
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["evaluation_weight"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
-        DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["evaluation_weight"]]] * DF.predictions.parcel[,"predicted_response"];
+        DF.predictions.parcel[,   "actual_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,learner.metadata[["response_variable"]]];
+        DF.predictions.parcel[,"predicted_production"] <- DF.predictions.parcel[,learner.metadata[["harvested_area"]]] * DF.predictions.parcel[,"predicted_response"];
         logger::log_debug('{this.function.name}(): ({learner.name},{validation.year}), dim(DF.predictions.parcel) = c({paste0(dim(DF.predictions.parcel),collapse=",")})');
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
