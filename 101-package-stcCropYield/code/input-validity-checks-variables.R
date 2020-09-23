@@ -95,13 +95,6 @@ input.validity.checks_variables.needed.for.training <- function(
         0 == length(setdiff(c(year,response.variable,harvested.area,evaluation.weight),colnames(DF.input)))
         );
 
-    base::stopifnot(
-        base::is.numeric(min.num.parcels),
-        base::length(min.num.parcels) == 1,
-        min.num.parcels == base::as.integer(min.num.parcels),
-        min.num.parcels > 0
-        );
-
     base::return( NULL );
 
     }

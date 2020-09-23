@@ -572,6 +572,12 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     output.directory     = NULL
     ) {
 
+    input.validity.checks_parameters(
+        training.window   = training.window,
+        validation.window = validation.window,
+        min.num.parcels   = min.num.parcels
+        );
+
     input.validity.checks_variables.needed.for.training(
         DF.input          = DF.input,
         year              = year,
