@@ -572,17 +572,22 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     output.directory     = NULL
     ) {
 
-    # input.validity.checks_input.variables(
-    #     DF.input          = NULL,
-    #     year              = NULL,
-    #     ecoregion         = NULL,
-    #     crop              = NULL,
-    #     response.variable = NULL,
-    #     harvested.area    = NULL,
-    #     evaluation.weight = NULL,
-    #     predictors        = NULL
-    #     );
-    #
+    input.validity.checks_variables.needed.for.training(
+        DF.input          = DF.input,
+        year              = year,
+        response.variable = response.variable,
+        harvested.area    = harvested.area,
+        evaluation.weight = evaluation.weight,
+        min.num.parcels   = min.num.parcels
+        );
+
+    input.validity.checks_variables.needed.for.prediction(
+        DF.input   = DF.input,
+        ecoregion  = ecoregion,
+        crop       = crop,
+        predictors = predictors
+        );
+
     # input.validity.checks_window.compatibility(
     #     training.window   = NULL,
     #     validation.window = NULL,
