@@ -30,7 +30,7 @@ input.validity.checks_variables.needed.for.prediction <- function(
         );
 
     base::stopifnot(
-        base::all( base::c(ecoregion,crop,predictors) %in% base::colnames(DF.input) )
+        base::all( base::c(ecoregion,crop,predictors) %in% base::colnames(DF.input) )
         );
 
     for ( column.index in 1:length(predictors) ) {
