@@ -27,6 +27,7 @@ code.files <- c(
     "get-mock-production-errors.R",
     "get-performance-metrics.R",
     "initializePlot.R",
+    "input-validity-checks-learner-metadata.R",
     "input-validity-checks-parameters.R",
     "input-validity-checks-variables.R",
     "input-validity-checks-window-compatibility.R",
