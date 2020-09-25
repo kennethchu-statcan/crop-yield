@@ -30,12 +30,12 @@ input.validity.checks_variables.needed.for.prediction <- function(
         );
 
     base::stopifnot(
-        0 == length(setdiff(c(ecoregion,crop,predictors),colnames(DF.input)))
+        base::all( base::c(ecoregion,crop,predictors) %in% base::colnames(DF.input) )
         );
 
     for ( column.index in 1:length(predictors) ) {
         base::stopifnot(
-            base::is.numeric(DF.input[,predictors[column.index]]),
+            base::is.numeric(      DF.input[,predictors[column.index]]),
             base::all(!base::is.na(DF.input[,predictors[column.index]]))
             );
         }
@@ -49,8 +49,7 @@ input.validity.checks_variables.needed.for.training <- function(
     year              = NULL,
     response.variable = NULL,
     harvested.area    = NULL,
-    evaluation.weight = NULL,
-    min.num.parcels   = NULL
+    evaluation.weight = NULL
     ) {
 
     base::stopifnot(

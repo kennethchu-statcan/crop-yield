@@ -135,7 +135,7 @@ rollingWindowForwardValidation <- function(
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
+    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4)),
     num.cores            = base::max(1,parallel::detectCores() - 1),
     output.directory     = base::paste0("rwFV.",base::gsub(x=base::Sys.time(),pattern="( |:)",replacement="-")),
     log.threshold        = logger::INFO,
@@ -574,8 +574,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
 
     input.validity.checks_parameters(
         training.window   = training.window,
-        validation.window = validation.window,
-        min.num.parcels   = min.num.parcels
+        validation.window = validation.window
         );
 
     input.validity.checks_variables.needed.for.training(
@@ -583,8 +582,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
         year              = year,
         response.variable = response.variable,
         harvested.area    = harvested.area,
-        evaluation.weight = evaluation.weight,
-        min.num.parcels   = min.num.parcels
+        evaluation.weight = evaluation.weight
         );
 
     input.validity.checks_variables.needed.for.prediction(
@@ -601,16 +599,16 @@ rollingWindowForwardValidation_input.validity.checks <- function(
         year              = NULL
         );
 
-    # input.validity.checks_learner.metadata(
-    #     learner              = NULL,
-    #     DF.input             = NULL,
-    #     ecoregion            = NULL,
-    #     crop                 = NULL,
-    #     min.num.parcels      = NULL,
-    #     by.variables.phase01 = NULL,
-    #     by.variables.phase02 = NULL,
-    #     by.variables.phase03 = NULL,
-    #     search.grid          = NULL
-    #     );
+    input.validity.checks_learner.metadata(
+        DF.input             = DF.input,
+        learner              = learner,
+        ecoregion            = ecoregion,
+        crop                 = crop,
+        min.num.parcels      = min.num.parcels,
+        by.variables.phase01 = by.variables.phase01,
+        by.variables.phase02 = by.variables.phase02,
+        by.variables.phase03 = by.variables.phase03,
+        search.grid          = search.grid
+        );
 
     }

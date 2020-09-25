@@ -1,8 +1,7 @@
 
 input.validity.checks_parameters <- function(
     training.window   = NULL,
-    validation.window = NULL,
-    min.num.parcels   = NULL
+    validation.window = NULL
     ) {
 
     base::stopifnot(
@@ -17,13 +16,6 @@ input.validity.checks_parameters <- function(
         base::length(validation.window) == 1,
         validation.window == base::as.integer(validation.window),
         validation.window > 0
-        );
-
-    base::stopifnot(
-        base::is.numeric(min.num.parcels),
-        base::length(min.num.parcels) == 1,
-        min.num.parcels == base::as.integer(min.num.parcels),
-        min.num.parcels > 0
         );
 
     base::return( NULL );
