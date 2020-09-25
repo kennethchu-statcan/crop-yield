@@ -17,7 +17,15 @@ crop.yield.predict <- function(
     FILE.trained.model = NULL,
     DF.predictors      = NULL
     ) {
+
+    input.validity.checks_predict(
+        FILE.trained.model = FILE.trained.model,
+        DF.predictors      = DF.predictors
+        );
+
     trained.model  <- base::readRDS( file = FILE.trained.model );
     DF.predictions <- trained.model$predict(newdata = DF.predictors);
+
     base::return( DF.predictions );
+
     }
