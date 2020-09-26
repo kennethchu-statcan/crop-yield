@@ -1,17 +1,21 @@
 
 input.validity.checks_predict <- function(
-    FILE.trained.model = NULL,
-    DF.predictors      = NULL
+    trained.model = NULL,
+    DF.predictors = NULL
     ) {
 
     base::stopifnot(
-        base::is.character(FILE.trained.model),
-        base::length(FILE.trained.model) == 1,
-        base::file.exists(FILE.trained.model),
-        base::tolower(tools::file_ext(base::basename(FILE.trained.model))) %in% base::c("rdata","rds")
+        base::is.character(trained.model) | base::identical(base::class(trained.model),base::c("learner.multiphase","R6"))
         );
 
-    trained.model <- readRDS(file = FILE.trained.model);
+    if ( base::is.character(trained.model) ) {
+        base::stopifnot(
+            base::length(trained.model) == 1,
+            base::file.exists(trained.model),
+            base::tolower(tools::file_ext(base::basename(trained.model))) %in% base::c("rdata","rds")
+            );
+        trained.model <- readRDS(file = trained.model);
+        }
 
     base::stopifnot(
         base::identical(base::class(trained.model),base::c("learner.multiphase","R6"))

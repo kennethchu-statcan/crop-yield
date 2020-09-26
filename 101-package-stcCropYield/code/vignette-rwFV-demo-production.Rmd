@@ -169,8 +169,8 @@ RData.trained.model <- list.files( path = "rwFV", pattern = "\\.RData$" );
 RData.trained.model <- file.path("rwFV",RData.trained.model);
 
 DF.predictions <- stcCropYield::crop.yield.predict(
-   FILE.trained.model = RData.trained.model,
-   DF.predictors      = DF.production
+   trained.model = RData.trained.model,
+   DF.predictors = DF.production
    );
 ```
 

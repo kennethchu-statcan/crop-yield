@@ -102,7 +102,10 @@
 #'     hyperparameters      = base::list(alpha = 23, lambda = 23)
 #'     );
 #'
-#' DF.predictions <- trained.model$predict(newdata = DF.production);
+#' DF.predictions <- stcCropYield::crop.yield.predict(
+#'    trained.model = trained.model,
+#'    DF.predictors = DF.production
+#'    );
 #' }
 #'
 #' @export
