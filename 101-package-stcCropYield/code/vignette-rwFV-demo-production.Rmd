@@ -55,7 +55,7 @@ DF.production <- stcCropYield::getData.synthetic(
     n.predictors = n.predictors,
     avg.n.parcels = avg.n.parcels
     );
-DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_harvested_area"))]
+DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_harvested_area","my_evaluation_weight"))]
 ```
 We examine the structure of the data frame DF.training
 ```{r trainingStructure}
@@ -78,9 +78,9 @@ it must contain the following mandatory columns with the expected data types
 
 * a character column indicating the crop type (**my_crop**)
 
-* numeric column with non-negative values indicating the harvested area
-  (**my_harvested_area**).
-  The usual physical unit for harvested area is *acre*.
+* numeric column with non-negative values indicating the evaluation weight
+  (**my_evaluation_weight**).
+  The usual evaluation weight variable is *seeded area* expressed in *acres*.
 
 * numeric column with non-negative values indicating crop yield (**my_yield**).
   The usual physical unit for crop yield is *number of bushels per acre*.
@@ -99,7 +99,8 @@ Here are the first few rows of DF.training:
 knitr::kable(head(DF.training), align = "c")
 ```
 
-The first few rows of DF.production (note the absence of **my_yield** and **my_harvested_area**):
+The first few rows of DF.production (note the absence of **my_yield** and
+**my_evaluation_weight**):
 ```{r productionHead}
 knitr::kable(head(DF.production), align = "c")
 ```
@@ -118,6 +119,7 @@ stcCropYield::rollingWindowForwardValidation(
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
+    evaluation.weight    = "my_evaluation_weight",
     predictors           = predictor.colnames,
     min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",

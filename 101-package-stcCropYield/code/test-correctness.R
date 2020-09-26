@@ -37,7 +37,7 @@ test.correctness_group.then.add.relative.error <- function(
     my.DF.input <- base::data.frame(
         ecoregion            = sample(paste0(   "r0",1:5),size=100,replace=TRUE),
         crop                 = sample(paste0("crop0",1:9),size=100,replace=TRUE),
-        harvested_area       = abs(rnorm(100)),
+        evaluation_weight    = abs(rnorm(100)),
         actual_production    = abs(rnorm(100)),
         predicted_production = abs(rnorm(100))
         );
@@ -52,12 +52,12 @@ test.correctness_group.then.add.relative.error <- function(
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             DF.expected <- my.DF.input %>%
                dplyr::select(
-                   .data[["harvested_area"]],
+                   .data[["evaluation_weight"]],
                    .data[["actual_production"]],
                    .data[["predicted_production"]]
                    ) %>%
                dplyr::summarize(
-                   harvested_area       = sum(.data$harvested_area),
+                   evaluation_weight    = sum(.data$evaluation_weight),
                    actual_production    = sum(.data$actual_production),
                    predicted_production = sum(.data$predicted_production)
                    ) %>%
@@ -91,12 +91,12 @@ test.correctness_group.then.add.relative.error <- function(
                    .data[["crop"]]
                    ) %>%
                dplyr::select(
-                   .data[["harvested_area"]],
+                   .data[["evaluation_weight"]],
                    .data[["actual_production"]],
                    .data[["predicted_production"]]
                    ) %>%
                dplyr::summarize(
-                   harvested_area       = sum(.data$harvested_area),
+                   evaluation_weight    = sum(.data$evaluation_weight),
                    actual_production    = sum(.data$actual_production),
                    predicted_production = sum(.data$predicted_production)
                    ) %>%
@@ -130,12 +130,12 @@ test.correctness_group.then.add.relative.error <- function(
                    .data[["ecoregion"]]
                    ) %>%
                dplyr::select(
-                   .data[["harvested_area"]],
+                   .data[["evaluation_weight"]],
                    .data[["actual_production"]],
                    .data[["predicted_production"]]
                    ) %>%
                dplyr::summarize(
-                   harvested_area       = sum(.data$harvested_area),
+                   evaluation_weight    = sum(.data$evaluation_weight),
                    actual_production    = sum(.data$actual_production),
                    predicted_production = sum(.data$predicted_production)
                    ) %>%
@@ -170,12 +170,12 @@ test.correctness_group.then.add.relative.error <- function(
                    .data[["crop"]]
                    ) %>%
                dplyr::select(
-                   .data[["harvested_area"]],
+                   .data[["evaluation_weight"]],
                    .data[["actual_production"]],
                    .data[["predicted_production"]]
                    ) %>%
                dplyr::summarize(
-                   harvested_area       = sum(.data$harvested_area),
+                   evaluation_weight    = sum(.data$evaluation_weight),
                    actual_production    = sum(.data$actual_production),
                    predicted_production = sum(.data$predicted_production)
                    ) %>%
@@ -240,6 +240,7 @@ test.correctness_xgboost.multiphase <- function(
                 crop                 = "my_crop",
                 response.variable    = "my_yield",
                 harvested.area       = "my_harvested_area",
+                evaluation.weight    = "my_evaluation_weight",
                 predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
                 min.num.parcels      = min.num.parcels,
                 learner              = "xgboost_multiphase",
@@ -260,6 +261,7 @@ test.correctness_xgboost.multiphase <- function(
                 crop                 = "my_crop",
                 response.variable    = "my_yield",
                 harvested.area       = "my_harvested_area",
+                evaluation.weight    = "my_evaluation_weight",
                 predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
                 min.num.parcels      = min.num.parcels,
                 learner              = "xgboost_multiphase",
@@ -291,6 +293,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     crop                 = NULL,
     response.variable    = NULL,
     harvested.area       = NULL,
+    evaluation.weight    = NULL,
     predictors           = NULL,
     min.num.parcels      = NULL,
     learner              = NULL,
@@ -312,6 +315,7 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         crop                 = crop,
         response.variable    = response.variable,
         harvested.area       = harvested.area,
+        evaluation.weight    = evaluation.weight,
         predictors           = predictors,
         min.num.parcels      = min.num.parcels,
         learner              = learner,

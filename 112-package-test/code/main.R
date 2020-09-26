@@ -14,47 +14,7 @@ start.proc.time <- proc.time();
 setwd( dir.out );
 
 cat("\n##################################################\n");
-require(foreach);
-require(magrittr);
-require(rlang);
-
-code.files <- c(
-    "crop-yield-predict.R",
-    "crop-yield-train-model.R",
-    "getData-synthetic.R",
-    "getLearner.R",
-    "get-learner-metadata.R",
-    "get-mock-production-errors.R",
-    "get-performance-metrics.R",
-    "initializePlot.R",
-    "input-validity-checks-learner-metadata.R",
-    "input-validity-checks-parameters.R",
-    "input-validity-checks-predict.R",
-    "input-validity-checks-variables.R",
-    "input-validity-checks-window-compatibility.R",
-    "preprocessor.R",
-    "learner-abstract.R",
-    "learner-byGroup.R",
-    "learner-multiphase.R",
-    "learner-xgboost.R",
-    "rollingWindowForwardValidation.R",
-    "validation-single-year.R",
-    "weighted-statistics.R"
-    );
-
-for ( code.file in code.files ) {
-    source(file.path(dir.code,code.file));
-    }
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# running unit tests
-test.files <- c(
-    "test-correctness.R"
-    );
-
-for ( test.file in test.files ) {
-    source(file.path(dir.code,test.file));
-    }
+require(stcCropYield);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(7654321);

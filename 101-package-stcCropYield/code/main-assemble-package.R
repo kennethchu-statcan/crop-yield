@@ -34,9 +34,9 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9013",
+    Version         = "0.0.1.9016",
     `Authors@R`     = string.authors,
-    Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
+    Description     = "This package provides a collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data.",
     Language        = "fr",
     VignetteBuilder = "R.rsp"
     );
@@ -76,6 +76,11 @@ files.R <- base::c(
     "getData-synthetic.R",
     "getLearner.R",
     "initializePlot.R",
+    "input-validity-checks-learner-metadata.R",
+    "input-validity-checks-parameters.R",
+    "input-validity-checks-predict.R",
+    "input-validity-checks-variables.R",
+    "input-validity-checks-window-compatibility.R",
     "learner-abstract.R",
     "learner-byGroup.R",
     "learner-multiphase.R",
@@ -192,6 +197,7 @@ stcCropYield::rollingWindowForwardValidation(
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
+    evaluation.weight    = "my_evaluation_weight",
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
     min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",

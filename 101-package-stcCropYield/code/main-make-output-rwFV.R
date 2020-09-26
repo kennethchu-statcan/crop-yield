@@ -86,6 +86,7 @@ stcCropYield::rollingWindowForwardValidation(
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
+    evaluation.weight    = "my_evaluation_weight",
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
     min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",

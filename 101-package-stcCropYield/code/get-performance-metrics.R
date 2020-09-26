@@ -70,16 +70,16 @@ get.performance.metrics_single.model <- function(
             csvdata     <- base::as.data.frame(utils::read.csv( base::file.path(folder.year,errors.csv) ));
 
             #csvdata$weights<- (csvdata$actual_production) / base::sum(csvdata$actual_production);
-            csvdata$weights <- (csvdata$harvested_area) / base::sum(csvdata$harvested_area);
+            csvdata$weights <- (csvdata$evaluation_weight) / base::sum(csvdata$evaluation_weight);
             weighted_error  <- weighted.mean(x = csvdata$relative_error, weights = csvdata$weights);
             weighted_std    <- weighted.sd(  x = csvdata$relative_error, weights = csvdata$weights);
 
             newdata <- base::data.frame(
-            	model          = modelID,
-            	year           = base::as.numeric(validation.year),
-            	weighted_error = weighted_error,
-            	weighted_std   = weighted_std
-            	);
+                model          = modelID,
+                year           = base::as.numeric(validation.year),
+                weighted_error = weighted_error,
+                weighted_std   = weighted_std
+                );
 
             DF.errors.model.year <- base::rbind(DF.errors.model.year,newdata);
 
@@ -95,4 +95,3 @@ get.performance.metrics_single.model <- function(
     base::return( DF.errors.model.year );
 
     }
-
