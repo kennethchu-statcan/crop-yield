@@ -448,6 +448,7 @@ rollingWindowForwardValidation_generate.predictions <- function(
     logger::log_debug('{this.function.name}(): ls(environment()):\n{paste(ls(environment()),collapse="\n")}');
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    temp.index <- NULL; # binding temp.index to this function in order to avoid the R CMD check note that there is 'no visialbe binding for global variable temp.index'
     foreach::foreach (
         temp.index = 1:base::length(learner.metadata),
         .export    = base::ls(name = base::environment())
