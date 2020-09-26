@@ -93,7 +93,7 @@
 #'     response.variable    = "my_yield",
 #'     harvested.area       = "my_harvested_area",
 #'     evaluation.weight    = "my_evaluation_weight",
-#'     predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+#'     predictors           = base::grep(x = base::colnames(DF.training), pattern = "x[0-9]*", value = TRUE),
 #'     min.num.parcels      = min.num.parcels,
 #'     learner              = "xgboost_multiphase",
 #'     by.variables.phase01 = base::c("my_ecoregion","my_crop"),
