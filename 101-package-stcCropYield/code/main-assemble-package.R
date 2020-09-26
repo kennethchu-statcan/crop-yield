@@ -36,7 +36,7 @@ description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
     Version         = "0.0.1.9016",
     `Authors@R`     = string.authors,
-    Description     = "A collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data",
+    Description     = "This package provides a collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data.",
     Language        = "fr",
     VignetteBuilder = "R.rsp"
     );
