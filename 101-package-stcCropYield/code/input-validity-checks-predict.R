@@ -25,16 +25,31 @@ input.validity.checks_predict <- function(
         base::all( base::c('predictors') %in% base::names(trained.model$learner.metadata) )
         );
 
-    required.colnames <- base::unique(base::c(
-        trained.model$learner.metadata$predictors,
+    predictor.colnames <- trained.model$learner.metadata$predictors;
+
+    by.variables.colnames <- base::unique(base::c(
         trained.model$learner.metadata$by_variables_phase01,
         trained.model$learner.metadata$by_variables_phase02,
         trained.model$learner.metadata$by_variables_phase03
         ));
 
     base::stopifnot(
-        required.colnames %in% base::colnames(DF.predictors)
+        base::c(predictor.colnames,by.variables.colnames) %in% base::colnames(DF.predictors)
         );
+
+    for ( temp.index in 1:length(predictor.colnames) ) {
+        base::stopifnot(
+            base::is.numeric(      DF.predictors[,predictor.colnames[temp.index]]),
+            base::all(!base::is.na(DF.predictors[,predictor.colnames[temp.index]]))
+            );
+        }
+
+    for ( temp.index in 1:length(by.variables.colnames) ) {
+        base::stopifnot(
+            base::is.character(    DF.predictors[,by.variables.colnames[temp.index]]),
+            base::all(!base::is.na(DF.predictors[,by.variables.colnames[temp.index]]))
+            );
+        }
 
     base::return( NULL );
 
