@@ -66,6 +66,44 @@
 #' @return an instance of class \code{learner}, e.g. "xgboost_multiphase".
 #'
 #' @examples
+#' \dontrun{
+#' set.seed(7654321);
+#' n.ecoregions    <-   3;
+#' n.crops         <-   5;
+#' n.predictors    <-   7;
+#' avg.n.parcels   <- 100;
+#' min.num.parcels <-  50;
+#'
+#' DF.synthetic <- getData.synthetic(
+#'     years         = base::seq(2015,2020),
+#'     n.ecoregions  = n.ecoregions,
+#'     n.crops       = n.crops,
+#'     n.predictors  = n.predictors,
+#'     avg.n.parcels = avg.n.parcels
+#'     );
+#'
+#' DF.training   <- DF.synthetic[DF.synthetic[,"my_year"] != 2020,];
+#' DF.production <- DF.synthetic[DF.synthetic[,"my_year"] == 2020,];
+#'
+#' trained.model <- crop.yield.train.model(
+#'     DF.training          = DF.training,
+#'     year                 = "my_year",
+#'     ecoregion            = "my_ecoregion",
+#'     crop                 = "my_crop",
+#'     response.variable    = "my_yield",
+#'     harvested.area       = "my_harvested_area",
+#'     evaluation.weight    = "my_evaluation_weight",
+#'     predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+#'     min.num.parcels      = min.num.parcels,
+#'     learner              = "xgboost_multiphase",
+#'     by.variables.phase01 = base::c("my_ecoregion","my_crop"),
+#'     by.variables.phase02 = base::c("my_crop"),
+#'     by.variables.phase03 = base::c("my_ecoregion"),
+#'     hyperparameters      = base::list(alpha = 23, lambda = 23)
+#'     );
+#'
+#' DF.predictions <- trained.model$predict(newdata = DF.production);
+#' }
 #'
 #' @export
 

@@ -117,6 +117,7 @@
 #'     log.threshold  = logger::TRACE
 #'     );
 #' }
+#'
 #' @export
 
 rollingWindowForwardValidation <- function(
