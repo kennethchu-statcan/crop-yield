@@ -183,7 +183,8 @@ rollingWindowForwardValidation <- function(
         by.variables.phase01 = by.variables.phase01,
         by.variables.phase02 = by.variables.phase02,
         by.variables.phase03 = by.variables.phase03,
-        search.grid          = search.grid
+        search.grid          = search.grid,
+        num.cores            = num.cores
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -569,12 +570,14 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     by.variables.phase02 = NULL,
     by.variables.phase03 = NULL,
     search.grid          = NULL,
+    num.cores            = NULL,
     output.directory     = NULL
     ) {
 
     input.validity.checks_parameters(
         training.window   = training.window,
-        validation.window = validation.window
+        validation.window = validation.window,
+        num.cores         = num.cores
         );
 
     input.validity.checks_variables.needed.for.training(

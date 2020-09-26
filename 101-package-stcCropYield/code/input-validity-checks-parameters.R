@@ -1,7 +1,8 @@
 
 input.validity.checks_parameters <- function(
     training.window   = NULL,
-    validation.window = NULL
+    validation.window = NULL,
+    num.cores         = NULL
     ) {
 
     base::stopifnot(
@@ -16,6 +17,13 @@ input.validity.checks_parameters <- function(
         base::length(validation.window) == 1,
         validation.window == base::as.integer(validation.window),
         validation.window > 0
+        );
+
+    base::stopifnot(
+        base::is.numeric(num.cores),
+        base::length(num.cores) == 1,
+        num.cores == base::as.integer(num.cores),
+        num.cores > 0
         );
 
     base::return( NULL );
