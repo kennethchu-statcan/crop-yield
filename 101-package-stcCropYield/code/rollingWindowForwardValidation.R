@@ -70,7 +70,7 @@
 #' indicating file path of the (output) directory to which all results will be written.
 #'
 #' @param log.threshold log threshold.
-#' Must be one of the log levels supported by the \code{looger} package. Default: logger::INFO
+#' Must be one of the log levels supported by the \code{logger} package. Default: logger::INFO
 #'
 #' @param suppress.child.process.graphics logical.
 #' If TRUE, generation of diagnostics graphics during child processes will be suppressed.

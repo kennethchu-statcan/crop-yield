@@ -3,7 +3,7 @@
 #' Computes parcel-level crop yield predictions based on
 #' a given trained prediction model and a data frame of predictor variables.
 #'
-#' @param FILE.trained.model data frame containing crop yield data. See Details below for more information.
+#' @param trained.model data frame containing crop yield data. See Details below for more information.
 #'
 #' @param DF.predictors data frame containing crop yield data. See Details below for more information.
 #'
@@ -64,24 +64,27 @@
 #' RData.trained.model <- file.path("rwFV",RData.trained.model);
 #'
 #' DF.predictions <- stcCropYield::crop.yield.predict(
-#'    FILE.trained.model = RData.trained.model,
-#'    DF.predictors      = DF.production
+#'    trained.model = RData.trained.model,
+#'    DF.predictors = DF.production
 #'    );
 #' }
 #'
 #' @export
 
 crop.yield.predict <- function(
-    FILE.trained.model = NULL,
-    DF.predictors      = NULL
+    trained.model = NULL,
+    DF.predictors = NULL
     ) {
 
     input.validity.checks_predict(
-        FILE.trained.model = FILE.trained.model,
-        DF.predictors      = DF.predictors
+        trained.model = trained.model,
+        DF.predictors = DF.predictors
         );
 
-    trained.model  <- base::readRDS( file = FILE.trained.model );
+    if ( base::is.character(trained.model) ) {
+        trained.model <- readRDS(file = trained.model);
+        }
+
     DF.predictions <- trained.model$predict(newdata = DF.predictors);
 
     base::return( DF.predictions );

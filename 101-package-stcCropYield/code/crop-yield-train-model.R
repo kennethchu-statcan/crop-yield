@@ -63,6 +63,9 @@
 #' @param hyperparameters list of numeric vectors each of length 1,
 #' indicating the single hyperparameter configuration to be used for training.
 #'
+#' @param log.threshold log threshold.
+#' Must be one of the log levels supported by the \code{logger} package. Default: logger::INFO
+#'
 #' @return an instance of class \code{learner}, e.g. "xgboost_multiphase".
 #'
 #' @examples
@@ -93,7 +96,7 @@
 #'     response.variable    = "my_yield",
 #'     harvested.area       = "my_harvested_area",
 #'     evaluation.weight    = "my_evaluation_weight",
-#'     predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
+#'     predictors           = base::grep(x = base::colnames(DF.training), pattern = "x[0-9]*", value = TRUE),
 #'     min.num.parcels      = min.num.parcels,
 #'     learner              = "xgboost_multiphase",
 #'     by.variables.phase01 = base::c("my_ecoregion","my_crop"),
@@ -102,7 +105,10 @@
 #'     hyperparameters      = base::list(alpha = 23, lambda = 23)
 #'     );
 #'
-#' DF.predictions <- trained.model$predict(newdata = DF.production);
+#' DF.predictions <- stcCropYield::crop.yield.predict(
+#'    trained.model = trained.model,
+#'    DF.predictors = DF.production
+#'    );
 #' }
 #'
 #' @export
@@ -124,9 +130,18 @@ crop.yield.train.model <- function(
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
+    hyperparameters      = base::list(alpha = 23, lambda = 23),
+    log.threshold        = logger::INFO
     ) {
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    this.function.name <- "crop.yield.train.model";
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    log.threshold.original <- logger::log_threshold();
+    logger::log_threshold(level = log.threshold);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( is.null(learner.metadata) ) {
         learner.metadata <- get.learner.metadata_private.helper(
             year                 = year,
@@ -160,6 +175,8 @@ crop.yield.train.model <- function(
             );
         }
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_threshold(level = log.threshold.original);
     base::return( trained.model );
 
     }
