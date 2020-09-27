@@ -55,9 +55,9 @@ learner.byGroup <- R6::R6Class(
             colnames.training  <- c(self$response.variable,self$by.variables,self$learner.metadata[["predictors"]]);
             self$training.data <- training.data[,colnames.training];
 
-            logger::log_debug('{this.function.name}(): str(training.data): {paste(capture.output(str(training.data)),collapse="\n")}');
-            logger::log_debug('{this.function.name}(): self$by.variables: {paste(self$by.variables,collapse="\n")}');
-            logger::log_debug('{this.function.name}(): str(self$training.data[,self$by.variables]): {paste(capture.output(str(self$training.data[,self$by.variables])),collapse="\n")}');
+            logger::log_debug('{this.function.name}(): str(training.data):\n{paste(capture.output(str(training.data)),collapse="\n")}');
+            logger::log_debug('{this.function.name}(): self$by.variables: c({paste(self$by.variables,collapse=",")})');
+            logger::log_debug('{this.function.name}(): str(self$training.data[,self$by.variables]):\n{paste(capture.output(str(self$training.data[,self$by.variables])),collapse="\n")}');
 
             self$training.data[,"concatenated_by_variable"] <- private$get_concatenated_by_variable(
                 DF.input = self$training.data[,self$by.variables]
@@ -65,7 +65,7 @@ learner.byGroup <- R6::R6Class(
 
             self$training.data <- self$training.data[,base::setdiff(base::colnames(self$training.data),self$by.variables)];
 
-            logger::log_debug('{this.function.name}(): str(self$training.data): {paste(capture.output(str(self$training.data)),collapse="\n")}');
+            logger::log_debug('{this.function.name}(): str(self$training.data):\n{paste(capture.output(str(self$training.data)),collapse="\n")}');
 
             },
 
