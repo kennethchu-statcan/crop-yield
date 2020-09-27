@@ -13,9 +13,6 @@
 #'
 #' @param learner.metadata list of key-value pairs, specifying learner metadata. See Details below.
 #'
-#' @param training.window integer vector of length 1.
-#' The number of years to use for each round of training. See Details below.
-#'
 #' @param year character vector of length 1,
 #' indicating the column name in \code{DF.input} for the calendar year variable.
 #'
@@ -27,13 +24,6 @@
 #'
 #' @param response.variable character vector of length 1,
 #' indicating column name in \code{DF.input} for the crop yield variable.
-#'
-#' @param harvested.area character vector of length 1,
-#' indicating column name in \code{DF.input} for the harvested area variable.
-#'
-#' @param evaluation.weight character vector of length 1,
-#' indicating column name in \code{DF.input} for the variable to be used as
-#' evaluation weight.
 #'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
@@ -117,20 +107,17 @@ crop.yield.train.model <- function(
     FILE.trained.model   = NULL,
     DF.training          = NULL,
     learner.metadata     = NULL,
-    training.window      = NULL,
-    year                 = "year",
-    ecoregion            = "ecoregion",
-    crop                 = "crop",
-    response.variable    = "yield",
-    harvested.area       = "harvested_area",
-    evaluation.weight    = "evaluation_weight",
+    year                 = NULL,
+    ecoregion            = NULL,
+    crop                 = NULL,
+    response.variable    = NULL,
     predictors           = NULL,
-    min.num.parcels      = 50,
-    learner              = "xgboost_multiphase",
-    by.variables.phase01 = base::c(ecoregion,crop),
-    by.variables.phase02 = base::c(crop),
-    by.variables.phase03 = base::c(ecoregion),
-    hyperparameters      = base::list(alpha = 23, lambda = 23),
+    min.num.parcels      = NULL,
+    learner              = NULL,
+    by.variables.phase01 = NULL,
+    by.variables.phase02 = NULL,
+    by.variables.phase03 = NULL,
+    hyperparameters      = NULL,
     log.threshold        = logger::INFO
     ) {
 
@@ -142,14 +129,30 @@ crop.yield.train.model <- function(
     logger::log_threshold(level = log.threshold);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    input.validty.checks_crop.yield.train.model(
+        FILE.trained.model   = FILE.trained.model,
+        DF.training          = DF.training,
+        learner.metadata     = learner.metadata,
+        year                 = year,
+        ecoregion            = ecoregion,
+        crop                 = crop,
+        response.variable    = response.variable,
+        predictors           = predictors,
+        min.num.parcels      = min.num.parcels,
+        learner              = learner,
+        by.variables.phase01 = by.variables.phase01,
+        by.variables.phase02 = by.variables.phase02,
+        by.variables.phase03 = by.variables.phase03,
+        hyperparameters      = hyperparameters
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( is.null(learner.metadata) ) {
         learner.metadata <- get.learner.metadata_private.helper(
             year                 = year,
             ecoregion            = ecoregion,
             crop                 = crop,
             response.variable    = response.variable,
-            harvested.area       = harvested.area,
-            evaluation.weight    = evaluation.weight,
             predictors           = predictors,
             min.num.parcels      = min.num.parcels,
             learner              = learner,
@@ -160,6 +163,8 @@ crop.yield.train.model <- function(
             );
         learner.metadata <- learner.metadata[[1]];
         }
+
+    logger::log_debug('{this.function.name}(): learner.metadata:\n{paste0(capture.output(print(learner.metadata)),collapse="\n")}');
 
     trained.model <- getLearner(
         learner.metadata = learner.metadata,
@@ -178,5 +183,115 @@ crop.yield.train.model <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_threshold(level = log.threshold.original);
     base::return( trained.model );
+
+    }
+
+##################################################
+input.validty.checks_crop.yield.train.model <- function(
+    FILE.trained.model   = NULL,
+    DF.training          = NULL,
+    learner.metadata     = NULL,
+    year                 = NULL,
+    ecoregion            = NULL,
+    crop                 = NULL,
+    response.variable    = NULL,
+    predictors           = NULL,
+    min.num.parcels      = NULL,
+    learner              = NULL,
+    by.variables.phase01 = NULL,
+    by.variables.phase02 = NULL,
+    by.variables.phase03 = NULL,
+    hyperparameters      = NULL
+    ) {
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    this.function.name <- "input.validty.checks_crop.yield.train.model";
+    logger::log_debug('{this.function.name}(): starts');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_debug('{this.function.name}(): FILE.trained.model = {capture.output({FILE.trained.model})}');
+    logger::log_debug('{this.function.name}(): str(DF.training):\n{paste0(capture.output(str(DF.training)),collapse="\n")}');
+    logger::log_debug('{this.function.name}(): learner.metadata:\n{paste0(capture.output(print(learner.metadata)),collapse="\n")}');
+    logger::log_debug('{this.function.name}(): year = {year}');
+    logger::log_debug('{this.function.name}(): ecoregion = {ecoregion}');
+    logger::log_debug('{this.function.name}(): crop = {crop}');
+    logger::log_debug('{this.function.name}(): response.variable = {response.variable}');
+    logger::log_debug('{this.function.name}(): predictors:\n{paste0(predictors,collapse="\n")}');
+    logger::log_debug('{this.function.name}(): min.num.parcels = {min.num.parcels}');
+    logger::log_debug('{this.function.name}(): learner = {learner}');
+    logger::log_debug('{this.function.name}(): by.variables.phase01:\n{paste0(capture.output(by.variables.phase01),collapse="\n")}');
+    logger::log_debug('{this.function.name}(): by.variables.phase02:\n{paste0(capture.output(by.variables.phase02),collapse="\n")}');
+    logger::log_debug('{this.function.name}(): by.variables.phase03:\n{paste0(capture.output(by.variables.phase03),collapse="\n")}');
+    logger::log_debug('{this.function.name}(): hyperparameters:\n{paste0(capture.output(hyperparameters),collapse="\n")}');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( !is.null(learner.metadata) ) {
+
+        base::stopifnot(
+            base::is.null(year),
+            base::is.null(ecoregion),
+            base::is.null(crop),
+            base::is.null(response.variable),
+            base::is.null(predictors),
+            base::is.null(learner),
+            base::is.null(by.variables.phase01),
+            base::is.null(by.variables.phase02),
+            base::is.null(by.variables.phase03),
+            base::is.null(hyperparameters)
+            );
+
+        base::stopifnot(
+           base::is.list(learner.metadata)
+           );
+
+        base::stopifnot(base::all(
+            base::c('year','ecoregion','crop','response_variable','predictors','learner','min_num_parcels','by_variables_phase01','by_variables_phase02','by_variables_phase03','hyperparameters') %in% base::names(learner.metadata)
+            ));
+
+        year                 <- learner.metadata[['year']];
+        ecoregion            <- learner.metadata[['ecoregion']];
+        crop                 <- learner.metadata[['crop']];
+        response.variable    <- learner.metadata[['response_variable']];
+        predictors           <- learner.metadata[['predictors']];
+        learner              <- learner.metadata[['learner']];
+        min.num.parcels      <- learner.metadata[['min_num_parcels']];
+        by.variables.phase01 <- learner.metadata[['by_variables_phase01']];
+        by.variables.phase02 <- learner.metadata[['by_variables_phase02']];
+        by.variables.phase03 <- learner.metadata[['by_variables_phase03']];
+        hyperparameters      <- learner.metadata[['hyperparameters']];
+
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    input.validity.checks_learner.metadata(
+        DF.input             = DF.training,
+        learner              = learner,
+        ecoregion            = ecoregion,
+        crop                 = crop,
+        min.num.parcels      = min.num.parcels,
+        by.variables.phase01 = by.variables.phase01,
+        by.variables.phase02 = by.variables.phase02,
+        by.variables.phase03 = by.variables.phase03,
+        search.grid          = hyperparameters,
+        single.configuration = TRUE
+        );
+
+    input.validity.checks_variables.needed.for.prediction(
+        DF.input   = DF.training,
+        ecoregion  = ecoregion,
+        crop       = crop,
+        predictors = predictors
+        );
+
+    input.validity.checks_variables.needed.for.training(
+        DF.input             = DF.training,
+        year                 = year,
+        response.variable    = response.variable,
+        single.configuration = TRUE
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_debug('{this.function.name}(): exits');
+    return( NULL );
 
     }

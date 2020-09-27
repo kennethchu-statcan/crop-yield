@@ -8,7 +8,8 @@ input.validity.checks_learner.metadata <- function(
     by.variables.phase01 = NULL,
     by.variables.phase02 = NULL,
     by.variables.phase03 = NULL,
-    search.grid          = NULL
+    search.grid          = NULL,
+    single.configuration = FALSE
     ) {
 
     base::stopifnot(
@@ -60,8 +61,10 @@ input.validity.checks_learner.metadata <- function(
             );
         }
 
-    base::stopifnot(
-        base::is.list(search.grid)
+    input.validity.checks_learner.search.grid(
+        learner              = learner,
+        search.grid          = search.grid,
+        single.configuration = single.configuration
         );
 
     base::return( NULL );
@@ -69,14 +72,25 @@ input.validity.checks_learner.metadata <- function(
     }
 
 input.validity.checks_learner.search.grid <- function(
-    learner     = NULL,
-    search.grid = NULL
+    learner              = NULL,
+    search.grid          = NULL,
+    single.configuration = NULL
     ) {
+
+    base::stopifnot(
+        base::is.list(search.grid)
+        );
+
+    if ( single.configuration ) {
+        base::all(base::unique(base::sapply(X = search.grid, FUN = base::length)) %in% c(1))
+    } else {
+        base::all(base::unique(base::sapply(X = search.grid, FUN = base::length)) > 0)
+        }
 
     if ( base::grepl(x = base::tolower(learner), pattern = 'xgboost') ) {
         base::stopifnot(
-            base::identical( base::sort(base::names(search.grid)) , c("alpha","lambda") ),
-            base::all(base::unique(base::sapply(X = search.grid, FUN = base::class) ) %in% c("integer","numeric"))
+            base::all( base::c("alpha","lambda") %in% base::names(search.grid) ),
+            base::all( base::unique(base::sapply(X = search.grid[base::c("alpha","lambda")], FUN = base::class) ) %in% c("integer","numeric") )
             );
         }
 

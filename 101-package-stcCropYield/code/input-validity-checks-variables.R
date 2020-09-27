@@ -45,11 +45,12 @@ input.validity.checks_variables.needed.for.prediction <- function(
     }
 
 input.validity.checks_variables.needed.for.training <- function(
-    DF.input          = NULL,
-    year              = NULL,
-    response.variable = NULL,
-    harvested.area    = NULL,
-    evaluation.weight = NULL
+    DF.input             = NULL,
+    year                 = NULL,
+    response.variable    = NULL,
+    harvested.area       = NULL,
+    evaluation.weight    = NULL,
+    single.configuration = TRUE
     ) {
 
     base::stopifnot(
@@ -74,24 +75,38 @@ input.validity.checks_variables.needed.for.training <- function(
         base::all(DF.input[,response.variable] > 0)
         );
 
-    base::stopifnot(
-        base::is.character(harvested.area),
-        base::length(harvested.area) == 1,
-        base::is.numeric(DF.input[,harvested.area]),
-        base::all(!base::is.na(DF.input[,harvested.area])),
-        base::all(DF.input[,harvested.area] > 0)
+    if ( single.configuration ) {
+
+        # do nothing
+
+    } else {
+
+        base::stopifnot(
+            base::is.character(harvested.area),
+            base::length(harvested.area) == 1,
+            base::is.numeric(DF.input[,harvested.area]),
+            base::all(!base::is.na(DF.input[,harvested.area])),
+            base::all(DF.input[,harvested.area] > 0)
+            );
+
+        base::stopifnot(
+            base::is.character(evaluation.weight),
+            base::length(evaluation.weight) == 1,
+            base::is.numeric(DF.input[,evaluation.weight]),
+            base::all(!base::is.na(DF.input[,evaluation.weight])),
+            base::all(DF.input[,evaluation.weight] > 0)
+            );
+
+        }
+
+    required.colnames <- ifelse(
+        single.configuration,
+        c(year,response.variable),
+        c(year,response.variable,harvested.area,evaluation.weight)
         );
 
     base::stopifnot(
-        base::is.character(evaluation.weight),
-        base::length(evaluation.weight) == 1,
-        base::is.numeric(DF.input[,evaluation.weight]),
-        base::all(!base::is.na(DF.input[,evaluation.weight])),
-        base::all(DF.input[,evaluation.weight] > 0)
-        );
-
-    base::stopifnot(
-        0 == length(setdiff(c(year,response.variable,harvested.area,evaluation.weight),colnames(DF.input)))
+        0 == length(setdiff(required.colnames,colnames(DF.input)))
         );
 
     base::return( NULL );

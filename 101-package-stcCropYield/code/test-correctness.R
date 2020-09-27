@@ -11,7 +11,7 @@ test.correctness <- function(
 
     my.tolerance <- ifelse("windows" == base::.Platform[["OS.type"]],1e-3,1e-6);
 
-    test.correctness_xgboost.multiphase(my.tolerance = my.tolerance);
+    #test.correctness_xgboost.multiphase(my.tolerance = my.tolerance);
     test.correctness_group.then.add.relative.error(my.tolerance = my.tolerance);
 
     }
@@ -239,15 +239,13 @@ test.correctness_xgboost.multiphase <- function(
                 ecoregion            = "my_ecoregion",
                 crop                 = "my_crop",
                 response.variable    = "my_yield",
-                harvested.area       = "my_harvested_area",
-                evaluation.weight    = "my_evaluation_weight",
                 predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
                 min.num.parcels      = min.num.parcels,
                 learner              = "xgboost_multiphase",
                 by.variables.phase01 = base::c("my_ecoregion","my_crop"),
                 by.variables.phase02 = base::c("my_crop"),
                 by.variables.phase03 = base::c("my_ecoregion"),
-                hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
+                hyperparameters      = base::list(alpha = 23, lambda = 23)
                 );
 
             DF.computed <- trained.model$predict(newdata = DF.validation);
@@ -260,15 +258,13 @@ test.correctness_xgboost.multiphase <- function(
                 ecoregion            = "my_ecoregion",
                 crop                 = "my_crop",
                 response.variable    = "my_yield",
-                harvested.area       = "my_harvested_area",
-                evaluation.weight    = "my_evaluation_weight",
                 predictors           = base::grep(x = base::colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
                 min.num.parcels      = min.num.parcels,
                 learner              = "xgboost_multiphase",
                 by.variables.phase01 = base::c("my_ecoregion","my_crop"),
                 by.variables.phase02 = base::c("my_crop"),
                 by.variables.phase03 = base::c("my_ecoregion"),
-                hyperparameters      = base::list(alpha = 23, lambda = 23, lambda_bias = 23)
+                hyperparameters      = base::list(alpha = 23, lambda = 23)
                 );
 
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -292,8 +288,6 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
     ecoregion            = NULL,
     crop                 = NULL,
     response.variable    = NULL,
-    harvested.area       = NULL,
-    evaluation.weight    = NULL,
     predictors           = NULL,
     min.num.parcels      = NULL,
     learner              = NULL,
@@ -314,8 +308,8 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         ecoregion            = ecoregion,
         crop                 = crop,
         response.variable    = response.variable,
-        harvested.area       = harvested.area,
-        evaluation.weight    = evaluation.weight,
+        # harvested.area     = harvested.area,
+        # evaluation.weight  = evaluation.weight,
         predictors           = predictors,
         min.num.parcels      = min.num.parcels,
         learner              = learner,
@@ -389,11 +383,10 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                 trained.machine <- xgboost::xgb.train(
                     data = DMatrix.training,
                     params = base::list(
-                        booster     = 'gblinear',
-                        objective   = 'reg:squarederror', # deprecated: 'reg:linear',
-                        alpha       = learner.metadata[["hyperparameters"]][["alpha"]],
-                        lambda      = learner.metadata[["hyperparameters"]][["lambda"]]
-                        #,lambda_bias = learner.metadata[["hyperparameters"]][["lambda_bias"]]
+                        booster   = 'gblinear',
+                        objective = 'reg:squarederror', # deprecated: 'reg:linear',
+                        alpha     = learner.metadata[["hyperparameters"]][["alpha"]],
+                        lambda    = learner.metadata[["hyperparameters"]][["lambda"]]
                         ),
                     verbose       = learner.metadata[["hyperparameters"]][["verbose"]],
                     print_every_n = learner.metadata[["hyperparameters"]][["print_every_n"]],

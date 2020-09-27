@@ -57,14 +57,14 @@ cat("\nsummary(DF.production)\n");
 print( summary(DF.production)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+cat("\n### NULL learner metadata\n");
+
 trained.model <- crop.yield.train.model(
     DF.training          = DF.training,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
-    harvested.area       = "my_harvested_area",
-    evaluation.weight    = "my_evaluation_weight",
     predictors           = base::grep(x = base::colnames(DF.training), pattern = "x[0-9]*", value = TRUE),
     min.num.parcels      = min.num.parcels,
     learner              = "xgboost_multiphase",
@@ -87,11 +87,53 @@ print( summary(DF.predictions)   );
 
 write.csv(
     x         = DF.predictions,
-    file      = "predictions-single-config.csv",
+    file      = "predictions-metadata-null.csv",
     row.names = FALSE
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+cat("\n### Non-NULL learner metadata\n");
+
+my.metadata <- stcCropYield:::get.learner.metadata_private.helper(
+    year                 = "my_year",
+    ecoregion            = "my_ecoregion",
+    crop                 = "my_crop",
+    response.variable    = "my_yield",
+    predictors           = grep(x = base::colnames(DF.training), pattern = "x[0-9]*", value = TRUE),
+    min.num.parcels      = min.num.parcels,
+    learner              = "xgboost_multiphase",
+    by.variables.phase01 = c("my_ecoregion","my_crop"),
+    by.variables.phase02 = c("my_crop"),
+    by.variables.phase03 = c("my_ecoregion"),
+    search.grid          = list(alpha = 23, lambda = 23)
+    )[[1]];
+
+trained.model <- crop.yield.train.model(
+    DF.training      = DF.training,
+    learner.metadata = my.metadata,
+    log.threshold    = logger::TRACE
+    );
+
+DF.predictions <- crop.yield.predict(
+   trained.model = trained.model,
+   DF.predictors = DF.production
+   );
+
+cat('\nstr(DF.predictions)\n');
+print( str(DF.predictions)   );
+
+cat('\nsummary(DF.predictions)\n');
+print( summary(DF.predictions)   );
+
+write.csv(
+    x         = DF.predictions,
+    file      = "predictions-metadata-nonnull.csv",
+    row.names = FALSE
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+cat("\n### rollingWindowForwardValidation()\n");
+
 rollingWindowForwardValidation(
     training.window      = 2,
     validation.window    = 3,
