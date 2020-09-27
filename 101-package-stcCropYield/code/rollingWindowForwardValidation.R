@@ -109,9 +109,8 @@
 #'     by.variables.phase03 = c("my_ecoregion"),
 #'     learner     = "xgboost_multiphase",
 #'     search.grid = list(
-#'         alpha       = seq(23,11,-8),
-#'         lambda      = seq(23,11,-8),
-#'         lambda_bias = c(23)
+#'         alpha  = seq(23,11,-8),
+#'         lambda = seq(23,11,-8)
 #'         ),
 #'     output.directory = file.path(".","rwFV"),
 #'     log.threshold  = logger::TRACE
