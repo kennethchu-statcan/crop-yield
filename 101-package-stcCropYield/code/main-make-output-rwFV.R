@@ -94,9 +94,8 @@ stcCropYield::rollingWindowForwardValidation(
     by.variables.phase02 = c("my_crop"),
     by.variables.phase03 = c("my_ecoregion"),
     search.grid = list(
-        alpha       = c(1,12,23),
-        lambda      = c(1,12,23),
-        lambda_bias = c(23) #seq(23,11,-8)
+        alpha  = c(1,12,23),
+        lambda = c(1,12,23)
         ),
     output.directory = "rwFV",
     log.threshold    = logger::TRACE
