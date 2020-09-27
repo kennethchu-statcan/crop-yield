@@ -11,7 +11,7 @@ test.correctness <- function(
 
     my.tolerance <- ifelse("windows" == base::.Platform[["OS.type"]],1e-3,1e-6);
 
-    #test.correctness_xgboost.multiphase(my.tolerance = my.tolerance);
+    test.correctness_xgboost.multiphase(my.tolerance = my.tolerance);
     test.correctness_group.then.add.relative.error(my.tolerance = my.tolerance);
 
     }
@@ -308,8 +308,6 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
         ecoregion            = ecoregion,
         crop                 = crop,
         response.variable    = response.variable,
-        # harvested.area     = harvested.area,
-        # evaluation.weight  = evaluation.weight,
         predictors           = predictors,
         min.num.parcels      = min.num.parcels,
         learner              = learner,
