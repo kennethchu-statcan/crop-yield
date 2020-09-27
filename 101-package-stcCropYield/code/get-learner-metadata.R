@@ -12,7 +12,7 @@ get.learner.metadata <- function(
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4)),
+    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4)),
     output.directory     = "predictions",
     metadata.json        = base::file.path(output.directory,"learner-metadata.json")
     ) {
@@ -71,7 +71,7 @@ get.learner.metadata_private.helper <- function(
     by.variables.phase01 = base::c(ecoregion,crop),
     by.variables.phase02 = base::c(crop),
     by.variables.phase03 = base::c(ecoregion),
-    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4), lambda_bias = base::seq(23,11,-4))
+    search.grid          = base::list(alpha = base::seq(23,11,-4), lambda = base::seq(23,11,-4))
     ) {
 
     temp.list     <- base::list();
