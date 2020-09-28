@@ -30,7 +30,8 @@ xcopy /E /I /Y %codeDIR% %outROOT%\code
 
 :: ########################################################
 :: R command
-set PATH=F:\work\software\R\instances\R-3.6.2\bin;C:\Program Files\Anaconda;%PATH%
+::set PATH=F:\work\software\R\instances\R-3.6.2\bin;C:\Program Files\Anaconda;%PATH%
+set PATH=F:\work\software\R\instances\R-4.0.2\bin;C:\Program Files\Anaconda;%PATH%
 Rscript %codeDIR%\main.R %dataDIR% %codeDIR% %outROOT% 1> %outROOT%\stdout.R.main 2> %outROOT%\stderr.R.main
 
 :: unmap network drives

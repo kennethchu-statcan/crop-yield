@@ -30,9 +30,10 @@ xcopy /E /I /Y %codeDIR% %outROOT%\code
 
 :: ########################################################
 :: add R bin directory to PATH
-::set PATH=F:\work\software\R\instances\R-3.5.3\bin;%PATH%
-::set PATH=F:\work\software\R\instances\R-3.6.2\bin;%PATH%
-set PATH=F:\work\software\R\instances\R-3.6.3\bin;%PATH%
+::set Rversion=3.6.3
+set Rversion=4.0.2
+
+set PATH=F:\work\software\R\instances\R-%Rversion%\bin;%PATH%
 
 :: Assemble contents of R package
 set packageName=stcCropYield
@@ -41,13 +42,12 @@ Rscript %codeDIR%\main-assemble-package.R %codeDIR% %outROOT% %packageName% 1> %
 :: Build the R package (create *.tar.gz file)
 Z:
 cd %outROOT%\build-no-vignettes
-::R CMD build --md5 --no-build-vignettes %outROOT%\%packageName% 1> %outROOT%\stdout.R.build 2> %outROOT%\stderr.R.build
 
 :: Check the newly built R package
 ::set R_LIBS_USER=%R_LIBS_USER%;\\fld6filer\meth\DataSciWrkGrp\software\R\library\3.5.3\library
 ::R CMD check --library=%MethRLIB% %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
 ::R CMD check --as-cran %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
-set R_LIBS_USER=\\fld6filer\meth\DataSciWrkGrp\software\R\library\3.6.2\library;%R_LIBS_USER%
+set R_LIBS_USER=\\fld6filer\meth\DataSciWrkGrp\software\R\library\%Rversion%\library;%R_LIBS_USER%
 R CMD check --no-vignettes --no-build-vignettes --ignore-vignettes %packageName%_*.tar.gz 1> %outROOT%\stdout.R.check 2> %outROOT%\stderr.R.check
 
 :: ########################################################
