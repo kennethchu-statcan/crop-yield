@@ -72,7 +72,7 @@ input.validity.checks_variables.needed.for.training <- function(
         base::length(response.variable) == 1,
         base::is.numeric(DF.input[,response.variable]),
         base::all(!base::is.na(DF.input[,response.variable])),
-        base::all(DF.input[,response.variable] > 0)
+        base::all(DF.input[,response.variable] >= 0)
         );
 
     if ( single.configuration ) {
@@ -86,7 +86,7 @@ input.validity.checks_variables.needed.for.training <- function(
             base::length(harvested.area) == 1,
             base::is.numeric(DF.input[,harvested.area]),
             base::all(!base::is.na(DF.input[,harvested.area])),
-            base::all(DF.input[,harvested.area] > 0)
+            base::all(DF.input[,harvested.area] >= 0)
             );
 
         base::stopifnot(
@@ -94,7 +94,7 @@ input.validity.checks_variables.needed.for.training <- function(
             base::length(evaluation.weight) == 1,
             base::is.numeric(DF.input[,evaluation.weight]),
             base::all(!base::is.na(DF.input[,evaluation.weight])),
-            base::all(DF.input[,evaluation.weight] > 0)
+            base::all(DF.input[,evaluation.weight] >= 0)
             );
 
         }
