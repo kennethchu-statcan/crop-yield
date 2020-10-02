@@ -582,11 +582,12 @@ rollingWindowForwardValidation_input.validity.checks <- function(
         );
 
     input.validity.checks_variables.needed.for.training(
-        DF.input          = DF.input,
-        year              = year,
-        response.variable = response.variable,
-        harvested.area    = harvested.area,
-        evaluation.weight = evaluation.weight
+        DF.input             = DF.input,
+        year                 = year,
+        response.variable    = response.variable,
+        harvested.area       = harvested.area,
+        evaluation.weight    = evaluation.weight,
+        single.configuration = FALSE
         );
 
     input.validity.checks_variables.needed.for.prediction(
