@@ -151,6 +151,9 @@ validation.single.year_diagnostics <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
+    logger::log_debug('{this.function.name}({learner.name},{validation.year}): colnames(DF.input):\n{paste(colnames(DF.input),collapse="\n")}');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     selected.colnames <- base::c(
         learner.metadata[["year"]],
         learner.metadata[["ecoregion"]],
