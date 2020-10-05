@@ -118,11 +118,13 @@ get.mock.production.errors_single.model <- function(
 
         }
 
-    DF.diagnostics[,"composite_metric"] <- base::apply(
-        X      = DF.diagnostics[,base::c("mean_weighted_error","mean_weighted_std")],
-        MARGIN = 1,
-        FUN    = function(x) { return(base::sum(x)/base::sqrt(2)); }
-        );
+    # DF.diagnostics[,"composite_metric"] <- base::apply(
+    #     X      = DF.diagnostics[,base::c("mean_weighted_error","mean_weighted_std")],
+    #     MARGIN = 1,
+    #     FUN    = function(x) { return(base::sum(x)/base::sqrt(2)); }
+    #     );
+
+    DF.diagnostics[,"composite_metric"] <- DF.diagnostics[,"mean_weighted_error"];
 
     logger::log_debug('{this.function.name}(): computation of composite_metric complete');
 
