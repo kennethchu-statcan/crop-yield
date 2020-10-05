@@ -20,7 +20,7 @@
 data
 *.RData
 *DELETEME*
-ARCHIVE
+*ARCHIVE*
 *BACKUP*
 *output*
 stderr.*

@@ -1,12 +1,29 @@
 
 get.mock.production.errors <- function(
-    list.performance.metrics = NULL,
-    validation.window        = NULL,
-    output.directory         = NULL
+    dir.mock.production.errors = NULL,
+    output.directory           = NULL
     ) {
 
     this.function.name <- "get.mock.production.errors";
     logger::log_info('{this.function.name}(): starts');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.mock.production.errors <- read.csv(
+        file = file.path(dir.mock.production.errors,"mock-production-errors-xgboost_multiphase.csv")
+        );
+
+    cat("\nstr(DF.mock.production.errors)\n");
+    print( str(DF.mock.production.errors)   );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    logger::log_info('{this.function.name}(): exits');
+    base::return( DF.mock.production.errors );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !base::dir.exists(output.directory) ) {
@@ -118,13 +135,11 @@ get.mock.production.errors_single.model <- function(
 
         }
 
-    # DF.diagnostics[,"composite_metric"] <- base::apply(
-    #     X      = DF.diagnostics[,base::c("mean_weighted_error","mean_weighted_std")],
-    #     MARGIN = 1,
-    #     FUN    = function(x) { return(base::sum(x)/base::sqrt(2)); }
-    #     );
-
-    DF.diagnostics[,"composite_metric"] <- DF.diagnostics[,"mean_weighted_error"];
+    DF.diagnostics[,"composite_metric"] <- base::apply(
+        X      = DF.diagnostics[,base::c("mean_weighted_error","mean_weighted_std")],
+        MARGIN = 1,
+        FUN    = function(x) { return(base::sum(x)/base::sqrt(2)); }
+        );
 
     logger::log_debug('{this.function.name}(): computation of composite_metric complete');
 
