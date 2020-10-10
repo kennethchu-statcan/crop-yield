@@ -171,6 +171,15 @@ install.packages(
     repos = NULL
     );
 
+cat("\ntemp.RLib\n");
+print( temp.RLib   );
+
+cat("\nnormalizePath(temp.RLib)\n");
+print( normalizePath(temp.RLib)   );
+
+cat("\nlist.files(temp.RLib)\n");
+print( list.files(temp.RLib)   );
+
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(13);
 
@@ -242,6 +251,12 @@ if ( "windows" != base::.Platform[["OS.type"]] ) {
 # print warning messages to log
 base::cat("\n##### warnings()\n")
 base::print(base::warnings());
+
+base::cat("\n##### getOption('repos'):\n");
+base::print(       getOption('repos')    );
+
+base::cat("\n##### .libPaths():\n");
+base::print(       .libPaths()    );
 
 # print session info to log
 base::cat("\n##### sessionInfo()\n")
