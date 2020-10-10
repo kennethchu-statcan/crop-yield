@@ -38,7 +38,7 @@
 #'
 #' @param evaluation.weight character vector of length 1,
 #' indicating column name in \code{DF.input} for the variable to be used
-#' as evaluation weight. Usually same as seeded area.
+#' as evaluation weight.
 #'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
