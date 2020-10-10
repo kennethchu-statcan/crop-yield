@@ -68,6 +68,13 @@ test.correctness_group.then.add.relative.error <- function(
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            is.zero.zero <- base::apply(
+                X      = DF.expected[,c('actual_production','predicted_production')],
+                MARGIN = 1,
+                FUN    = function(x) { base::return( base::all(0==x) ) }
+                );
+            DF.expected[is.zero.zero,'relative_error'] <- 0;
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
             logger::log_info('{this.function.name}(tolerance = {my.tolerance}): by.variables = NULL, all.equal(DF.computed,DF.expected) = {test.result}');
             testthat::expect_equal(
@@ -106,6 +113,13 @@ test.correctness_group.then.add.relative.error <- function(
                        ) / abs( .data$actual_production )
                    );
             DF.expected <- as.data.frame(DF.expected);
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            is.zero.zero <- base::apply(
+                X      = DF.expected[,c('actual_production','predicted_production')],
+                MARGIN = 1,
+                FUN    = function(x) { base::return( base::all(0==x) ) }
+                );
+            DF.expected[is.zero.zero,'relative_error'] <- 0;
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
             logger::log_info("{this.function.name}(tolerance = {my.tolerance}): by.variables = 'crop', all.equal(DF.computed,DF.expected) = {test.result}");
@@ -146,6 +160,13 @@ test.correctness_group.then.add.relative.error <- function(
                    );
             DF.expected <- as.data.frame(DF.expected);
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            is.zero.zero <- base::apply(
+                X      = DF.expected[,c('actual_production','predicted_production')],
+                MARGIN = 1,
+                FUN    = function(x) { base::return( base::all(0==x) ) }
+                );
+            DF.expected[is.zero.zero,'relative_error'] <- 0;
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             test.result <- base::all.equal(target = DF.expected, current = DF.computed, tolerance = my.tolerance);
             logger::log_info("{this.function.name}(tolerance = {my.tolerance}): by.variables = 'ecoregion', all.equal(DF.computed,DF.expected) = {test.result}");
             testthat::expect_equal(
@@ -185,6 +206,14 @@ test.correctness_group.then.add.relative.error <- function(
                        ) / abs( .data$actual_production )
                    );
             DF.expected <- as.data.frame(DF.expected);
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+            is.zero.zero <- base::apply(
+                X      = DF.expected[,c('actual_production','predicted_production')],
+                MARGIN = 1,
+                FUN    = function(x) { base::return( base::all(0==x) ) }
+                );
+            DF.expected[is.zero.zero,'relative_error'] <- 0;
+            ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
             DF.expected <- DF.expected[order(DF.expected[,"crop"],DF.expected[,"ecoregion"]),]
             rownames(DF.expected) <- NULL;
             ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -406,8 +435,9 @@ test.correctness_xgboost.multiphase_get.expected.output <- function(
                     newdata = DMatrix.validation
                     );
 
-                } # if ( nrow(DF.temp.training) < min.num.parcels )
+                predicted.response[predicted.response < 0] <- 0;
 
+                } # if ( nrow(DF.temp.training) < min.num.parcels )
 
             logger::log_info('{this.function.name}(): training/prediction for (phase,group) = ({temp.phase},{temp.group}): finished creation of predicted.response');
 

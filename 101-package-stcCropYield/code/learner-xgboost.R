@@ -122,6 +122,8 @@ learner.xgboost <- R6::R6Class(
             DF.output <- newdata;
             DF.output[,"predicted_response"] <- predicted.response;
 
+            DF.output[DF.output[,"predicted_response"] < 0,"predicted_response"] <- 0;
+
             base::return ( DF.output );
             }
 

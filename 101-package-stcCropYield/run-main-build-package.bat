@@ -30,8 +30,8 @@ xcopy /E /I /Y %codeDIR% %outROOT%\code
 
 :: ########################################################
 :: add R bin directory to PATH
-::set Rversion=3.6.3
-set Rversion=4.0.2
+set Rversion=3.6.3
+::set Rversion=4.0.2
 
 set PATH=F:\work\software\R\instances\R-%Rversion%\bin;%PATH%
 
