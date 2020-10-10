@@ -500,6 +500,10 @@ validation.single.year_group.then.add.relative.error <- function(
             }
         );
 
+    is.infinite.relative.error <- base::is.infinite(DF.output[,"relative_error"]);
+     max.finite.relative.error <- base::max(DF.output[!is.infinite.relative.error,"relative_error"],na.rm=TRUE);
+    DF.output[is.infinite.relative.error,"relative_error"] <- max.finite.relative.error;
+
     base::return( DF.output );
 
     }
