@@ -484,10 +484,22 @@ validation.single.year_group.then.add.relative.error <- function(
 
         }
 
-    DF.output[,"relative_error"] <- base::abs(
-        DF.output[,"predicted_production"] - DF.output[,"actual_production"]
-        ) / abs( DF.output[,"actual_production"] );
+    # DF.output[,"relative_error"] <- base::abs(
+    #     DF.output[,"predicted_production"] - DF.output[,"actual_production"]
+    #     ) / abs( DF.output[,"actual_production"] );
 
-    return( DF.output );
+    DF.output[,"relative_error"] <- base::apply(
+        X      = DF.output[,c("actual_production","predicted_production")],
+        MARGIN = 1,
+        FUN    = function(x) {
+            base::return(base::ifelse(
+                test = base::all(0==x),
+                yes  = 0,
+                no   = base::abs(x[1]-x[2])/base::abs(x[1])
+                ));
+            }
+        );
+
+    base::return( DF.output );
 
     }
