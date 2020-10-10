@@ -184,8 +184,9 @@ getData.synthetic_year.ecoregion <- function(
         my_ecoregion         = base::rep(x = ecoregion, n = n.parcels),
         my_parcelID          = parcels,
         my_crop              = base::sample(x = crops, size = n.parcels, replace = TRUE, prob = crop.probs),
-        my_harvested_area    = stats::runif(n = n.parcels, min = 0.8, max = 1),
-        my_evaluation_weight = stats::runif(n = n.parcels, min = 0.8, max = 1),
+        my_harvested_area    = stats::runif(n = n.parcels, min = 0.8 * 160, max = 160),
+        my_seeded_area       = stats::runif(n = n.parcels, min = 0.8 * 160, max = 160),
+        my_evaluation_weight = stats::runif(n = n.parcels, min = 0.8 * 160, max = 160),
         my_yield             = base::rep(x = -9999, n = n.parcels),
         stringsAsFactors     = FALSE
         );
@@ -203,7 +204,7 @@ getData.synthetic_year.ecoregion <- function(
 
         temp.mean <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 2));
         temp.sd1  <- base::abs(stats::rnorm(n = 1, mean =  2, sd = 1));
-        temp.sd2  <- base::abs(stats::rnorm(n = 1, mean = 10, sd = 1));
+        temp.sd2  <- base::abs(stats::rnorm(n = 1, mean =  5, sd = 1));
 
         temp.beta  <- base::abs(stats::rnorm(n = base::ncol(DF.temp), mean = temp.mean, sd = temp.sd1));
         temp.noise <- stats::rnorm(n = base::nrow(DF.temp), mean = 0, sd = temp.sd2);

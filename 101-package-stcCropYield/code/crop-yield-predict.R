@@ -45,6 +45,7 @@
 #'     crop                 = "my_crop",
 #'     response.variable    = "my_yield",
 #'     harvested.area       = "my_harvested_area",
+#'     seeded.area          = "my_seeded_area",
 #'     evaluation.weight    = "my_evaluation_weight",
 #'     predictors           = predictor.colnames,
 #'     min.num.parcels      = min.num.parcels,

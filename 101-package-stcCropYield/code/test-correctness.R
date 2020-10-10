@@ -16,6 +16,7 @@ test.correctness <- function(
 
     }
 
+###################################################
 #' @importFrom rlang .data
 #' @importFrom magrittr %>%
 test.correctness_group.then.add.relative.error <- function(

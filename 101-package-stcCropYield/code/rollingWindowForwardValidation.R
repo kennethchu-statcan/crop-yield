@@ -30,10 +30,15 @@
 #'
 #' @param harvested.area character vector of length 1,
 #' indicating column name in \code{DF.input} for the harvested area variable.
+#' Used for computing actual crop production.
+#'
+#' @param seeded.area character vector of length 1,
+#' indicating column name in \code{DF.input} for the seeded area variable.
+#' Used for computing predicted crop production.
 #'
 #' @param evaluation.weight character vector of length 1,
 #' indicating column name in \code{DF.input} for the variable to be used
-#' as evaluation weight.
+#' as evaluation weight. Usually same as seeded area.
 #'
 #' @param predictors character vector of arbitrary length,
 #' indicating the column names in \code{DF.input} for the predictor variables
@@ -102,6 +107,7 @@
 #'     crop                 = "my_crop",
 #'     response.variable    = "my_yield",
 #'     harvested.area       = "my_harvested_area",
+#'     seeded.area          = "my_seeded_area",
 #'     evaluation.weight    = "my_evaluation_weight",
 #'     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
 #'     by.variables.phase01 = c("my_ecoregion","my_crop"),
@@ -123,12 +129,13 @@ rollingWindowForwardValidation <- function(
     training.window      = NULL,
     validation.window    = NULL,
     DF.input             = NULL,
-    year                 = "year",
-    ecoregion            = "ecoregion",
-    crop                 = "crop",
-    response.variable    = "yield",
-    harvested.area       = "harvested_area",
-    evaluation.weight    = "evaluation_weight",
+    year                 = NULL,
+    ecoregion            = NULL,
+    crop                 = NULL,
+    response.variable    = NULL,
+    harvested.area       = NULL,
+    seeded.area          = NULL,
+    evaluation.weight    = NULL,
     predictors           = NULL,
     min.num.parcels      = 50,
     learner              = "xgboost_multiphase",
@@ -176,6 +183,7 @@ rollingWindowForwardValidation <- function(
         crop                 = crop,
         response.variable    = response.variable,
         harvested.area       = harvested.area,
+        seeded.area          = seeded.area,
         evaluation.weight    = evaluation.weight,
         predictors           = predictors,
         min.num.parcels      = min.num.parcels,
@@ -201,6 +209,7 @@ rollingWindowForwardValidation <- function(
         crop                 = crop,
         response.variable    = response.variable,
         harvested.area       = harvested.area,
+        seeded.area          = seeded.area,
         evaluation.weight    = evaluation.weight,
         predictors           = predictors,
         by.variables.phase01 = by.variables.phase01,
@@ -563,6 +572,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
     crop                 = NULL,
     response.variable    = NULL,
     harvested.area       = NULL,
+    seeded.area          = NULL,
     evaluation.weight    = NULL,
     predictors           = NULL,
     min.num.parcels      = NULL,
@@ -586,6 +596,7 @@ rollingWindowForwardValidation_input.validity.checks <- function(
         year                 = year,
         response.variable    = response.variable,
         harvested.area       = harvested.area,
+        seeded.area          = seeded.area,
         evaluation.weight    = evaluation.weight,
         single.configuration = FALSE
         );
