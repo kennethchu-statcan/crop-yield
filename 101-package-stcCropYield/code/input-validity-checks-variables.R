@@ -49,6 +49,7 @@ input.validity.checks_variables.needed.for.training <- function(
     year                 = NULL,
     response.variable    = NULL,
     harvested.area       = NULL,
+    seeded.area          = NULL,
     evaluation.weight    = NULL,
     single.configuration = TRUE
     ) {
@@ -90,6 +91,14 @@ input.validity.checks_variables.needed.for.training <- function(
             );
 
         base::stopifnot(
+            base::is.character(seeded.area),
+            base::length(seeded.area) == 1,
+            base::is.numeric(DF.input[,seeded.area]),
+            base::all(!base::is.na(DF.input[,seeded.area])),
+            base::all(DF.input[,seeded.area] >= 0)
+            );
+
+        base::stopifnot(
             base::is.character(evaluation.weight),
             base::length(evaluation.weight) == 1,
             base::is.numeric(DF.input[,evaluation.weight]),
@@ -102,7 +111,7 @@ input.validity.checks_variables.needed.for.training <- function(
     required.colnames <- ifelse(
         single.configuration,
         c(year,response.variable),
-        c(year,response.variable,harvested.area,evaluation.weight)
+        c(year,response.variable,harvested.area,seeded.area,evaluation.weight)
         );
 
     base::stopifnot(

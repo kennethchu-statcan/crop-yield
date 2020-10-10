@@ -34,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9024",
+    Version         = "0.0.1.9025",
     `Authors@R`     = string.authors,
     Description     = "This package provides a collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data.",
     Language        = "fr",
@@ -183,14 +183,14 @@ print( list.files(temp.RLib)   );
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 set.seed(13);
 
-n.ecoregions    <-   3;
-n.crops         <-   5;
-n.predictors    <-   7;
-avg.n.parcels   <- 100;
-min.num.parcels <-  50;
+n.ecoregions    <-    3;
+n.crops         <-    5;
+n.predictors    <-    7;
+avg.n.parcels   <- 1000;
+min.num.parcels <-   50;
 
 DF.synthetic <- stcCropYield::getData.synthetic(
-    years         = seq(2011,2020),
+    years         = seq(2000,2020),
     n.ecoregions  = n.ecoregions,
     n.crops       = n.crops,
     n.predictors  = n.predictors,
@@ -198,14 +198,15 @@ DF.synthetic <- stcCropYield::getData.synthetic(
     );
 
 stcCropYield::rollingWindowForwardValidation(
-    training.window      = 2,
-    validation.window    = 3,
+    training.window      = 5,
+    validation.window    = 5,
     DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
     crop                 = "my_crop",
     response.variable    = "my_yield",
     harvested.area       = "my_harvested_area",
+    seeded.area          = "my_seeded_area",
     evaluation.weight    = "my_evaluation_weight",
     predictors           = grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE),
     min.num.parcels      = min.num.parcels,
