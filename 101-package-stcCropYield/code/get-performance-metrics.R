@@ -66,10 +66,17 @@ get.performance.metrics_single.model <- function(
             logger::log_info('get.performance.metrics_single.model(): ({modelID},{validation.year})');
 
             folder.year <- base::file.path(folder.model,validation.year);
-            errors.csv  <- base::list.files(path = folder.year, pattern = 'region-crop.csv');
-            csvdata     <- base::as.data.frame(utils::read.csv( base::file.path(folder.year,errors.csv) ));
 
-            #csvdata$weights<- (csvdata$actual_production) / base::sum(csvdata$actual_production);
+            # errors.csv  <- base::list.files(path = folder.year, pattern = 'region-crop.csv');
+            errors.csv <- base::grep(
+                x       = base::list.files(path = folder.year, pattern = "-crop.csv"),
+                pattern = 'region',
+                invert  = TRUE,
+                value   = TRUE
+                );
+
+            csvdata <- base::as.data.frame(utils::read.csv( base::file.path(folder.year,errors.csv) ));
+
             csvdata$weights <- (csvdata$evaluation_weight) / base::sum(csvdata$evaluation_weight);
             weighted_error  <- weighted.mean(x = csvdata$relative_error, weights = csvdata$weights);
             weighted_std    <- weighted.sd(  x = csvdata$relative_error, weights = csvdata$weights);
