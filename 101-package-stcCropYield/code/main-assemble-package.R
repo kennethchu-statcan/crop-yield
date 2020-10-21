@@ -34,7 +34,7 @@ base::Encoding(string.authors) <- "UTF-8";
 
 description.fields <- base::list(
     Title           = "Early-season Crop Yield Prediction",
-    Version         = "0.0.1.9027",
+    Version         = "0.0.1.9028",
     `Authors@R`     = string.authors,
     Description     = "This package provides a collection of tools for parcel-level early-season crop yield prediction based on remote sensing and weather data.",
     Language        = "fr",
@@ -55,6 +55,7 @@ packages.import <- base::c(
     "stats",
     "stringi",
     "stringr",
+    "tools",
     "utils",
     "xgboost"
     );
