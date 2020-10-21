@@ -74,7 +74,7 @@ trained.model <- crop.yield.train.model(
     hyperparameters      = base::list(alpha = 23, lambda = 23)
     );
 
-DF.predictions <- stcCropYield::crop.yield.predict(
+DF.predictions <- crop.yield.predict(
    trained.model = trained.model,
    DF.predictors = DF.production
    );
@@ -170,7 +170,8 @@ print( file.exists(RData.trained.model)   );
 
 DF.predictions <- crop.yield.predict(
    trained.model = RData.trained.model,
-   DF.predictors = DF.production
+   DF.predictors = DF.production,
+   CSV.output    = "predictions-rwFV.csv"
    );
 
 cat('\nstr(DF.predictions)\n');
@@ -178,12 +179,6 @@ print( str(DF.predictions)   );
 
 cat('\nsummary(DF.predictions)\n');
 print( summary(DF.predictions)   );
-
-write.csv(
-    x         = DF.predictions,
-    file      = "predictions-rwFV.csv",
-    row.names = FALSE
-    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
