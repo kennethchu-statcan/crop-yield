@@ -154,6 +154,7 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     log.threshold.original <- logger::log_threshold();
+    log.appender.original  <- logger::log_appender();
     logger::log_threshold(level = logger::INFO);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -273,7 +274,10 @@ rollingWindowForwardValidation <- function(
     logger::log_info("{this.function.name}(): warnings():\n{base::paste(utils::capture.output(base::warnings()),collapse='\n')}");
     logger::log_info("{this.function.name}(): sessionInfo():\n{base::paste(utils::capture.output(utils::sessionInfo()),collapse='\n')}");
     logger::log_info('{this.function.name}(): exits');
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_threshold(level = log.threshold.original);
+    logger::log_appender(appender = log.appender.original);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     base::return( NULL );
@@ -609,10 +613,10 @@ rollingWindowForwardValidation_input.validity.checks <- function(
         );
 
     input.validity.checks_window.compatibility(
-        training.window   = NULL,
-        validation.window = NULL,
-        DF.input          = NULL,
-        year              = NULL
+        training.window   = training.window,
+        validation.window = validation.window,
+        DF.input          = DF.input,
+        year              = year
         );
 
     input.validity.checks_learner.metadata(
