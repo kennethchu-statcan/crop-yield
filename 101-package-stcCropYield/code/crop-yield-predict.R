@@ -7,6 +7,10 @@
 #'
 #' @param DF.predictors data frame containing crop yield data. See Details below for more information.
 #'
+#' @param CSV.output character vector length 1, indicating path to output file
+#' (in CSV format). Default is NULL, which suppresses saving output data frame
+#' to file.
+#'
 #' @return data frame obtained by augmented DF.predictors with predictions produced with the given trained model.
 #'
 #' @examples
@@ -74,12 +78,14 @@
 
 crop.yield.predict <- function(
     trained.model = NULL,
-    DF.predictors = NULL
+    DF.predictors = NULL,
+    CSV.output    = NULL
     ) {
 
     input.validity.checks_predict(
         trained.model = trained.model,
-        DF.predictors = DF.predictors
+        DF.predictors = DF.predictors,
+        CSV.output    = CSV.output
         );
 
     if ( base::is.character(trained.model) ) {
@@ -88,6 +94,58 @@ crop.yield.predict <- function(
 
     DF.predictions <- trained.model$predict(newdata = DF.predictors);
 
+    if ( ! base::is.null(CSV.output) ) {
+        crop.yield.predict_persist.output(
+            DF.predictions = DF.predictions,
+            CSV.output     = CSV.output
+            );
+        }
+
     base::return( DF.predictions );
+
+    }
+
+
+##################################################
+#' @importFrom logger log_warn
+#' @importFrom tools file_path_sans_ext
+#' @importFrom utils write.csv
+
+crop.yield.predict_persist.output <- function(
+    DF.predictions = NULL,
+    CSV.output     = NULL
+    ) {
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    my.parent.folder <- base::dirname(path = CSV.output);
+    my.file.sans.ext <- tools::file_path_sans_ext(x = base::basename(CSV.output));
+    my.path          <- base::file.path(my.parent.folder,base::paste0(my.file.sans.ext,".csv"))
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( base::dir.exists(paths = my.parent.folder) ) {
+        if ( 0 != base::file.access(names = my.parent.folder, mode = 2) ) {
+            logger::log_warn('No write permission to folder: {my.parent.folder}; unable to save predictions to file.');
+            base::return( NULL );
+            }
+    } else if ( ! base::dir.create(path = my.parent.folder, recursive = TRUE) ) {
+        logger::log_warn('Unable to create folder: {my.parent.folder}; unable to save predictions to file.');
+        base::return( NULL )
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( base::file.exists(CSV.output) ) {
+        my.suffix <- base::gsub(x = base::Sys.time(), pattern = "(\\s|:)", replacement = "-");
+        my.path   <- base::file.path(my.parent.folder,base::paste0(my.file.sans.ext,"_",my.suffix,".csv"));
+        logger::log_warn('{CSV.output} already exists; writing instead to: {my.path}.');
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    utils::write.csv(
+        x         = DF.predictions,
+        file      = my.path,
+        row.names = FALSE
+        );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    base::return( NULL );
 
     }

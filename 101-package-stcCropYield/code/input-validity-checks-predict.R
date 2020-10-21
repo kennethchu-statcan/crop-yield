@@ -1,7 +1,8 @@
 
 input.validity.checks_predict <- function(
     trained.model = NULL,
-    DF.predictors = NULL
+    DF.predictors = NULL,
+    CSV.output    = NULL
     ) {
 
     base::stopifnot(
@@ -52,6 +53,13 @@ input.validity.checks_predict <- function(
         base::stopifnot(
             base::is.character(    DF.predictors[,by.variables.colnames[temp.index]]),
             base::all(!base::is.na(DF.predictors[,by.variables.colnames[temp.index]]))
+            );
+        }
+
+    if ( ! base::is.null(CSV.output) ) {
+        base::stopifnot(
+            base::is.character(CSV.output),
+            1 == base::length(CSV.output)
             );
         }
 
