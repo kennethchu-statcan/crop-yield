@@ -277,7 +277,7 @@ rollingWindowForwardValidation <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     logger::log_threshold(level = log.threshold.original);
-    logger::log_appender(appender = log.appender.original);
+    #logger::log_appender(appender = log.appender.original);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     base::return( NULL );
