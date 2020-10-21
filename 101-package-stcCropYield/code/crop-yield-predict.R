@@ -136,7 +136,7 @@ crop.yield.predict_persist.output <- function(
     if ( base::file.exists(my.path) ) {
         my.suffix <- base::gsub(x = base::Sys.time(), pattern = "(\\s|:)", replacement = "-");
         my.path   <- base::file.path(my.parent.folder,base::paste0(my.file.sans.ext,"_",my.suffix,".csv"));
-        logger::log_warn('{CSV.output} already exists; writing instead to: {my.path}.');
+        logger::log_warn('{my.path} already exists; writing instead to: {my.path}.');
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
