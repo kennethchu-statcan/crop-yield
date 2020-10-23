@@ -1,5 +1,5 @@
 ---
-title: "Early-Season Crop Yield Prediction via XGBoost and Rolling Window Forward Validation"
+title: "Explanation of contents of output folder of **stcCropYield::rollingWindowForwardValidation(.)**"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{rwFV-xgboost}
@@ -13,32 +13,26 @@ knitr::opts_chunk$set(
     comment = "#>"
     )
 ```
-The R package **stcCropYield** implements a number of model training procedures
-to build trained prediction models for early-season crop yield (parcel-level)
-prediction for the province of Manitoba, using parcel-level NDVI and CARS-level
-weather measurement time series as predictor variables.
 
-This vignette demonstrates how to use the function
-**stcCropYield::rollingWindowForwardValidation(.)**
-to train a crop yield prediction model,
-following the *rolling window forward validation* protocol,
-using XGBoost as the underlying prediction technique.
+This vignette explains the contents of the output folder of the function
+**stcCropYield::rollingWindowForwardValidation(.)**.
 
-First, load the **stcCropYield** R package.
-```{r setup}
-library(stcCropYield)
-```
-Next, we generate a synthetic data set in the form of a single data frame
-that has the structure expected by
-**stcCropYield::rollingWindowForwardValidation(...)**:
+For documentation on how to use the function, in particular
+its input parameters, please consult the vignette
+titled "Demo – Crop Yield Prediction via stcCropYield".
+
+Next, we load the **stcCropYield** R package, and then
+generate a synthetic data frame with the structure expected by
+**stcCropYield::rollingWindowForwardValidation(.)**:
 ```{r synthetic}
+library(stcCropYield)
+
 set.seed(13);
 
-n.ecoregions    <-    3;
-n.crops         <-    5;
-n.predictors    <-    7;
-avg.n.parcels   <- 1000;
-min.num.parcels <-   50;
+n.ecoregions  <-    3;
+n.crops       <-    5;
+n.predictors  <-    7;
+avg.n.parcels <- 1000;
 
 DF.synthetic <- stcCropYield::getData.synthetic(
     years         = seq(2000,2020),
@@ -52,48 +46,9 @@ We examine the structure of the data frame DF.synthetic
 ```{r syntheticStructure}
 str(DF.synthetic)
 ```
-The data frame DF.synthetic has `r nrow(DF.synthetic)` rows and
-`r ncol(DF.synthetic)` columns.
 
-Each row corresponds to a (reference year, parcel).
-
-As the input data frame to the function
-**stcCropYield::rollingWindowForwardValidation**
-it must contain the following mandatory columns with the expected data types
-(while column names and ordering do NOT matter):
-
-* a numeric column with non-negative integers indicating the reference year
-  (in case of DF.synthetic, **my_year**)
-
-* a character column indicating the ecoregion (**my_ecoregion**)
-
-* a character column indicating the crop type (**my_crop**)
-
-* numeric column with non-negative values indicating the evaluation weight
-  (**my_evaluation_weight**).
-  The usual evaluation weight variable is *seeded area* expressed in *acres*.
-
-* numeric column with non-negative values indicating crop yield (**my_yield**).
-  The usual physical unit for crop yield is *number of bushels per acre*.
-
-* a collection of numeric columns of predictor variables
-  (in case of DF.synthetic, **x1**, **x2**, ... , **x7**).
-  In practice, these could include (but are not limited to)
-  the weekly NDVI measurements,
-  the weekly (or monthly) weather measurements, and
-  their derived variables (e.g. rolling averages, maxima, emerging week, etc).
-  There is no limit of the number of predictor variables
-  (apart from computer memory).
-
-Here are the first few rows of DF.synthetic:
-```{r syntheticHead}
-knitr::kable(head(DF.synthetic), align = "c")
-```
-
-``` {r}
-(predictor.colnames <- grep(x = colnames(DF.synthetic), pattern = "x[0-9]*", value = TRUE))
-```
-
+Now, we call **stcCropYield::rollingWindowForwardValidation(.)**
+to train a parcel-level crop yield prediction model:
 ```{r rwFV}
 stcCropYield::rollingWindowForwardValidation(
     training.window      = 5,
@@ -106,8 +61,8 @@ stcCropYield::rollingWindowForwardValidation(
     harvested.area       = "my_harvested_area",
     seeded.area          = "my_seeded_area",
     evaluation.weight    = "my_evaluation_weight",
-    predictors           = predictor.colnames,
-    min.num.parcels      = min.num.parcels,
+    predictors           = c("x1","x2","x3","x4","x5","x6","x7"),
+    min.num.parcels      = 50,
     learner              = "xgboost_multiphase",
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),

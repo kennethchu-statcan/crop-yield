@@ -1,5 +1,5 @@
 ---
-title: "Early-Season Crop Yield Prediction -- Production Demo"
+title: "Demo -- Crop Yield Prediction via **stcCropYield**"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{rwFV-demo-production}
@@ -13,32 +13,48 @@ knitr::opts_chunk$set(
     comment = "#>"
     )
 ```
-The R package **stcCropYield** implements a number of model training procedures
-to build trained prediction models for early-season crop yield (parcel-level)
-prediction for the province of Manitoba, using parcel-level NDVI and CARS-level
-weather measurement time series as predictor variables.
+This vignette demonstrates how to use the R package **stcCropYield**
+to do the following:
 
-This vignette demonstrates how to use the function
-**stcCropYield::rollingWindowForwardValidation(.)**
-to train a crop yield prediction model,
-following the *rolling window forward validation* protocol,
-using XGBoost as the underlying prediction technique.
+*  train the early-season parcel-level crop yield prediction model:
 
-First, load the **stcCropYield** R package.
-```{r setup}
+   *  based on historical yield, NDVI and weather measurement data
+   *  uses the function **stcCropYield::rollingWindowForwardValidation(.)**
+   *  normally takes place during the early months of the reference year,
+      when the preceding year's insurance (crop yield and harvested area)
+      data have become avavilable
+   *  saves the trained model to file.
+
+*  generate parcel-level crop yield predictions using a trained model
+   previously saved to file.
+
+   *  based on NDVI and weather data -- up to end of July --
+      of the current growing season
+   *  uses the function **stcCropYield::crop.yield.predict(.)**
+
+In what follows, we pretend that we are in the production cycle 2021.
+
+### Step 0. Generate synthetic data sets.
+
+Obviously, in practice, there won't be a **Step 0** of synthetic data set
+generation.
+In this vignette, we generate in this step the two (synthetic) input data frames
+needed for Step 1 and Step 2 below:
+
+*  **DF.training**
+
+*  **DF.production**
+
+The following code segment generates the two aforementioned data frames:
+```{r synthetic}
 library(stcCropYield)
-```
-Next, we generate a synthetic data set in the form of a single data frame
-that has the structure expected by
-**stcCropYield::rollingWindowForwardValidation(...)**:
-```{r training}
+
 set.seed(13);
 
-n.ecoregions    <-    3;
-n.crops         <-    5;
-n.predictors    <-    7;
-avg.n.parcels   <- 1000;
-min.num.parcels <-   50;
+n.ecoregions  <-    7;
+n.crops       <-   30;
+n.predictors  <-    7;
+avg.n.parcels <- 1500;
 
 DF.training <- stcCropYield::getData.synthetic(
     years         = seq(2000,2020),
@@ -57,7 +73,7 @@ DF.production <- stcCropYield::getData.synthetic(
     );
 DF.production <- DF.production[,setdiff(colnames(DF.production),c("my_yield","my_harvested_area","my_seeded_area","my_evaluation_weight"))]
 ```
-We examine the structure of the data frame DF.training
+We examine the structure of the data frame DF.training:
 ```{r trainingStructure}
 str(DF.training)
 ```
@@ -78,11 +94,23 @@ it must contain the following mandatory columns with the expected data types
 
 * a character column indicating the crop type (**my_crop**)
 
-* numeric column with non-negative values indicating the evaluation weight
-  (**my_evaluation_weight**).
-  The usual evaluation weight variable is *seeded area* expressed in *acres*.
+* a numeric column with non-negative values indicating the harvested area
+  (**my_harvested_area**).
+  This is used to compute parcel-level actual crop production
+  (actual yield x harvested area).
 
-* numeric column with non-negative values indicating crop yield (**my_yield**).
+* a numeric column with non-negative values indicating the seeded area
+  (**my_seeded_area**).
+  This is used to compute parcel-level predicted crop production
+  (predicted yield x seeded area).
+
+* a numeric column with non-negative values indicating the parcel-level
+  evaluation weight (**my_evaluation_weight**).
+  This is used as a parcel-level (importance) weight
+  in the hyperparameter tuning objective function.
+
+* a numeric column with non-negative values indicating
+  the target variable, i.e. crop yield (**my_yield**).
   The usual physical unit for crop yield is *number of bushels per acre*.
 
 * a collection of numeric columns of predictor variables
@@ -91,23 +119,28 @@ it must contain the following mandatory columns with the expected data types
   the weekly NDVI measurements,
   the weekly (or monthly) weather measurements, and
   their derived variables (e.g. rolling averages, maxima, emerging week, etc).
-  There is no limit of the number of predictor variables
-  (apart from computer memory).
+  There is no limit on the number of predictor variables
+  (apart from the available amount of computer memory).
 
 Here are the first few rows of DF.training:
 ```{r trainingHead}
 knitr::kable(head(DF.training), align = "c")
 ```
-
-The first few rows of DF.production (note the absence of **my_yield** and
+The first few rows of DF.production (note the absence of
+**my_yield**, **my_harvested_area**, **my_seeded_area**, and
 **my_evaluation_weight**):
 ```{r productionHead}
 knitr::kable(head(DF.production), align = "c")
 ```
 
-``` {r}
-(predictor.colnames <- grep(x = colnames(DF.training), pattern = "x[0-9]*", value = TRUE))
-```
+### Step 1. Train model using **stcCropYield::rollingWindowForwardValidation(.)**
+
+This is the first step in the real production setting, namely to train a
+crop yield prediction model based on historical training data
+(DF.training, in the present example).
+
+We train the model by calling
+**stcCropYield::rollingWindowForwardValidation(.)**:
 
 ```{r rwFV}
 stcCropYield::rollingWindowForwardValidation(
@@ -121,8 +154,8 @@ stcCropYield::rollingWindowForwardValidation(
     harvested.area       = "my_harvested_area",
     seeded.area          = "my_seeded_area",
     evaluation.weight    = "my_evaluation_weight",
-    predictors           = predictor.colnames,
-    min.num.parcels      = min.num.parcels,
+    predictors           = c("x1","x2","x3","x4","x5","x6","x7"),
+    min.num.parcels      = 50,
     learner              = "xgboost_multiphase",
     by.variables.phase01 = c("my_ecoregion","my_crop"),
     by.variables.phase02 = c("my_crop"),
@@ -136,10 +169,86 @@ stcCropYield::rollingWindowForwardValidation(
     suppress.child.process.graphics = TRUE
     )
 ```
-We examine the contents in the output direcotry *rwFV*
+
+*   training.window = 5, validation.window = 5
+
+    These two input parameters together stipulates the use of a
+    *rolling window forward validation* scheme
+    with a training window of 5 years, and a validation window of 5 years.
+
+*   DF.input = DF.training
+
+    The training data frame is DF.training
+
+*   **stcCropYield::rollingWindowForwardValidation(.)**
+    expects its input data frame to have a number of mandatory variables.
+    The input parameters
+    **year**,
+    **ecoregion**,
+    **crop**,
+    **response.variable**,
+    **harvested.area**,
+    **seeded.area**,
+    **evaluation.weight**,
+    **predictors**
+    indicate the column names in the input data frame
+    of these mandatory variables.
+
+*   min.num.parcels = 50
+
+    For each round of modeling fitting, the minimal numnber of parcels
+    required in the corresponding training data is 50.
+    If there are fewer records, fitting is suppressed.
+
+*   learner = "xgboost_multiphase"
+
+    "xgboost_multiphase" will be the learner.
+    Currently, this learner has 3 phases.
+
+*   by.variables.phase01 = c("my_ecoregion","my_crop")
+
+    In the first phase, a separate model is fitted for each combination
+    of ecoregion and crop.
+
+*   by.variables.phase02 = c("my_crop")
+
+    In the second phase, a separate model is fitted for each crop type.
+
+*   by.variables.phase03 = c("my_ecoregion")
+
+    In the third and last phase, a separate model is fitted for each ecoregion.
+
+*   search.grid = list(alpha = c(1,12,23), lambda = c(1,12,23))
+
+    We are tuning on two XGBoost(Linear) parameters, namely, alpha and lambda.
+    For each parameter, the candidate values are 1, 12, and 23.
+    The full search grid therefore consists of 9 = 3 x 3 candidate
+    hyperparameter configurations, namely:
+    (alpha, lambda) = (1,1), (1,12), (1,23), (12,1), (12,12), (12,23),
+    (23,1), (23,12), (23,23).
+
+*   output.directory = "rwFV"
+
+    All output and log files are to be written to the output folder "rwFV".
+
+*   log.threshold = logger::ERROR
+
+    log.threshold is set to logger::ERROR.
+    See documentation of the **logger** package for the other possible
+    log.threshold values.
+
+*   suppress.child.process.graphics = TRUE
+
+    In practice, omit this optinal parameter (whose default value is FALSE).
+    It is set to TRUE in this vignette only because generating graphics
+    in a multi-threaded process during the vignette rendering process
+    generated an error.
+
+We next examine the contents in the output direcotry **rwFV**:
 ```{r outputDIR}
 list.files("rwFV")
 ```
+
 The output directory *rwFV* contains:
 
 * three sub-directories:
@@ -147,7 +256,7 @@ The output directory *rwFV* contains:
   * 020-performance-metrics
   * 030-mock-productions
 
-* one RData file: **production-model-RY2021-xgboost_multiphase_9.RData**
+* one RData file: **`r list.files(path = "rwFV", pattern = "\\.RData$")`**
 
 * one log file: **rollingWindowForwardValidation.log**
 
@@ -162,33 +271,74 @@ metrics according to the aforementioned predictions.
 The sub-directory **rwFV/030-productions** contains the prediction error series
 in mock production.
 
-The RData file **production-model-RY2021-xgboost_multiphase_9.RData** contains
-the final trained model that can be deployed in the next production cycle.
+The RData file **`r list.files(path = "rwFV", pattern = "\\.RData$")`**
+contains the final trained model
+that can be deployed in the next production cycle,
+and it will be used in Step 2 in the call to
+**stcCropYield::crop.yield.predict(.)**.
+
+### Step 2. Use the trained model to compute parcel-level crop yield predictions based on observed data on predictor variables for current production cycle, using **stcCropYield::crop.yield.predict(.)**
+
+The trained model was saved file in Step 1, which is probably performed
+in the early months of the reference year, e.g. January or February,
+soon after the crop yield insurance data for the preceding reference year
+became available.
+
+First, we capture the file path of the previously saved trained model in
+a variable:
 
 ```{r}
 RData.trained.model <- list.files( path = "rwFV", pattern = "\\.RData$" );
-RData.trained.model <- file.path("rwFV",RData.trained.model);
+(RData.trained.model <- file.path("rwFV",RData.trained.model))
+```
 
+The (synthetic) data frame **DF.production** generated in Step 0 contains
+data for the predictor variables for the current reference year, and will be
+supplied to the trained model in order generate the parcel-level
+crop yield predictions. This is done by executing the following:
+
+```{r}
 DF.predictions <- stcCropYield::crop.yield.predict(
    trained.model = RData.trained.model,
-   DF.predictors = DF.production
+   DF.predictors = DF.production,
+   # CSV.output  = "2021-production-folder/2021-crop-yield-predictions.csv"
    );
 ```
 
-The first few rows of **DF.predictions**:
+*   The return value of **stcCropYield::crop.yield.predict(.)** is
+    the data frame containing the parcel-level crop yield predictions,
+    assigned to the variable **DF.predictions** in the code segment above.
+
+*   When the optional input parameter **CSV.output** is supplied, the function
+    **stcCropYield::crop.yield.predict(.)**
+    will in addition save the output data frame to file accordingly.
+
+We next examine the first few rows of **DF.predictions**:
 ```{r predictionHead}
 knitr::kable(head(DF.predictions), align = "c")
 ```
+Note that **DF.predictions** is in fact **DF.production** with five
+additional columns augmented at the right:
 
-The subset of rows of **DF.predictions** with phase > 1:
+*   predicted_response_phase01: Phase 1 predicted crop yield
+
+*   predicted_response_phase02: Phase 2 predicted crop yield
+
+*   predicted_response_phase03: Phase 3 predicted crop yield
+
+*   predicted_response: final predicted crop yield,
+    which is the first non-NA value in the ordered sequence
+    (predicted_response_phase01, predicted_response_phase02, predicted_response_phase03)
+
+*   phase: the phase that the final predicted value comes from
+
+Next, we examine the number of records for each phase:
 ```{r}
-DF.predictions.phaseGt01 <- DF.predictions[DF.predictions[,'phase'] > 1,]
-knitr::kable(DF.predictions.phaseGt01, align = "c")
+knitr::kable(table(DF.predictions[,'phase']), align = "c")
 ```
 
-Mock production errors of preceding reference years:
-```{r plotMock, out.width="950px"}
-knitr::include_graphics(
-    path = file.path("rwFV","030-mock-productions","plot-xgboost_multiphase-mockProdErr-vs-year.png")
-    )
+Here are the first 50 records of **DF.predictions** with phase > 1:
+```{r}
+DF.predictions.phaseGt01 <- DF.predictions[DF.predictions[,'phase'] > 1,]
+knitr::kable(DF.predictions.phaseGt01[1:50,], align = "c")
 ```
