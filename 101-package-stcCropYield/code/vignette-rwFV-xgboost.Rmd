@@ -122,7 +122,7 @@ list.files(file.path("rwFV","010-predictions"))
   for the hyperparameter configurations being evaluated
 
 The file **rwFV/010-predictions/learner-metadata.json**
-contains the specifications of each hyperparameter configuration
+contains the specifications of each candidate hyperparameter configuration
 in the search grid.
 We can see its first 100 lines below:
 ```{r, echo=FALSE}
