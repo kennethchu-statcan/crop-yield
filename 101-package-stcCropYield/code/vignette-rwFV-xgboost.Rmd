@@ -50,9 +50,10 @@ str(DF.synthetic)
 Now, we call **stcCropYield::rollingWindowForwardValidation(.)**
 to train a parcel-level crop yield prediction model:
 ```{r rwFV}
+validation.window <- 5;
 stcCropYield::rollingWindowForwardValidation(
     training.window      = 5,
-    validation.window    = 5,
+    validation.window    = validation.window,
     DF.input             = DF.synthetic,
     year                 = "my_year",
     ecoregion            = "my_ecoregion",
@@ -93,8 +94,8 @@ The output directory *rwFV* contains:
 
 The sub-directory **rwFV/010-predictions** contains the
 (hyperparameter,year)-specific parcel-level predictions
-as well as rolled up values to the levels of (ecoregion,crop), crop and
-ecoregion.
+as well as crop production values rolled up
+to the levels of (ecoregion,crop), crop and ecoregion, respectively.
 
 The sub-directory **rwFV/020-performance-metrics** contains the computed performance
 metrics according to the aforementioned predictions.
@@ -105,21 +106,29 @@ in mock production.
 The RData file **production-model-RY2021-xgboost_multiphase_9.RData** contains
 the final trained model that can be deployed in the next production cycle.
 
-## Contents of **rwFV/010-predictions**
+In what follows, we explain the contents of each of the subfolders shown above.
+
+### Contents of **rwFV/010-predictions**
+
+The folder **rwFV/010-predictions** contains the following contents:
 ```{r predictions}
 list.files(file.path("rwFV","010-predictions"))
 ```
 * **learner-metadata.json**
-  JSON file contains metadata about the 9 hyperparameter configurations
-  being evaluated
+
+  This JSON file contains the metadata
+  about the 9 candidate hyperparameter configurations.
 
 * **xgboost_multiphase_1**, ... , **xgboost_multiphase_9**
-  Sub-folders each containing parcel-level prediction results corresponding
-  to one of hyperparameter configurations being evaluated
+
+  These are sub-folders each containing parcel-level prediction results,
+  as well as other intermediate output and diagnostics,
+  corresponding to one of candidate hyperparameter configurations.
 
 * **xgboost_multiphase_1.log**, ... , **xgboost_multiphase_9.log**
-  log files during the fitting/predicting process
-  for the hyperparameter configurations being evaluated
+
+  These are log files for the fitting processes
+  for the candidate hyperparameter configurations.
 
 The file **rwFV/010-predictions/learner-metadata.json**
 contains the specifications of each candidate hyperparameter configuration
@@ -130,30 +139,225 @@ learner.metadata.json <- file.path("rwFV","010-predictions","learner-metadata.js
 for ( temp.line in readLines(learner.metadata.json, n = 100) ) { cat(paste0(temp.line),"\n") }
 ```
 
-Directory structure of **rwFV/010-predictions/xgboost_multiphase_5**
+The first group:
+```{r, echo=FALSE}
+learner.metadata.json <- file.path("rwFV","010-predictions","learner-metadata.json")
+for ( temp.line in readLines(learner.metadata.json, n = 23) ) { cat(paste0(temp.line),"\n") }
+```
+displays the metadata for the candidate hyperparameter configuration
+**xgboost_multiphase_1**:
+
+*   The learner is **xgboost_multiphase**.
+*   The *year* variable in the input data frame has column named *my_year*.
+*   The *ecoregion* variable in the input data frame has column named *my_ecoregion*.
+*   ...
+*   The predictor variables in the input data frames have column named *x1*, *x2*, ... , *x7*.
+*   The minimum number of parcels required for fitting is 50, i.e. during each
+    round of training (model fitting), if the number of records in the training
+    data set is strictly less than **min_num_parcels**
+    (in the above function call, it is 50), then no training will be done.
+*   The first phase of model fitting will have two "by-variables", namely,
+    *my_ecoregion* and *my_crop*.
+    This means that one model will be fitted for each combination of
+    *ecoregion* and *crop*.
+*   The second phase of model fitting will have one "by-variable", namely,
+    *my_crop*.
+    This means that one model will be fitted for each *crop*.
+*   The third phase of model fitting will have one "by-variable", namely,
+    *my_ecoregion*.
+    This means that one model will be fitted for each *ecoregion*.
+*   The actual XGBoost(Linear) hyperparameter values of the candidate
+    hyperparameter configuration **xgboost_multiphase_1** are:
+
+    *   alpha = 1, lambda = 1, verbose = 2, print_every_n = 10, nrounds = 500.
+
+    See documentation of XGBoost regarding these hyperparameters.
+
+We next examine the intermediate output generated for one of the candidate
+hyperparameter configurations, namely, **xgboost_multiphase_5**.
+
+### Contents of **rwFV/010-predictions/xgboost_multiphase_5**
+
+Note that the directory **rwFV/010-predictions/xgboost_multiphase_5**
+simply contains a number of subfolders, one for each validation year,
+and each such validation year subfolder contains
+a number of PNG and CSV files.
 ```{r, echo=FALSE}
 fs::dir_tree( path = file.path("rwFV","010-predictions","xgboost_multiphase_5") )
 ```
+Next, we focus on the contents of one of the validation year subfolders,
+namely, that of 2013.
 
+### Contents of **rwFV/010-predictions/xgboost_multiphase_5/2013**
+```{r, echo=FALSE}
+fs::dir_tree( path = file.path("rwFV","010-predictions","xgboost_multiphase_5","2013") )
+```
+
+The RData file
+**rwFV/010-predictions/xgboost_multiphase_5/2013/predictions-xgboost_multiphase_5-parcel.RData**
+contains the parcel-level predictions for validation year 2013, with respect to
+the canadidate hyperparameter configuration **xgboost_multiphase_5**.
+We examine the first few records of this RData file:
 ```{r}
 DF.parcel.2013 <- readRDS( file.path("rwFV","010-predictions","xgboost_multiphase_5","2013","predictions-xgboost_multiphase_5-parcel.RData") )
 knitr::kable(head(DF.parcel.2013), align = "c")
 ```
+Note that the predictions file
+**predictions-xgboost_multiphase_5-parcel.RData**
+is the 2013 portion of the input data frame
+with seven addition columns augmented on the right:
 
+*   predicted_response_phase01: Phase 1 predicted crop yield
+
+*   predicted_response_phase02: Phase 2 predicted crop yield
+
+*   predicted_response_phase03: Phase 3 predicted crop yield
+
+*   predicted_response: final predicted crop yield,
+    which is the first non-NA value in the ordered sequence
+    (predicted_response_phase01, predicted_response_phase02, predicted_response_phase03)
+
+*   phase: the phase that the final predicted value comes from
+
+*   actual_production: (actual yield) x (harvested area)
+
+*   predicted_production: (predicted yield) x (seeded area)
+
+The CSV file
+**rwFV/010-predictions/xgboost_multiphase_5/2013/predictions-xgboost_multiphase_5-region-crop.csv**
+contains, for validation year 2013, the (ecoregion,crop)-level
+evaluatiion weights, actual crop production, predicted crop production, and
+the relative prediction error for crop production.
+Note the (ecoregion,crop)-level evaluation weights, actual and predicted
+crop productions are obtained simply by rolling up their respective
+parcel-level figures to the (ecoregion,crop)-level.
+Here are the first several rows of this CSV file:
 ```{r}
-DF.parcel.2013.gt01 <- DF.parcel.2013[DF.parcel.2013[,'phase'] > 1,]
-knitr::kable(DF.parcel.2013.gt01, align = "c")
+DF.region.crop.2013 <- read.csv( file.path("rwFV","010-predictions","xgboost_multiphase_5","2013","predictions-xgboost_multiphase_5-region-crop.csv") )
+knitr::kable(head(DF.region.crop.2013), align = "c")
 ```
-
-```{r plotPred2013, out.width="685px"}
+The PNG file
+**rwFV/010-predictions/xgboost_multiphase_5/2013/plot-predictions-region-crop.png**
+is the scatter plot comparing the (ecoregion,crop)-level predicted crop production
+against the actual production shown in the preceding table:
+```{r, out.width="685px"}
 knitr::include_graphics(path = file.path("rwFV","010-predictions","xgboost_multiphase_5","2013","plot-predictions-region-crop.png"))
-knitr::include_graphics(path = file.path("rwFV","010-predictions","xgboost_multiphase_5","2013","plot-predictions-crop.png"))
-knitr::include_graphics(path = file.path("rwFV","010-predictions","xgboost_multiphase_5","2013","plot-predictions-region.png"))
 ```
 
-```{r metrics}
-list.files(file.path("rwFV","020-performance-metrics"))
+The following CSV and PNG are counterparts of the ones described above,
+but for crop-level and region-level results respectively:
+
+*   **rwFV/010-predictions/xgboost_multiphase_5/2013/predictions-xgboost_multiphase_5-crop.csv**
+
+*   **rwFV/010-predictions/xgboost_multiphase_5/2013/plot-predictions-crop.png**
+
+*   **rwFV/010-predictions/xgboost_multiphase_5/2013/predictions-xgboost_multiphase_5-region.csv**
+
+*   **rwFV/010-predictions/xgboost_multiphase_5/2013/plot-predictions-region.png**
+
+### Contents of **rwFV/020-performance-metrics**
+
+This only file in this folder of interest is the following CSV file:
+**rwFV/020-performance-metrics/metrics-xgboost_multiphase-model-year.csv**,
+which gives the weighted relative prediction error for each
+(candidate hyperparameter configuration, validation year).
+Note that these are computed from the crop-level evaluation weights and
+relative prediction errors.
+Here are the first several rows of this CSV file:
+```{r}
+DF.metrics <- read.csv( file.path("rwFV","020-performance-metrics","metrics-xgboost_multiphase-model-year.csv") )
+knitr::kable(head(DF.metrics), align = "c")
 ```
+
+### Contents of **rwFV/030-mock-productions**
+
+The CSV file
+**rwFV/030-mock-productions/mock-production-errors-xgboost_multiphase-diagnostics.csv**
+records, for each (production year, hyperparameter configuration),
+its validation error and mock production error.
+In each row of this table, the validation error is the mean
+of the weighted errors of the candidate hyperparameter configuration
+of the row over the validation window
+strictly and immediately preceding the production year of the row.
+The mock production error is simply the weighted error
+of the (candidate hyperparameter configuration, year) of the row.
+In the current version of this R package,
+composite metric is just validation error,
+while validation_std (validation standard deviation) is disregarded.
+Here are the first 20 rows of this table:
+```{r}
+DF.mock.diagnostics <- read.csv( file.path("rwFV","030-mock-productions","mock-production-errors-xgboost_multiphase-diagnostics.csv") )
+knitr::kable(head(DF.mock.diagnostics,n=20), align = "c")
+```
+
+The CSV file
+**rwFV/030-mock-productions/mock-production-errors-xgboost_multiphase.csv**
+records, for each production year, its optimal (minimizing validation error)
+hyperparameter configuration,
+and the validation error and the mock production of that optimal configuration:
+```{r}
+DF.mock <- read.csv( file.path("rwFV","030-mock-productions","mock-production-errors-xgboost_multiphase.csv") )
+knitr::kable(DF.mock, align = "c")
+```
+
+### **Validation of the first row of the above optimal hyperparameter configuration / mock production error table, namely:**
+```{r, echo=FALSE}
+# `r paste0("( ",paste(DF.metrics[1,c('production_year','model')],collapse=", ")," )")`
+# DF.mock <- read.csv( file.path("rwFV","030-mock-productions","mock-production-errors-xgboost_multiphase.csv") )
+knitr::kable(DF.mock[1,], align = "c")
+```
+
+*   First, the optimal hyperparameter configuration for production year
+    **`r as.character(DF.mock[1,'production_year'])`**
+    is
+    **`r as.character(DF.mock[1,'model'])`**,
+    since
+    **`r as.character(DF.mock[1,'model'])`**
+    has the smallest composite metric (= validation error)
+    among all the candidate hyperparameter configurations for
+    production year
+    **`r as.character(DF.mock[1,'production_year'])`**,
+    as can be seen in the following table:
+
+```{r, echo=FALSE}
+knitr::kable(DF.mock.diagnostics[DF.mock[1,'production_year'] == DF.mock.diagnostics[,'production_year'],], align = "c")
+```
+
+```{r, echo=FALSE}
+temp.validation.years <- seq(DF.mock[1,'production_year']-6,DF.mock[1,'production_year']-1,1);
+is.selected <- (DF.metrics[,'model'] == DF.mock[1,'model']) & (DF.metrics[,'year'] %in% temp.validation.years);
+temp.weighted.errors <- round(x = DF.metrics[is.selected,'weighted_error'], digits = 7);
+```
+
+*   Next, the validation error for
+    **`r paste0("( ",DF.mock[1,'production_year'],", ",DF.mock[1,'model']," )")`**
+    is
+    **`r as.character(round(x = DF.mock[1,'validation_error'],digits=7))`**,
+    which is the mean of the weighted errors of
+    **`r as.character(DF.mock[1,'model'])`**
+   over the
+   **validation window** **=** **`r validation.window`**
+   years strictly prior to the production year
+   **`r as.character(DF.mock[1,'production_year'])`**,
+   namely,
+   <center> `r mean(temp.weighted.errors)` = `r paste0("mean( ",paste(temp.weighted.errors,collapse=", ")," )")` </center>
+
+*   The mock production error for
+    **`r paste0("( ",DF.mock[1,'production_year'],", ",DF.mock[1,'model']," )")`**
+    is
+    **`r as.character(round(x = DF.mock[1,'mock_production_error'],digits=7))`**,
+    which is simply the weighted error for
+    **`r paste0("( ",DF.mock[1,'production_year'],", ",DF.mock[1,'model']," )")`**.
+
+The last two observations above can be verified in the following table:
+```{r, echo=FALSE}
+is.selected <- (DF.mock[1,'model'] == DF.metrics[,'model']) & (DF.metrics[,'year'] <= DF.mock[1,'production_year']);
+knitr::kable(DF.metrics[is.selected,], align = "c", row.names = FALSE)
+```
+
+Lastly,
+**rwFV/030-mock-productions/plot-xgboost_multiphase-mockProdErr-vs-year.png**
+is the mock production error plot:
 
 ```{r plotMock, out.width="950px"}
 knitr::include_graphics(

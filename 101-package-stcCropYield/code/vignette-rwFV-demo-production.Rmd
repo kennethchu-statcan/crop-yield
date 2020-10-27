@@ -294,7 +294,7 @@ RData.trained.model <- list.files( path = "rwFV", pattern = "\\.RData$" );
 
 The (synthetic) data frame **DF.production** generated in Step 0 contains
 data for the predictor variables for the current reference year, and will be
-supplied to the trained model in order generate the parcel-level
+supplied to the trained model in order to generate the parcel-level
 crop yield predictions. This is done by executing the following:
 
 ```{r}
