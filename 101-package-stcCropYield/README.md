@@ -6,7 +6,7 @@ This task contains an automated pipeline to generate the package source
 
 How to execute the pipeline
 ---------------------------
-Clone this repository to your computer.
+Clone this repository to your computer, if not already done.
 
 Change directory to the folder of this pipeline in the local cloned repository:
 
