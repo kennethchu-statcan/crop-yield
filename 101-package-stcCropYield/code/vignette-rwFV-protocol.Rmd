@@ -1,5 +1,5 @@
 ---
-title: "Rolling Window Forward Validation for Crop Yield Prediction"
+title: "Rolling Window Forward Validation"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{rwFV-protocol}
@@ -13,19 +13,107 @@ knitr::opts_chunk$set(
     comment = "#>"
     )
 ```
-The R package **stcCropYield** implements a number of model training procedures
-to build trained prediction models for early-season crop yield (parcel-level)
-prediction for the province of Manitoba, using parcel-level NDVI and CARS-level
-weather measurement time series as predictor variables.
-
-This vignette demonstrates how to use the function
+The function
 **stcCropYield::rollingWindowForwardValidation(.)**
-to train a crop yield prediction model,
-following the *rolling window forward validation* protocol,
-using XGBoost as the underlying prediction technique.
+implements a variant of the rolling window forward validation protocol
+to perform hyperparameter tuning
+in order to build a crop yield prediction model.
 
-```{r rwFV, echo=FALSE, out.width="950px"}
+This vignette gives a brief explanation of the
+rolling window forward validation protocol.
+
+### 1. The Rolling Window Forward Validation Protocol
+
+This schematic illustrates a rolling window forward validation scheme
+with a **training window** of 5 years, and
+a **validation window** of 3 years.
+```{r, echo=FALSE, out.width="950px"}
 knitr::include_graphics(
-    path = file.path("schematic-rwFV.png")
+    path = file.path("figure-schematic-rwFV.png")
     )
 ```
+
+Consider the blue box at the bottom, which represents the production cycle 2021.
+The five white boxes immediately to its left correspond to the fact that
+we are using a training window of 5 years, which means that the training data
+for production cycle 2021 will be those from the five years
+strictly and immediately prior, namely, 2016 to 2020.
+
+Note that this respects the operational constraint that, for 2021,
+the trained prediction model must have been trained on data
+from strictly preceding years.
+We still need to know which hyperparameter configuration to use
+for production cycle 2021, which brings us to these three gray boxes
+above the blue box, corresponding to our choice that the validation window
+is three years.
+
+The function
+**stcCropYield::rollingWindowForwardValidation(.)**
+uses simply a grid search for the hyperparameter tuning.
+The search grid of hyperparameter configurations is prescribed
+by the user at run time.
+
+The rolling window forward validation protocol
+is used to choose a particular configuration from
+that user-prescribed search grid
+to actually use in production for 2021.
+
+Now, fix temporarily an arbitrary candidate hyperparameter configuration from
+the user-prescribed search grid.
+Using that configuration, we train a model using data
+from the following five years: 2015 to 2019.
+We then use that resulting trained model to make predictions
+for the validation year 2020.
+We compute accordingly the parcel-level prediction errors for 2020.
+
+We then aggregate the parcel-level prediction errors down
+to a single numerical performance metric.
+
+We repeat for these two other validation years, namely 2018, 2019 .
+
+Averaging the performance metrics across the validation years
+-- the grey boxes -- 2018, 2019, 2020,
+we arrive finally at a single numerical performance metric / validation error
+for the temporarily fixed configuration.
+
+We next repeat for all configurations in our pre-chosen search grid.
+And, the optimized configuration to actually be deployed in production
+is the one that yields the best aggregated performance metric.
+
+And, that’s it. This is rolling window -- forward validation, or more precisely, our adaptation of it
+to the crop yield prediction context.
+
+### 2. Mock Production Error Series (to evaluate the prediction strategy)
+
+One should ask how to tell how well, or how poorly, this proposed strategy
+will work in practice.
+
+While we cannot tell what will happen in the future, we can tell EXACTLY
+what would have happened in the past, had we deployed this prediction strategy
+in the past, which brings us to the orange boxes as shown below.
+
+```{r, echo=FALSE, out.width="950px"}
+knitr::include_graphics(
+    path = file.path("figure-mock-productions.png")
+    )
+```
+
+We repeat, for each orange box, what we described above
+(namely, executing the rolling window forward validation) for the blue box.
+The difference for the orange boxes is the following:
+for the blue box, namely the current production year, it is NOT yet possible
+to compute the production / prediction errors. But, for the orange boxes, it is.
+
+If we go ahead and do exactly that, that would produce a plot like this:
+
+```{r, echo=FALSE, out.width="950px"}
+knitr::include_graphics(
+    path = file.path("figure-xgboost_multiphase-mockProdErr-vs-year.png")
+    )
+```
+
+In the figure above, the orange line illustrates the mock production
+error series of the prediction strategy
+based on rolling window forward validation.
+Each of the gray lines illustrates the validation errors
+for a fixed candidate hyperparameter configuration.
