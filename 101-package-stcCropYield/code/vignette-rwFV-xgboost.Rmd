@@ -325,7 +325,7 @@ knitr::kable(DF.mock.diagnostics[DF.mock[1,'production_year'] == DF.mock.diagnos
 
 ```{r, echo=FALSE}
 temp.validation.years <- seq(DF.mock[1,'production_year']-6,DF.mock[1,'production_year']-1,1);
-is.selected <- (DF.metrics[,'model'] == DF.mock[1,'model']) & (DF.metrics[,'year'] %in% temp.validation.years);
+is.selected <- (as.character(DF.metrics[,'model']) == as.character(DF.mock[1,'model'])) & (DF.metrics[,'year'] %in% temp.validation.years);
 temp.weighted.errors <- round(x = DF.metrics[is.selected,'weighted_error'], digits = 7);
 ```
 
